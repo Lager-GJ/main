@@ -11,10 +11,12 @@ Ya existe una primera versión funcional en `Assets/Script/`:
 - **`Presencia/PresenciaController.cs`** — tu sistema: escucha `OnFosforoEncendido`, sube `NivelActual` (fijo o con `probabilidadDeAvance`), y dispara `OnCercaniaPresenciaCambiada` con el multiplicador de miedo correspondiente (array `multiplicadorMiedoPorNivel`, configurable en el Inspector). Tiene `ReiniciarPresencia()` para cuando Dev B reinicie el juego.
 - **`Presencia/PresenciaTestTrigger.cs`** — simulador temporal del fósforo de Dev A (tecla `Espacio` dispara `GameEvents.RaiseFosforoEncendido()`), para que puedas probar tu sistema en tu propia escena de prueba **antes** de que el sistema real de Dev A exista. Bórralo de la escena principal una vez integrado el sistema real (déjalo solo en tu escena de prueba si quieres seguir usándolo).
 - **`Presencia/PresenciaHUD.cs`** — feedback perceptible mínimo: muestra "Presencia: nivel X (miedo xY)" en pantalla (arriba a la izquierda) usando `OnGUI`, sin depender de un Canvas/TextMeshPro configurado. Cúbrelo o reemplázalo cuando Diseñador B entregue el HUD final con el indicador de cercanía.
+- **`Presencia/PresenciaFeedbackVisual.cs`** — tinte rojo en los bordes de pantalla que se intensifica con el nivel de cercanía (placeholder sin arte final, vía `OnGUI`). Reemplazar por la viñeta/silueta real de Diseñador A/C cuando esté lista.
+- **`Presencia/PresenciaAudio.cs`** — hook de audio: reproduce `sonidoAcercamiento` (AudioClip, asignable en el Inspector) cada vez que la Presencia sube de nivel. Sin clip asignado no truena error, solo no suena — así ya se puede dejar montado en la escena antes de tener el audio final de Diseñador C.
 
 Nota: `Assets/Script/Fosforo/` (de Dev A) y lo que se construya para la barra de miedo de Dev B son también **stands-in mínimos** para poder probar tu sistema de punta a punta — no las implementaciones finales de esos devs. El contrato de `GameEvents.cs` es lo único que debe mantenerse estable entre todos.
 
-Pendiente para ti: sonido/silueta del acercamiento y el pulido de timing con playtest.
+Pendiente para ti: asignar el audio/arte final cuando lleguen, y el pulido de timing con playtest.
 
 ---
 
