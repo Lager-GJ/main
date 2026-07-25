@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Terror
 {
@@ -7,11 +8,9 @@ namespace Terror
     // Quitar de la escena principal cuando el sistema real de fosforos este integrado.
     public class PresenciaTestTrigger : MonoBehaviour
     {
-        public KeyCode teclaSimularFosforo = KeyCode.Space;
-
         private void Update()
         {
-            if (Input.GetKeyDown(teclaSimularFosforo))
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 GameEvents.RaiseFosforoEncendido();
             }
