@@ -16,6 +16,7 @@ Trabajas en escena/scripts separados de Dev A y Dev C; integran en los checkpoin
 - [ ] Condición de victoria: llave + caja de dulces encontradas (ambos `esObjetivo == true` recolectados/inspeccionados).
 - [ ] Condición de derrota: barra de miedo al 100% (susto + reinicio).
 - [ ] **Conectar la barra de miedo a la mecánica de la Presencia (Dev C):** la cercanía de la Presencia debe subir la barra más rápido. Esta conexión es la que hace que el reto oficial ("todo tiene un costo") sea mecánico y no solo narrativo — no te saltes este paso ni lo dejes para el final.
+  - Ya existe el contrato en `Assets/Script/Core/GameEvents.cs` (namespace `Terror`). Suscríbete a `GameEvents.OnCercaniaPresenciaCambiada(int nivel, float multiplicador)` — Dev C ya lo dispara desde `Presencia/PresenciaController.cs` cada vez que sube de nivel. Usa el `multiplicador` para acelerar la velocidad con la que sube tu barra de miedo, no crees tu propia lógica de cercanía.
 - [ ] Audio Manager con hooks a eventos: encender fósforo, acercamiento de la Presencia, miedo alto, victoria, derrota.
 
 ## Día 2 — Mañana

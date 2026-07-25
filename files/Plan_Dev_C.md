@@ -5,6 +5,14 @@ Rol nuevo y crítico: implementas el sistema que hace que **"todo tenga un costo
 
 **Proyecto base:** `Main1Escenario/` (Unity 6, URP, Input System nuevo). Ya existen las escenas `Intro.unity` y `Historia.unity` con scripts de UI para la intro narrativa — tu trabajo va en `JUEGO.unity`, la escena de gameplay real.
 
+## Código ya implementado (punto de partida)
+Ya existe una primera versión funcional en `Assets/Script/`:
+- **`Core/GameEvents.cs`** — el contrato de eventos estático compartido entre Dev A, B y C (namespace `Terror`). Define `OnFosforoEncendido`, `OnFosforoApagado` (los dispara Dev A) y `OnCercaniaPresenciaCambiada(int nivel, float multiplicador)` (lo disparas tú). Nadie tiene referencia directa a la escena de otro dev — solo se conectan a través de estos eventos.
+- **`Presencia/PresenciaController.cs`** — tu sistema: escucha `OnFosforoEncendido`, sube `NivelActual` (fijo o con `probabilidadDeAvance`), y dispara `OnCercaniaPresenciaCambiada` con el multiplicador de miedo correspondiente (array `multiplicadorMiedoPorNivel`, configurable en el Inspector). Tiene `ReiniciarPresencia()` para cuando Dev B reinicie el juego.
+- **`Presencia/PresenciaTestTrigger.cs`** — simulador temporal del fósforo de Dev A (tecla `Espacio` dispara `GameEvents.RaiseFosforoEncendido()`), para que puedas probar tu sistema en tu propia escena de prueba **antes** de que el sistema real de Dev A exista. Bórralo de la escena principal una vez integrado el sistema real (déjalo solo en tu escena de prueba si quieres seguir usándolo).
+
+Pendiente para ti: el feedback perceptible (sonido/silueta/HUD) y el pulido de timing siguen siendo tuyos — el script actual solo loguea el nivel por consola (`Debug.Log`).
+
 ---
 
 ## El reto oficial que debes cumplir

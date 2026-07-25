@@ -22,6 +22,7 @@ El truco clave: **la luz ES el cursor**. "Objeto iluminado" = "objeto bajo el cu
 - [ ] Pausar el consumo del fósforo mientras se inspecciona (regla de MVP).
 - [ ] Feedback de encender/apagar fósforo (partícula o hook de sonido — el sonido real lo entrega Diseñador C).
 - [ ] **Emitir el evento `FosforoEncendido`** (y `FosforoApagado`) para que Dev C conecte la mecánica de la Presencia. Este evento es la interfaz crítica entre tu sistema y el de Dev C — defínelo temprano y no lo cambies sin avisar.
+  - Ya existe el contrato en `Assets/Script/Core/GameEvents.cs` (namespace `Terror`): llama a `GameEvents.RaiseFosforoEncendido()` cuando enciendas el fósforo y `GameEvents.RaiseFosforoApagado()` cuando se apague. Dev C ya está escuchando este evento (`Presencia/PresenciaController.cs`) — no dupliques el evento ni crees uno nuevo.
 
 ## Día 2 — Mañana
 - [ ] Integrar sprites finales (fósforo/matchbox de Diseñador A) y la UI del panel de inspección (entregada por Diseñador B).
