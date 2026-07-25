@@ -862,7 +862,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 672381074}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 675749960}
+        m_TargetAssemblyTypeName: StoryManager, Assembly-CSharp
+        m_MethodName: NextPage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &672381074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,31 +939,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 675749959}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f64c5cb6e370fac4597e2f435a26b942, type: 3}
+  m_Script: {fileID: 11500000, guid: cd204b247556cb44e9fe4e2c2cdc80e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntroStoryController
-  introScenes:
-  - illustration: {fileID: 21300000, guid: e3b78839f12f2854db5f78f713b2bcbc, type: 3}
-    textContent: 
-    voiceOrSound: {fileID: 0}
-  - illustration: {fileID: 21300000, guid: c9eb79f47a49f344f8f506a7e4a40033, type: 3}
-    textContent: 
-    voiceOrSound: {fileID: 0}
-  - illustration: {fileID: 21300000, guid: 73af8d4368410f74b89e8516c35582c5, type: 3}
-    textContent: 
-    voiceOrSound: {fileID: 0}
-  - illustration: {fileID: 21300000, guid: 200bcf4ad8f4b224aabdd4a11f69f505, type: 3}
-    textContent: 
-    voiceOrSound: {fileID: 0}
-  - illustration: {fileID: 21300000, guid: 30241a316486b6b44820613a62ac96bf, type: 3}
-    textContent: 
-    voiceOrSound: {fileID: 0}
-  displayImage: {fileID: 485641558}
-  displayText: {fileID: 1707263942}
-  audioSource: {fileID: 0}
-  fadeDuration: 1
-  textDelay: 0.5
-  sceneDuration: 5
+  storyPages:
+  - {fileID: 485641555}
+  - {fileID: 1963630157}
+  - {fileID: 1345474279}
+  - {fileID: 1884338070}
+  - {fileID: 614710087}
+  nombreDeLaEscenaDelJuego: JUEGO
 --- !u!4 &675749961
 Transform:
   m_ObjectHideFlags: 0
@@ -1419,50 +1416,6 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1683413323
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1683413325}
-  - component: {fileID: 1683413324}
-  m_Layer: 0
-  m_Name: juegos
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1683413324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1683413323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bf9ee52fcd2c55419b0a02c4038dcbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Scriptcambio
---- !u!4 &1683413325
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1683413323}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1447.5328, y: 576.8319, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2114,4 +2067,3 @@ SceneRoots:
   - {fileID: 1470272588}
   - {fileID: 2066064275}
   - {fileID: 675749961}
-  - {fileID: 1683413325}
