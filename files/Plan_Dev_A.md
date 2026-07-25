@@ -7,13 +7,13 @@ Eres el corazón del juego. Empiezas aquí desde el minuto uno — sin tu sistem
 
 ---
 
-## Código ya implementado (punto de partida)
-Ya existe una primera versión funcional de la lógica en `Assets/Script/Fosforo/`:
-- **`FosforoController.cs`** — contador limitado (`fosforosRestantes`), tecla `F` para encender, temporizador de quemado (`duracionQuemado`), apagado automático. Dispara `GameEvents.RaiseFosforoEncendido()` / `RaiseFosforoApagado()` (el contrato compartido con Dev C). Tiene un campo opcional `Light2D luz` — si no lo asignas en el Inspector, el sistema funciona igual (solo falta la parte visual).
-- **`InteraccionClick.cs`** — click izquierdo del mouse; solo es válido si `FosforoController.Instance.EstaEncendido` es `true`. Usa raycast 2D para detectar objetos con `ObjetoInteractable`.
-- **`ObjetoInteractable.cs`** — marca cualquier objeto con `Collider2D` como clickeable/inspeccionable (por ahora solo loguea el nombre; conectar al panel real es tarea de la tarde/noche, junto con Diseñador B).
+## ⚠️ Stand-in temporal en `Assets/Script/Fosforo/` — no es tu implementación final
+Para poder probar el sistema de Dev C de forma aislada (sin esperar a que tu sistema esté listo), se creó una versión mínima de referencia en `Assets/Script/Fosforo/` (`FosforoController.cs`, `InteraccionClick.cs`, `ObjetoInteractable.cs`). Cumple lo justo para disparar `GameEvents.RaiseFosforoEncendido()` / `RaiseFosforoApagado()` — el contrato que consume Dev C — pero **no está pensada como tu entrega real**.
 
-Pendiente: la luz visual siguiendo el cursor (`Light2D` o el overlay del plan B), y conectar `Inspeccionar()` al panel de inspección real en vez de solo loguear.
+Cuando empieces tu sistema:
+- Puedes usarla como referencia rápida de cómo conectarte al contrato de eventos, o ignorarla por completo y construir la tuya desde cero.
+- Lo único que debes conservar es que tu sistema real siga llamando a `GameEvents.RaiseFosforoEncendido()` / `RaiseFosforoApagado()` — es lo que Dev C escucha. No cambies la firma de esos eventos sin avisar al resto del equipo.
+- Coordina con quien integra antes de borrar o reemplazar esta carpeta, para no romper la prueba de Dev C mientras tu sistema no esté listo.
 
 ## Objetivo de tu sistema
 El truco clave: **la luz ES el cursor**. "Objeto iluminado" = "objeto bajo el cursor mientras hay un fósforo encendido". El click solo necesita comprobar si hay un fósforo activo — **no construyas detección de iluminación por radio**, es sobre-ingeniería y el mayor riesgo de perder tiempo.
