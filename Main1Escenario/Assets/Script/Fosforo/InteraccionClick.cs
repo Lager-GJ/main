@@ -21,6 +21,12 @@ namespace Terror
                 return;
             }
 
+            if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.EstaAbierto)
+            {
+                PanelInspeccion.Instance.Cerrar();
+                return;
+            }
+
             if (FosforoController.Instance == null || !FosforoController.Instance.EstaEncendido)
             {
                 Debug.Log("[Interaccion] Necesitas un fosforo encendido para interactuar.");

@@ -9,9 +9,17 @@ namespace Terror
     {
         public string nombreObjeto = "Objeto sin nombre";
 
+        [Tooltip("GameObject a mostrar en primer plano al inspeccionar (empieza desactivado en la escena)")]
+        public GameObject vistaPrimerPlano;
+
         public void Inspeccionar()
         {
             Debug.Log($"[Interaccion] Inspeccionando: {nombreObjeto}");
+
+            if (vistaPrimerPlano != null && PanelInspeccion.Instance != null)
+            {
+                PanelInspeccion.Instance.Mostrar(vistaPrimerPlano);
+            }
         }
     }
 }

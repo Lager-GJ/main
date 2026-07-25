@@ -50,6 +50,11 @@ namespace Terror
 
             SeguirCursor();
 
+            if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.EstaAbierto)
+            {
+                return;
+            }
+
             tiempoRestante -= Time.deltaTime;
             if (tiempoRestante <= 0f)
             {
