@@ -7,6 +7,14 @@ Eres el corazón del juego. Empiezas aquí desde el minuto uno — sin tu sistem
 
 ---
 
+## Código ya implementado (punto de partida)
+Ya existe una primera versión funcional de la lógica en `Assets/Script/Fosforo/`:
+- **`FosforoController.cs`** — contador limitado (`fosforosRestantes`), tecla `F` para encender, temporizador de quemado (`duracionQuemado`), apagado automático. Dispara `GameEvents.RaiseFosforoEncendido()` / `RaiseFosforoApagado()` (el contrato compartido con Dev C). Tiene un campo opcional `Light2D luz` — si no lo asignas en el Inspector, el sistema funciona igual (solo falta la parte visual).
+- **`InteraccionClick.cs`** — click izquierdo del mouse; solo es válido si `FosforoController.Instance.EstaEncendido` es `true`. Usa raycast 2D para detectar objetos con `ObjetoInteractable`.
+- **`ObjetoInteractable.cs`** — marca cualquier objeto con `Collider2D` como clickeable/inspeccionable (por ahora solo loguea el nombre; conectar al panel real es tarea de la tarde/noche, junto con Diseñador B).
+
+Pendiente: la luz visual siguiendo el cursor (`Light2D` o el overlay del plan B), y conectar `Inspeccionar()` al panel de inspección real en vez de solo loguear.
+
 ## Objetivo de tu sistema
 El truco clave: **la luz ES el cursor**. "Objeto iluminado" = "objeto bajo el cursor mientras hay un fósforo encendido". El click solo necesita comprobar si hay un fósforo activo — **no construyas detección de iluminación por radio**, es sobre-ingeniería y el mayor riesgo de perder tiempo.
 
