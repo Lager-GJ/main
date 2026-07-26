@@ -96,6 +96,16 @@ public class ObjetoInteractivo : MonoBehaviour
             return;
         }
 
+        // Fuera de la partida en curso (pausa, victoria, derrota) el click no vale.
+        // OnMouseDown es un callback de física que el panel de pausa de uGUI no
+        // bloquea, así que sin esto se podría seguir agarrando objetos con el menú
+        // abierto o después de haber perdido.
+        if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
+        {
+            Debug.Log("[ObjetoInteractivo] Clic rechazado: la partida no está en curso.");
+            return;
+        }
+
         Inspeccionar();
     }
 

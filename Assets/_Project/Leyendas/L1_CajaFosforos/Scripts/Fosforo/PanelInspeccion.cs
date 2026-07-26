@@ -19,6 +19,13 @@ namespace Terror
             Instance = this;
         }
 
+        private void OnDestroy()
+        {
+            // Higiene de singleton: no dejar Instance apuntando a un objeto destruido.
+            if (Instance == this)
+                Instance = null;
+        }
+
         private void Update()
         {
             if (!EstaAbierto)

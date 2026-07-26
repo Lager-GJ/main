@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem; // Mouse.current: el proyecto usa el Input System nuevo (activeInputHandler = 1),
                                // así que UnityEngine.Input.GetMouseButtonDown tiraría una excepción en runtime.
 using UnityEngine.Rendering.Universal; // Light2D vive aquí en URP.
+using Terror; // GameStateManager / GameState: para no aceptar input fuera de partida.
 
 /// <summary>
 /// Núcleo mecánico del sistema de fósforos ("La Vela de la Abuela").
@@ -71,8 +72,22 @@ public class FosforoManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        // Higiene de singleton: no dejar Instance apuntando a un objeto destruido.
+        if (Instance == this)
+            Instance = null;
+    }
+
     private void Update()
     {
+        // Sin fósforos ni interacción fuera de la partida en curso. Hace falta
+        // aunque la pausa ya ponga Time.timeScale = 0, porque timeScale NO detiene
+        // Update(): sin esta guarda, pulsar E con el menú de pausa abierto (o
+        // después de ganar/perder) igual gastaría un fósforo.
+        if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
+            return;
+
         // Encendido con la tecla E (y no con click) porque el click izquierdo ahora
         // lo usa el movimiento del niño (point & click) — si usáramos el mismo botón
         // para las dos cosas, cada vez que el jugador camina se gastaría un fósforo.

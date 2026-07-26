@@ -7,10 +7,17 @@ namespace Terror
     // se asignan en el Inspector cuando lleguen los assets finales (Diseñador C).
     // Nota: se suscribe en Start() (no OnEnable) para dar tiempo a que
     // GameStateManager/FearManager ya hayan corrido su Awake().
+    //
+    // Se llamaba AudioManager hasta la Semana 2. Se renombro porque el shell de
+    // la antologia trajo su propio Terror.AudioManager (volumenes persistentes,
+    // DontDestroyOnLoad) y dos clases con el mismo nombre no compilan. Este de
+    // aca es especifico de la Leyenda 1: sus clips son de esta leyenda, es
+    // scene-local (RequireComponent de AudioSource) y depende de FearManager/
+    // GameStateManager, que viven en la escena de juego.
     [RequireComponent(typeof(AudioSource))]
-    public class AudioManager : MonoBehaviour
+    public class AudioJuegoL1 : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
+        public static AudioJuegoL1 Instance { get; private set; }
 
         [Header("Clips (asignar cuando lleguen los assets finales)")]
         public AudioClip sfxFosforoEncendido;

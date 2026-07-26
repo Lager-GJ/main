@@ -40,6 +40,17 @@ namespace Terror
             Instance = this;
         }
 
+        private void OnDestroy()
+        {
+            // Higiene de singleton. Al recargar escena Unity ya se autorepara solo
+            // (un objeto destruido compara == null por la sobrecarga de operadores
+            // de UnityEngine.Object, asi que la guarda de Awake deja pasar al nuevo),
+            // pero dejar Instance colgando a un objeto muerto es una trampa esperando
+            // a alguien que la consulte fuera de ese camino feliz.
+            if (Instance == this)
+                Instance = null;
+        }
+
         private void OnEnable()
         {
             GameEvents.OnFosforoEncendido += ManejarFosforoEncendido;
