@@ -1,5 +1,27 @@
 # Plan — El shell de la antología (Semanas 2 y 7)
 
+> ## 🟡 Estado al cerrar la sesión del 2026-07-26 — LEER PRIMERO
+>
+> **El código está terminado y commiteado localmente (5 commits). El trabajo de Editor
+> (Fase 4) está hecho pero SIN COMMITEAR** — falta que David confirme visualmente que el
+> menú se ve bien (en curso, últimu paso: verificar tamaño/orden de las tarjetas) y que yo
+> haga el commit final de escenas + assets (último paso pendiente).
+>
+> **Cambio de alcance a mitad de camino, no reflejado en el resto de este documento tal
+> como se escribió originalmente:** el menú dejó de ser "5 leyendas ecuatorianas" y pasó a
+> ser **"Los secretos de la casa"** — 4 cuartos que se desbloquean en secuencia (no 5
+> leyendas independientes). Ver `CLAUDE.md` → "Product direction" para el detalle completo
+> y actualizado. Las secciones 2, 5 y 6 de abajo describen el plan **original**, previo a
+> ese cambio — quedan como referencia histórica de qué se pensaba construir, no como el
+> estado final.
+>
+> **⚠️ No se pudo pushear nada — David no tiene permiso de escritura en el repo** (`git
+> push` → 403). Los 5 commits de esta sesión existen solo en esta máquina. Pendiente:
+> pedir acceso o hacer fork+PR.
+>
+> Ver la sección **10. Cierre de sesión (2026-07-26)** al final de este documento para el
+> detalle completo de qué se hizo, qué falta, y los próximos pasos concretos.
+
 > **⚠️ Aviso para el equipo (Anavi):** este trabajo **mueve casi todos los scripts de sitio**
 > y **renombra las 4 escenas**. Antes de que empiece:
 > 1. **Pusheá todo lo que tengas** (aunque esté a medias, en una rama si hace falta).
@@ -175,3 +197,72 @@ Si `FearManager` o `FosforoManager` se volvieran persistentes aparecería el bug
 al doble. Además el GameObject `FosforoManager` carga **tres** componentes
 (`FosforoManager`, `PresenciaManager`, `PresenciaFearBridge`) y los tres tienen guardas de
 singleton que llaman `Destroy(gameObject)` — un duplicado los mataría a los tres de una.
+
+---
+
+## 10. Cierre de sesión (2026-07-26)
+
+### Qué se hizo — código (commiteado localmente, 5 commits)
+
+```
+99748d3  Fix alivio real del miedo, puente Presencia->FearManager, y numeros de fosforo
+c94c72c  Coloca PresenciaFearBridge en la escena (JUEGO.unity)
+c4c0a67  Documenta el plan del shell de la antologia (Semanas 2 y 7)
+dcfbb7f  Semana 2: reorganiza Assets/Script -> Assets/_Project
+e202ac2  Semana 2: shell de la antologia (guardado, menu, router, pausa)
+```
+
+Rama de respaldo `backup-antes-de-reorganizar` apunta al commit justo antes del `git mv`
+masivo, por si algo necesita revertirse.
+
+### Qué se hizo — Editor (hecho, pero SIN commitear todavía)
+
+- Las 4 escenas renombradas y movidas a `Assets/_Project/...` (ver §6).
+- `00_Boot`: objeto `[Persistentes]` con `SceneRouter` + `AudioManager` + `BootLoader`.
+- `01_Menu`: `MenuPrincipal` en el `Canvas`, 4 tarjetas (`Tarjeta_L1`..`L4`, no 5 — ver el
+  aviso de arriba sobre el cambio de alcance), cada una con `MenuTarjetaLeyenda` cableado
+  (Menu/Leyenda/TextoNombre/ImagenPortada/Candado/TextoEstado) y su `Button.OnClick →
+  OnClickTarjeta()`. El botón "Como Jugar" (antes muerto) sigue sin recablear a ningún panel
+  — pendiente.
+- `L1_Intro`: `StoryManager.nombreDeLaEscenaDelJuego` corregido de `JUEGO` a `L1_Juego`.
+- 4 assets `LeyendaDefinicion` en `_Project/Data/` (`L1_CajaFosforos` → `L2_Cantuna` →
+  `L3_DamaTapada` → `L4_PadreAlmeida`, encadenados por `siguienteLeyenda`) + 1
+  `CatalogoLeyendas.asset` con las 4 en orden. **No hay una 5ta** (se creó `L5_CajaRonca` y
+  se borró al confirmar que son 4 cuartos, no 5).
+- 4 sprites recortados de los mockups de Anavi en `Assets/Recursos/Niveles/` (uno por
+  cuarto), asignados al campo `Portada` de cada `LeyendaDefinicion`.
+- Arreglado a mano (edición directa del `.unity`, ver `CLAUDE.md` → "Editing scenes outside
+  the Editor"): orden de hijos de cada tarjeta (Portada detrás del texto, no encima),
+  anchors de `Portada` a stretch-fill, y tamaño/posición uniforme de las 4 tarjetas
+  (320×400, separadas en X). **Esto último — que se vea bien — todavía no lo confirmó
+  David visualmente**, quedó como el último paso pendiente antes de cerrar la Fase 4.
+
+### Lo que falta, en orden
+
+1. **David**: confirmar en Play (desde `00_Boot`, pestaña `Game`, no `Scene`) que las 4
+   tarjetas se ven del mismo tamaño, separadas, con la imagen de fondo y el texto legible
+   encima.
+2. Si algo más se ve mal, seguir ajustando (probablemente vía edición directa del `.unity`,
+   es lo que mejor funcionó esta sesión frente a la navegación manual del Inspector).
+3. **Claude**: commitear el trabajo de Editor (escenas + assets + sprites) — Fase 5 del
+   plan original.
+4. Correr el checklist completo de la sección 8 de este documento (pausa, salir al menú,
+   miedo al doble, persistencia).
+5. Cablear el botón "Como Jugar" a un panel (hoy no hace nada).
+6. Decidir qué hacer con el acceso de push (pedirle permiso a Anavi, o fork+PR) para que
+   este trabajo deje de existir solo en esta máquina.
+7. Cuando haya arte limpio (sin candado dibujado) de "El recibidor del velo" y "El patio de
+   la procesión", reemplazar esos 2 sprites.
+
+### Aprendizajes de esta sesión, para la próxima
+
+- **La navegación manual de Unity por texto es lenta y propensa a error** (crear objetos en
+  el menú equivocado, no encontrar el Inspector, olvidar guardar). Para tareas de layout
+  UI (tamaños, anchors, orden de hijos, posiciones), es más confiable que Claude edite el
+  `.unity` directamente con un script Python que parsee los bloques YAML y verifique
+  integridad padre/hijo después — así se hizo para arreglar las tarjetas del menú.
+- **El olvido de `Ctrl+S` fue la causa de la mayoría de los "no veo el cambio"** en esta
+  sesión. Recordar pedirlo explícitamente después de cada paso de Editor.
+- **Reabrir una escena sin guardar ("Don't Save") es la forma segura de sincronizar** el
+  estado en disco (editado por Claude) con lo que Unity tiene en memoria, sin arriesgarse a
+  que Unity pise el archivo bueno con datos viejos.
