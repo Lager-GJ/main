@@ -2,33 +2,33 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// La Presencia: la entidad que se "acerca" mientras el niÒo usa fÛsforos.
-/// Regla oficial del MVP: cada fÛsforo encendido aumenta el riesgo. Adem·s, el riesgo
-/// sigue subiendo mientras el fÛsforo permanece encendido (no solo al prenderlo) ó
-/// asÌ apagarlo antes con Q (ver FosforoManager) tiene un beneficio real: menos
+/// La Presencia: la entidad que se "acerca" mientras el ni√±o usa f√≥sforos.
+/// Regla oficial del MVP: cada f√≥sforo encendido aumenta el riesgo. Adem√°s, el riesgo
+/// sigue subiendo mientras el f√≥sforo permanece encendido (no solo al prenderlo) ‚Äî
+/// as√≠ apagarlo antes con Q (ver FosforoManager) tiene un beneficio real: menos
 /// segundos de luz encendida, menos riesgo acumulado.
-/// No dibuja nada de la Presencia (sprite, animaciÛn, sonido) ó eso lo arma quien
-/// se encargue del arte/IA de la entidad, enganch·ndose a los eventos de abajo.
+/// No dibuja nada de la Presencia (sprite, animaci√≥n, sonido) ‚Äî eso lo arma quien
+/// se encargue del arte/IA de la entidad, enganch√°ndose a los eventos de abajo.
 /// </summary>
 public class PresenciaManager : MonoBehaviour
 {
     public static PresenciaManager Instance { get; private set; }
 
-    [Header("ConfiguraciÛn de riesgo (0 = a salvo, 1 = atrapado)")]
-    [Tooltip("Cu·nto sube el riesgo de una sola vez cada vez que se enciende un fÛsforo.")]
+    [Header("Configuraci√≥n de riesgo (0 = a salvo, 1 = atrapado)")]
+    [Tooltip("Cu√°nto sube el riesgo de una sola vez cada vez que se enciende un f√≥sforo.")]
     [SerializeField] private float riesgoPorEncendido = 0.08f;
 
-    [Tooltip("Cu·nto sube el riesgo por segundo mientras el fÛsforo sigue encendido.")]
+    [Tooltip("Cu√°nto sube el riesgo por segundo mientras el f√≥sforo sigue encendido.")]
     [SerializeField] private float riesgoPorSegundoEncendido = 0.03f;
 
-    [Tooltip("Cu·nto baja el riesgo por segundo mientras el fÛsforo est· apagado (a oscuras, la Presencia pierde el rastro poco a poco).")]
+    [Tooltip("Cu√°nto baja el riesgo por segundo mientras el f√≥sforo est√° apagado (a oscuras, la Presencia pierde el rastro poco a poco).")]
     [SerializeField] private float recuperacionPorSegundoApagado = 0.015f;
 
     // --- Estado interno ---
     private float riesgo;
 
-    // --- Eventos est·ticos ---
-    // Mismo patrÛn que FosforoManager: la barra de miedo, el audio, o la animaciÛn
+    // --- Eventos est√°ticos ---
+    // Mismo patr√≥n que FosforoManager: la barra de miedo, el audio, o la animaci√≥n
     // de la Presencia se suscriben a esto sin depender directamente de esta clase.
     public static event Action<float> OnRiesgoCambiado;
     public static event Action OnJugadorAtrapado;
@@ -77,13 +77,19 @@ public class PresenciaManager : MonoBehaviour
         riesgo = Mathf.Clamp01(riesgo + cantidad);
 
         if (!Mathf.Approximately(riesgoAnterior, riesgo))
+        {
             OnRiesgoCambiado?.Invoke(riesgo);
+            
+            // Conexi√≥n con FearManager: enviamos un multiplicador basado en el riesgo
+            // Riesgo 0 => multiplicador 1x. Riesgo 1 => multiplicador 3x (ejemplo)
+            Terror.GameEvents.RaiseCercaniaPresenciaCambiada(1, 1f + (riesgo * 2f));
+        }
 
         // TEMPORAL: mientras no exista pantalla de game over, este log confirma que
-        // la lÛgica de riesgo funciona. Se puede borrar cuando haya un game over real.
+        // la l√≥gica de riesgo funciona. Se puede borrar cuando haya un game over real.
         if (riesgo >= 1f && riesgoAnterior < 1f)
         {
-            Debug.Log("[Presencia] AtrapÛ al niÒo. GAME OVER.");
+            Debug.Log("[Presencia] Atrap√≥ al ni√±o. GAME OVER.");
             OnJugadorAtrapado?.Invoke();
         }
     }

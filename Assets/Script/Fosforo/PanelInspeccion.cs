@@ -57,6 +57,11 @@ namespace Terror
             {
                 vistaActual.SetActive(false);
                 vistaActual = null;
+                
+                if (FosforoManager.Instance != null)
+                {
+                    FosforoManager.Instance.ReanudarQuemado();
+                }
             }
         }
     }

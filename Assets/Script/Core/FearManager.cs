@@ -24,6 +24,7 @@ namespace Terror
         private bool fosforoEncendido;
         private float multiplicadorPresencia = 1f;
         private bool derrotaDisparada;
+        private bool pausadoPorDialogo;
 
         private void Awake()
         {
@@ -40,6 +41,8 @@ namespace Terror
             GameEvents.OnFosforoEncendido += ManejarFosforoEncendido;
             GameEvents.OnFosforoApagado += ManejarFosforoApagado;
             GameEvents.OnCercaniaPresenciaCambiada += ManejarCercaniaPresencia;
+            GameEvents.OnDialogoIniciado += ManejarDialogoIniciado;
+            GameEvents.OnDialogoTerminado += ManejarDialogoTerminado;
         }
 
         private void OnDisable()
@@ -47,6 +50,8 @@ namespace Terror
             GameEvents.OnFosforoEncendido -= ManejarFosforoEncendido;
             GameEvents.OnFosforoApagado -= ManejarFosforoApagado;
             GameEvents.OnCercaniaPresenciaCambiada -= ManejarCercaniaPresencia;
+            GameEvents.OnDialogoIniciado -= ManejarDialogoIniciado;
+            GameEvents.OnDialogoTerminado -= ManejarDialogoTerminado;
         }
 
         private void ManejarFosforoEncendido() => fosforoEncendido = true;
@@ -55,12 +60,16 @@ namespace Terror
 
         private void ManejarCercaniaPresencia(int nivel, float multiplicador) => multiplicadorPresencia = multiplicador;
 
+        private void ManejarDialogoIniciado() => pausadoPorDialogo = true;
+        
+        private void ManejarDialogoTerminado() => pausadoPorDialogo = false;
+
         private void Update()
         {
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
                 return;
 
-            if (fosforoEncendido) return; // se mantiene fijo, no baja
+            if (fosforoEncendido || pausadoPorDialogo) return; // se mantiene fijo, no baja
 
             SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * Time.deltaTime);
         }

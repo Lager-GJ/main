@@ -18,6 +18,11 @@ namespace Terror
         // Dev B a la velocidad de subida de la barra de miedo.
         public static event Action<int, float> OnCercaniaPresenciaCambiada;
 
+        // UI -> Dev B: Se disparan cuando inicia o termina una secuencia de texto
+        // para que la barra de miedo se pause durante la lectura.
+        public static event Action OnDialogoIniciado;
+        public static event Action OnDialogoTerminado;
+
         public static void RaiseFosforoEncendido()
         {
             OnFosforoEncendido?.Invoke();
@@ -31,6 +36,16 @@ namespace Terror
         public static void RaiseCercaniaPresenciaCambiada(int nivel, float multiplicadorMiedo)
         {
             OnCercaniaPresenciaCambiada?.Invoke(nivel, multiplicadorMiedo);
+        }
+
+        public static void RaiseDialogoIniciado()
+        {
+            OnDialogoIniciado?.Invoke();
+        }
+
+        public static void RaiseDialogoTerminado()
+        {
+            OnDialogoTerminado?.Invoke();
         }
     }
 }

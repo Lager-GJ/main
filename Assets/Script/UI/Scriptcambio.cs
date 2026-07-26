@@ -8,4 +8,14 @@ public class Scriptcambio : MonoBehaviour
     {
         SceneManager.LoadScene("Historia");
     }
+
+    public void Niveles()
+    {
+        SceneManager.LoadScene("Nivel");
+    }
+
+    public void Creditos()
+    {
+        SceneManager.LoadScene("CreditosPan");
+    }
 }
