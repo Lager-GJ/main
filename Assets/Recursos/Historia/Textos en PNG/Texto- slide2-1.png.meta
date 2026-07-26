@@ -1,0 +1,1170 @@
+fileFormatVersion: 2
+guid: e2714bcdf2161c642bad5fa467a8ec2c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4579824788494344776
+    second: Texto- slide2-1_0
+  - first:
+      213: -929191844634017031
+    second: Texto- slide2-1_1
+  - first:
+      213: 7488713805969376683
+    second: Texto- slide2-1_2
+  - first:
+      213: 5317097612216345571
+    second: Texto- slide2-1_3
+  - first:
+      213: 3252783849954751032
+    second: Texto- slide2-1_4
+  - first:
+      213: -8737698381806188488
+    second: Texto- slide2-1_5
+  - first:
+      213: 2311684214333922316
+    second: Texto- slide2-1_6
+  - first:
+      213: -6968167527004443019
+    second: Texto- slide2-1_7
+  - first:
+      213: -2972696904553683783
+    second: Texto- slide2-1_8
+  - first:
+      213: 6767896813055869207
+    second: Texto- slide2-1_9
+  - first:
+      213: -5950298580725365581
+    second: Texto- slide2-1_10
+  - first:
+      213: 4248775127760144508
+    second: Texto- slide2-1_11
+  - first:
+      213: 2803131811140828406
+    second: Texto- slide2-1_12
+  - first:
+      213: -2535131598831475435
+    second: Texto- slide2-1_13
+  - first:
+      213: 1626451942525764282
+    second: Texto- slide2-1_14
+  - first:
+      213: 8791166787733188995
+    second: Texto- slide2-1_15
+  - first:
+      213: -1240823369401153502
+    second: Texto- slide2-1_16
+  - first:
+      213: -1444992532153244061
+    second: Texto- slide2-1_17
+  - first:
+      213: -7735388820786883038
+    second: Texto- slide2-1_18
+  - first:
+      213: -3235659802371659846
+    second: Texto- slide2-1_19
+  - first:
+      213: -563046788901405271
+    second: Texto- slide2-1_20
+  - first:
+      213: 4855970328662199098
+    second: Texto- slide2-1_21
+  - first:
+      213: 9180915434924170309
+    second: Texto- slide2-1_22
+  - first:
+      213: 7464927253975456147
+    second: Texto- slide2-1_23
+  - first:
+      213: 1262026567435608683
+    second: Texto- slide2-1_24
+  - first:
+      213: -650493191065389471
+    second: Texto- slide2-1_25
+  - first:
+      213: 1627484632461957154
+    second: Texto- slide2-1_26
+  - first:
+      213: -1011611840554351497
+    second: Texto- slide2-1_27
+  - first:
+      213: 803170994483346238
+    second: Texto- slide2-1_28
+  - first:
+      213: -5478055101615990959
+    second: Texto- slide2-1_29
+  - first:
+      213: -1820851588939339832
+    second: Texto- slide2-1_30
+  - first:
+      213: 7897428794107617283
+    second: Texto- slide2-1_31
+  - first:
+      213: 6596482667422607668
+    second: Texto- slide2-1_32
+  - first:
+      213: -5793437828161370155
+    second: Texto- slide2-1_33
+  - first:
+      213: -4912545899103850171
+    second: Texto- slide2-1_34
+  - first:
+      213: 3730850004971527325
+    second: Texto- slide2-1_35
+  - first:
+      213: -8884436550004569879
+    second: Texto- slide2-1_36
+  - first:
+      213: 5851800951206311388
+    second: Texto- slide2-1_37
+  - first:
+      213: -417917514405991303
+    second: Texto- slide2-1_38
+  - first:
+      213: 1501536731528901186
+    second: Texto- slide2-1_39
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Texto- slide2-1_0
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 145
+        width: 59
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bd144cae913170c0800000000000000
+      internalID: -4579824788494344776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_1
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 146
+        width: 39
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f2466cb0f8da13f0800000000000000
+      internalID: -929191844634017031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_2
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 145
+        width: 30
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba54e5597814de760800000000000000
+      internalID: 7488713805969376683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_3
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 145
+        width: 33
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e3ab3c6b102ac940800000000000000
+      internalID: 5317097612216345571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_4
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 146
+        width: 19
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8323ea37da5342d20800000000000000
+      internalID: 3252783849954751032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_5
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 145
+        width: 33
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 838cfe5bd957db680800000000000000
+      internalID: -8737698381806188488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_6
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 145
+        width: 33
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0c504c8b80c41020800000000000000
+      internalID: 2311684214333922316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_7
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 157
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57eec799d881c4f90800000000000000
+      internalID: -6968167527004443019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_8
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 146
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b4ac235aebdeb6d0800000000000000
+      internalID: -2972696904553683783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_9
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 105
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71181ba2b466ced50800000000000000
+      internalID: 6767896813055869207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_10
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 83
+        width: 7
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b48a5487fa4c6da0800000000000000
+      internalID: -5950298580725365581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_11
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 83
+        width: 39
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7888acb77ea6fa30800000000000000
+      internalID: 4248775127760144508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_12
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 71
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fc75a5d789b6e620800000000000000
+      internalID: 2803131811140828406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_13
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 89
+        width: 7
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51528c81e3761dcd0800000000000000
+      internalID: -2535131598831475435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_14
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 83
+        width: 21
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab20e76ac61529610800000000000000
+      internalID: 1626451942525764282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_15
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 82
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3817c08ad9f700a70800000000000000
+      internalID: 8791166787733188995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_16
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 83
+        width: 23
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22847dd38b5b7cee0800000000000000
+      internalID: -1240823369401153502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_17
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 82
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 366e9e9a2fa52fbe0800000000000000
+      internalID: -1444992532153244061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_18
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 82
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2265871f9d066a490800000000000000
+      internalID: -7735388820786883038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_19
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 82
+        width: 14
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab760a19d80a813d0800000000000000
+      internalID: -3235659802371659846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_20
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 83
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ad7b9bbde7af28f0800000000000000
+      internalID: -563046788901405271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_21
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 82
+        width: 14
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3b4fbf294fd36340800000000000000
+      internalID: 4855970328662199098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_22
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 82
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54c5e8b02f9296f70800000000000000
+      internalID: 9180915434924170309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_23
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 82
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 399d65f59cfb89760800000000000000
+      internalID: 7464927253975456147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_24
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 83
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b62ea110a7e938110800000000000000
+      internalID: 1262026567435608683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_25
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 83
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 166bcb1a3ebf8f6f0800000000000000
+      internalID: -650493191065389471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_26
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 29
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2285d4386acf59610800000000000000
+      internalID: 1627484632461957154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_27
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 17
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 774cd29046806f1f0800000000000000
+      internalID: -1011611840554351497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_28
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 29
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3bb31c93cf652b00800000000000000
+      internalID: 803170994483346238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_29
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 28
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1579928b8e90af3b0800000000000000
+      internalID: -5478055101615990959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_30
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 29
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c7a09c80290bb6e0800000000000000
+      internalID: -1820851588939339832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_31
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 28
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 300e9b755ad499d60800000000000000
+      internalID: 7897428794107617283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_32
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 28
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 439eebe490a6b8b50800000000000000
+      internalID: 6596482667422607668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_33
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 28
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d781208df2999fa0800000000000000
+      internalID: -5793437828161370155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_34
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 16
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 541fc15588123dbb0800000000000000
+      internalID: -4912545899103850171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_35
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 29
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9c97980054a6c330800000000000000
+      internalID: 3730850004971527325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_36
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 28
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e80b7f870424b480800000000000000
+      internalID: -8884436550004569879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_37
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 28
+        width: 20
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd5f1f006f5c53150800000000000000
+      internalID: 5851800951206311388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_38
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 28
+        width: 14
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97caa602c32433af0800000000000000
+      internalID: -417917514405991303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Texto- slide2-1_39
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 29
+        width: 33
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2423bfba3b786d410800000000000000
+      internalID: 1501536731528901186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Texto- slide2-1_0: -4579824788494344776
+      Texto- slide2-1_1: -929191844634017031
+      Texto- slide2-1_10: -5950298580725365581
+      Texto- slide2-1_11: 4248775127760144508
+      Texto- slide2-1_12: 2803131811140828406
+      Texto- slide2-1_13: -2535131598831475435
+      Texto- slide2-1_14: 1626451942525764282
+      Texto- slide2-1_15: 8791166787733188995
+      Texto- slide2-1_16: -1240823369401153502
+      Texto- slide2-1_17: -1444992532153244061
+      Texto- slide2-1_18: -7735388820786883038
+      Texto- slide2-1_19: -3235659802371659846
+      Texto- slide2-1_2: 7488713805969376683
+      Texto- slide2-1_20: -563046788901405271
+      Texto- slide2-1_21: 4855970328662199098
+      Texto- slide2-1_22: 9180915434924170309
+      Texto- slide2-1_23: 7464927253975456147
+      Texto- slide2-1_24: 1262026567435608683
+      Texto- slide2-1_25: -650493191065389471
+      Texto- slide2-1_26: 1627484632461957154
+      Texto- slide2-1_27: -1011611840554351497
+      Texto- slide2-1_28: 803170994483346238
+      Texto- slide2-1_29: -5478055101615990959
+      Texto- slide2-1_3: 5317097612216345571
+      Texto- slide2-1_30: -1820851588939339832
+      Texto- slide2-1_31: 7897428794107617283
+      Texto- slide2-1_32: 6596482667422607668
+      Texto- slide2-1_33: -5793437828161370155
+      Texto- slide2-1_34: -4912545899103850171
+      Texto- slide2-1_35: 3730850004971527325
+      Texto- slide2-1_36: -8884436550004569879
+      Texto- slide2-1_37: 5851800951206311388
+      Texto- slide2-1_38: -417917514405991303
+      Texto- slide2-1_39: 1501536731528901186
+      Texto- slide2-1_4: 3252783849954751032
+      Texto- slide2-1_5: -8737698381806188488
+      Texto- slide2-1_6: 2311684214333922316
+      Texto- slide2-1_7: -6968167527004443019
+      Texto- slide2-1_8: -2972696904553683783
+      Texto- slide2-1_9: 6767896813055869207
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -35,6 +35,7 @@ public class ObjetoInteractivo : MonoBehaviour
 
     private Renderer[] renderers;
     private UnityEngine.UI.Graphic[] graficosUI;
+    private bool yaInteractuo = false;
 
     private void Awake()
     {
@@ -80,6 +81,8 @@ public class ObjetoInteractivo : MonoBehaviour
     {
         Debug.Log("[ObjetoInteractivo] ¡El ratón ha hecho clic (OnMouseDown) sobre " + gameObject.name + "!");
 
+        if (yaInteractuo) return;
+
         // OnMouseDown funciona igual con el Input System nuevo: no pasa por la clase
         // UnityEngine.Input, así que no rompe aunque el proyecto tenga
         // "Active Input Handling" en modo "Input System Package (New)".
@@ -104,6 +107,8 @@ public class ObjetoInteractivo : MonoBehaviour
     {
         Debug.Log("[ObjetoInteractivo] ¡Clic detectado por InteractuarManual() en " + gameObject.name + "!");
         
+        if (yaInteractuo) return;
+        
         if (FosforoManager.Instance == null) return;
         if (!FosforoManager.Instance.PuedeInteractuar()) return;
 
@@ -112,6 +117,7 @@ public class ObjetoInteractivo : MonoBehaviour
 
     private void Inspeccionar()
     {
+        yaInteractuo = true;
         // Congelamos el consumo del fósforo mientras dura la inspección: el jugador
         // no debería perder luz solo por leer la descripción de un objeto.
         FosforoManager.Instance.PausarQuemado();

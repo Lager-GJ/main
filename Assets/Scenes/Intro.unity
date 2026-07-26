@@ -681,7 +681,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PHUSPURU
+  m_text: LUMBRE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   m_sharedMaterial: {fileID: 8858683890673008838, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}

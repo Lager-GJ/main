@@ -18,4 +18,9 @@ public class Scriptcambio : MonoBehaviour
     {
         SceneManager.LoadScene("CreditosPan");
     }
+
+    public void Volver()
+    {
+        SceneManager.LoadScene("Intro");
+    }
 }
