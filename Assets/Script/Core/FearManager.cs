@@ -69,15 +69,22 @@ namespace Terror
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
                 return;
 
-            if (fosforoEncendido || pausadoPorDialogo) return; // se mantiene fijo, no baja
+            if (pausadoPorDialogo) return;
 
-            SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * Time.deltaTime);
+            if (fosforoEncendido)
+            {
+                SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * Time.deltaTime);
+            }
+            else
+            {
+                SetMiedo(miedoActual - 0.5f * Time.deltaTime);
+            }
         }
 
         public void SetMiedo(float valor)
         {
-            // El miedo es de solo ida: nunca puede bajar del valor actual.
-            float clamped = Mathf.Clamp(valor, miedoActual, 100f);
+            // El miedo ahora puede bajar hasta 0
+            float clamped = Mathf.Clamp(valor, 0f, 100f);
             if (!Mathf.Approximately(clamped, miedoActual))
             {
                 miedoActual = clamped;
