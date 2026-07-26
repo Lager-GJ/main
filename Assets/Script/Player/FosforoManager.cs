@@ -117,6 +117,7 @@ public class FosforoManager : MonoBehaviour
         Debug.Log($"[Fosforo] Encendido. Quedan {fosforosRestantes} fósforos.");
 
         OnFosforoEncendido?.Invoke();
+        Terror.GameEvents.RaiseFosforoEncendido(); // <-- CONEXION A FEAR MANAGER
         OnFosforosRestantesCambiado?.Invoke(fosforosRestantes);
 
         // Avisamos "sin fósforos" apenas se usa el último, no solo cuando se apague:
@@ -184,6 +185,7 @@ public class FosforoManager : MonoBehaviour
         Debug.Log("[Fosforo] Apagado (se acabó el tiempo).");
 
         OnFosforoApagado?.Invoke();
+        Terror.GameEvents.RaiseFosforoApagado(); // <-- CONEXION A FEAR MANAGER
     }
 
     /// <summary>

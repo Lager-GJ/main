@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 491cce4db127e9f4ca65c48896a9a9fb
+guid: d20ee50591f08d34a8f5b8448d575e1c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3810614894643808526
-    second: 21c1b80e57b853c034ac677edd98d0f0_0
+      213: -1676861189612105797
+    second: Estatico-LUZ_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 21c1b80e57b853c034ac677edd98d0f0_0
+      name: Estatico-LUZ_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1200
-        height: 250
+        x: 1111
+        y: 27
+        width: 2063
+        height: 3940
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e098e03ae0602e430800000000000000
-      internalID: 3810614894643808526
+      spriteID: bbf0887e1a79ab8e0800000000000000
+      internalID: -1676861189612105797
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      21c1b80e57b853c034ac677edd98d0f0_0: 3810614894643808526
+      Estatico-LUZ_0: -1676861189612105797
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

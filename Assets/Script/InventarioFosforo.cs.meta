@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: ba9c3c6fd0f9c0348b3e8c5d4255d2ce
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - spriteFosforoNuevo: {fileID: 6394992186715826657, guid: 46735a0759e090b49b2d5fdc2607e232, type: 3}
+  - spriteFosforoQuemado: {fileID: -7514382926951691490, guid: b4b41b93ba156d7468dc678513e35264, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

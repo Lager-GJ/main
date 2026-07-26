@@ -1,22 +1,23 @@
 using System;
 using UnityEngine;
+using Terror;
 
 /// <summary>
 /// Clase base para cualquier objeto clickeable del escenario (llave, caja de dulces, etc.).
 /// Aplica la regla obligatoria del MVP: solo se puede interactuar mientras hay un
-/// fÛsforo encendido. Este script NO dibuja el panel de inspecciÛn (eso lo arma otro
-/// dev) ó solo decide si el click es v·lido y avisa mediante un evento est·tico con
+/// f√≥sforo encendido. Este script NO dibuja el panel de inspecci√≥n (eso lo arma otro
+/// dev) ‚Äî solo decide si el click es v√°lido y avisa mediante un evento est√°tico con
 /// los datos del objeto, para no acoplarse al script del panel.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class ObjetoInteractivo : MonoBehaviour
 {
-    [Header("Datos para el panel de inspecciÛn")]
-    [Tooltip("Nombre que se muestra en el panel de inspecciÛn.")]
+    [Header("Datos para el panel de inspecci√≥n")]
+    [Tooltip("Nombre que se muestra en el panel de inspecci√≥n.")]
     [SerializeField] private string nombreObjeto;
 
     [TextArea]
-    [Tooltip("DescripciÛn tem·tica que se muestra al inspeccionar este objeto.")]
+    [Tooltip("Descripci√≥n tem√°tica que se muestra al inspeccionar este objeto.")]
     [SerializeField] private string descripcion;
 
     [Tooltip("Marcar true si este objeto es un objetivo de victoria (llave / caja de dulces).")]
@@ -26,42 +27,115 @@ public class ObjetoInteractivo : MonoBehaviour
     public string Descripcion => descripcion;
     public bool EsObjetivoDeVictoria => esObjetivoDeVictoria;
 
-    // El script del panel de inspecciÛn (de otro dev) se suscribe a esto para saber
-    // CU¡NDO y QU… mostrar, sin que ObjetoInteractivo conozca cÛmo es ese panel.
-    // Se mantiene el mismo patrÛn de Action est·ticos que usa FosforoManager.
+    // El script del panel de inspecci√≥n (de otro dev) se suscribe a esto para saber
+    // CU√ÅNDO y QU√â mostrar, sin que ObjetoInteractivo conozca c√≥mo es ese panel.
+    // Se mantiene el mismo patr√≥n de Action est√°ticos que usa FosforoManager.
     public static event Action<ObjetoInteractivo> OnObjetoInspeccionado;
     public static event Action OnInspeccionCerrada;
 
+    private Renderer[] renderers;
+    private UnityEngine.UI.Graphic[] graficosUI;
+
+    private void Awake()
+    {
+        // Buscamos cualquier componente visual (Sprite, Mesh o UI) en este objeto y en sus hijos
+        renderers = GetComponentsInChildren<Renderer>();
+        graficosUI = GetComponentsInChildren<UnityEngine.UI.Graphic>();
+    }
+
+    private void OnEnable()
+    {
+        Terror.GameEvents.OnFosforoEncendido += Mostrar;
+        Terror.GameEvents.OnFosforoApagado += Ocultar;
+    }
+
+    private void OnDisable()
+    {
+        Terror.GameEvents.OnFosforoEncendido -= Mostrar;
+        Terror.GameEvents.OnFosforoApagado -= Ocultar;
+    }
+
+    private void Start()
+    {
+        // Al arrancar, comprobamos si ya hay un f√≥sforo encendido
+        if (FosforoManager.Instance != null && FosforoManager.Instance.PuedeInteractuar())
+            Mostrar();
+        else
+            Ocultar();
+    }
+
+    private void Mostrar()
+    {
+        foreach (var r in renderers) if (r != null) r.enabled = true;
+        foreach (var g in graficosUI) if (g != null) g.enabled = true;
+    }
+
+    private void Ocultar()
+    {
+        foreach (var r in renderers) if (r != null) r.enabled = false;
+        foreach (var g in graficosUI) if (g != null) g.enabled = false;
+    }
+
     private void OnMouseDown()
     {
+        Debug.Log("[ObjetoInteractivo] ¬°El rat√≥n ha hecho clic (OnMouseDown) sobre " + gameObject.name + "!");
+
         // OnMouseDown funciona igual con el Input System nuevo: no pasa por la clase
-        // UnityEngine.Input, asÌ que no rompe aunque el proyecto tenga
+        // UnityEngine.Input, as√≠ que no rompe aunque el proyecto tenga
         // "Active Input Handling" en modo "Input System Package (New)".
         if (FosforoManager.Instance == null)
+        {
+            Debug.LogWarning("[ObjetoInteractivo] Error: No se encontr√≥ FosforoManager.Instance");
             return;
+        }
 
-        // Regla obligatoria del MVP: sin fÛsforo encendido no se puede interactuar.
+        // Regla obligatoria del MVP: sin f√≥sforo encendido no se puede interactuar.
         if (!FosforoManager.Instance.PuedeInteractuar())
+        {
+            Debug.Log("[ObjetoInteractivo] Clic rechazado: Fosforo no est√° encendido.");
             return;
+        }
+
+        Inspeccionar();
+    }
+
+    // M√©todo p√∫blico alternativo por si el usuario usa un Button o EventTrigger en lugar de Collider
+    public void InteractuarManual()
+    {
+        Debug.Log("[ObjetoInteractivo] ¬°Clic detectado por InteractuarManual() en " + gameObject.name + "!");
+        
+        if (FosforoManager.Instance == null) return;
+        if (!FosforoManager.Instance.PuedeInteractuar()) return;
 
         Inspeccionar();
     }
 
     private void Inspeccionar()
     {
-        // Congelamos el consumo del fÛsforo mientras dura la inspecciÛn: el jugador
-        // no deberÌa perder luz solo por leer la descripciÛn de un objeto.
+        // Congelamos el consumo del f√≥sforo mientras dura la inspecci√≥n: el jugador
+        // no deber√≠a perder luz solo por leer la descripci√≥n de un objeto.
         FosforoManager.Instance.PausarQuemado();
 
-        // TEMPORAL: mientras no exista el panel de inspecciÛn, este log confirma
-        // en la Console que el click sobre el objeto fue v·lido. Se puede borrar despuÈs.
-        Debug.Log($"[InspecciÛn] Inspeccionando: {nombreObjeto}");
+        // TEMPORAL: mientras no exista el panel de inspecci√≥n, este log confirma
+        // en la Console que el click sobre el objeto fue v√°lido. Se puede borrar despu√©s.
+        Debug.Log($"[Inspecci√≥n] Inspeccionando: {nombreObjeto}");
 
         OnObjetoInspeccionado?.Invoke(this);
+
+        // ¬°AQU√ç EST√Å LA CONDICI√ìN DE VICTORIA!
+        if (esObjetivoDeVictoria && GameStateManager.Instance != null)
+        {
+            Debug.Log("[Victoria] ¬°Encontraste el objetivo final y lo agarraste!");
+            
+            // Hacemos que el objeto desaparezca para simular que lo hemos recogido
+            gameObject.SetActive(false);
+
+            GameStateManager.Instance.Ganar();
+        }
     }
 
     /// <summary>
-    /// El script del panel de inspecciÛn debe llamar este mÈtodo al cerrarse
+    /// El script del panel de inspecci√≥n debe llamar este m√©todo al cerrarse
     /// (por ejemplo, al clickear "volver" o presionar Escape).
     /// </summary>
     public void CerrarInspeccion()

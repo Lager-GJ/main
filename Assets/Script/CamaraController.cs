@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public class CameraFollow2D : MonoBehaviour
+public class CamaraController : MonoBehaviour
 {
     [Header("Objetivo")]
     public Transform target;          // El Transform de tu jugador

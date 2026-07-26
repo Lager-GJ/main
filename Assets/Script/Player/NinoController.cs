@@ -21,6 +21,16 @@ public class NinoController : MonoBehaviour
     [Tooltip("Opcional: Animator del niño. Puede quedar vacío mientras no haya animaciones listas.")]
     [SerializeField] private Animator animator;
 
+    private void Awake()
+    {
+        // Auto-asignamos el Animator si se nos olvidó arrastrarlo en el inspector
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+            // Si el Animator está en un GameObject hijo (como un Sprite), usaríamos:
+            // animator = GetComponentInChildren<Animator>();
+        }
+    }
     private void Update()
     {
         float direccionX = LeerDireccionX();
