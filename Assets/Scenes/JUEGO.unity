@@ -3023,8 +3023,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9ba1c13f73b795478f1fc7c997a0d89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FosforoManager
-  fosforosIniciales: 4
-  duracionFosforo: 5
+  fosforosIniciales: 5
+  duracionFosforo: 20
   luzFosforo: {fileID: 1188288284}
 --- !u!4 &2087550694
 Transform:

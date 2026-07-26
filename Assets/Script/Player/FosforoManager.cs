@@ -20,10 +20,10 @@ public class FosforoManager : MonoBehaviour
 
     [Header("Configuración de fósforos")]
     [Tooltip("Fósforos disponibles al iniciar la partida. Es la perilla principal de dificultad del MVP.")]
-    [SerializeField] private int fosforosIniciales = 4;
+    [SerializeField] private int fosforosIniciales = 5;
 
     [Tooltip("Segundos que dura encendido un fósforo antes de apagarse solo.")]
-    [SerializeField] private float duracionFosforo = 5f;
+    [SerializeField] private float duracionFosforo = 20f;
 
     [Header("Referencias")]
     [Tooltip("Luz 2D que representa el fósforo encendido. Se activa/desactiva junto con el estado.")]
