@@ -25,6 +25,7 @@ namespace Terror
         private float multiplicadorPresencia = 1f;
         private bool derrotaDisparada;
         private bool pausadoPorDialogo;
+        private float multiplicadorItems = 1f;
 
         private void Awake()
         {
@@ -64,6 +65,12 @@ namespace Terror
         
         private void ManejarDialogoTerminado() => pausadoPorDialogo = false;
 
+        public void ReducirVelocidadSubida(float reduccion)
+        {
+            multiplicadorItems *= (1f - reduccion);
+            Debug.Log($"[FearManager] Velocidad de miedo reducida. Multiplicador actual: {multiplicadorItems:F2}");
+        }
+
         private void Update()
         {
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
@@ -73,7 +80,7 @@ namespace Terror
 
             if (fosforoEncendido)
             {
-                SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * Time.deltaTime);
+                SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * multiplicadorItems * Time.deltaTime);
             }
             else
             {

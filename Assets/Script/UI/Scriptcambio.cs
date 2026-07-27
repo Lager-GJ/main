@@ -23,4 +23,8 @@ public class Scriptcambio : MonoBehaviour
     {
         SceneManager.LoadScene("Intro");
     }
+    public void SALIR()
+    {
+        Application.Quit();
+    }
 }

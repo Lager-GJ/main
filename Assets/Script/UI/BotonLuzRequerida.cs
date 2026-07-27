@@ -13,19 +13,35 @@ namespace Terror.UI
     {
         private Button miBoton;
         private bool yaInteractuo = false;
-        private bool esUnSoloUso = false;
+        private Sprite spriteOriginal;
+        
+        [Header("Configuración (Buró / Canasta)")]
+        [Tooltip("Si es true, el botón solo se podrá presionar una vez y cambiará de sprite.")]
+        public bool unSoloUso = false;
+        
+        [Tooltip("Eventos extra que se ejecutarán al hacer clic (ej. mostrar texto).")]
+        public UnityEngine.Events.UnityEvent AlInteractuar;
 
         private void Awake()
         {
             // Obtenemos el componente Button que está en este mismo GameObject
             miBoton = GetComponent<Button>();
 
-            // Validamos si es Buro o Canasta para aplicar la regla de un solo uso
-            if (gameObject.name == "Buro" || gameObject.name == "Canasta")
+            // Guardamos el sprite original por si necesitamos restaurarlo (como en Buró/Canasta)
+            Image img = GetComponent<Image>();
+            if (img != null)
             {
-                esUnSoloUso = true;
+                spriteOriginal = img.sprite;
+            }
+
+            // Si es de un solo uso, agregamos la lógica de deshabilitar al hacer clic
+            if (unSoloUso)
+            {
                 miBoton.onClick.AddListener(DeshabilitarBoton);
             }
+            
+            // Disparamos nuestro evento personalizado al hacer clic (para textos, etc.)
+            miBoton.onClick.AddListener(() => AlInteractuar?.Invoke());
         }
 
         private void OnEnable()
@@ -58,7 +74,16 @@ namespace Terror.UI
 
         private void PermitirInteraccion()
         {
-            if (miBoton != null && !yaInteractuo)
+            if (yaInteractuo && unSoloUso)
+            {
+                // Restauramos el sprite abierto al encender la luz si ya se había interactuado
+                Image img = GetComponent<Image>();
+                if (img != null && miBoton != null && miBoton.spriteState.pressedSprite != null)
+                {
+                    img.sprite = miBoton.spriteState.pressedSprite;
+                }
+            }
+            else if (miBoton != null && !yaInteractuo)
             {
                 miBoton.interactable = true;
             }
@@ -69,6 +94,16 @@ namespace Terror.UI
             if (miBoton != null)
             {
                 miBoton.interactable = false;
+            }
+            
+            if (yaInteractuo && unSoloUso)
+            {
+                // Devolvemos el sprite al original cerrado/sin cuando se apaga la luz
+                Image img = GetComponent<Image>();
+                if (img != null && spriteOriginal != null)
+                {
+                    img.sprite = spriteOriginal;
+                }
             }
         }
 
