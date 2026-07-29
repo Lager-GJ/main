@@ -3,11 +3,18 @@ using UnityEngine;
 
 namespace Terror
 {
-    // Barra de miedo: sube en oscuridad, se mantiene fija (no baja) mientras
-    // hay un fosforo encendido. La velocidad de subida se multiplica por la
-    // cercania de la Presencia (Dev C) via GameEvents.OnCercaniaPresenciaCambiada
-    // — esta es la conexion que hace que "todo tiene un costo" sea mecanico y
-    // no solo narrativo. Al llegar a 100 dispara la derrota.
+    // Barra de miedo: sube en oscuridad, BAJA (alivio real) mientras hay un
+    // fosforo encendido -- decision de diseno confirmada 2026-07-25 (ver
+    // CLAUDE.md, "Confirmed game-design decisions": "lit match gives real
+    // relief -- fear actively goes down while a match burns"). La velocidad de
+    // subida se multiplica por la cercania de la Presencia (Dev C) via
+    // GameEvents.OnCercaniaPresenciaCambiada — esta es la conexion que hace que
+    // "todo tiene un costo" sea mecanico y no solo narrativo. Al llegar a 100
+    // dispara la derrota.
+    //
+    // Fix 2026-07-28: la direccion estaba invertida (subia con el fosforo
+    // encendido, bajaba en oscuridad) -- se corrige el sentido sin tocar lo
+    // demas (pausa por dialogo, multiplicador de items siguen igual).
     public class FearManager : MonoBehaviour
     {
         public static FearManager Instance { get; private set; }
@@ -18,6 +25,9 @@ namespace Terror
         [Header("Configuracion")]
         [Tooltip("Cuanto sube el miedo por segundo (antes del multiplicador de la Presencia) cuando no hay fosforo encendido.")]
         public float velocidadSubidaOscuridad = 5f;
+
+        [Tooltip("Cuanto baja el miedo por segundo mientras hay un fosforo encendido (alivio real).")]
+        public float velocidadBajadaConFosforo = 8f;
 
         public event Action<float> OnMiedoCambiado;
 
@@ -80,11 +90,15 @@ namespace Terror
 
             if (fosforoEncendido)
             {
-                SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * multiplicadorItems * Time.deltaTime);
+                // Alivio real: encender un fosforo es un refugio momentaneo.
+                SetMiedo(miedoActual - velocidadBajadaConFosforo * Time.deltaTime);
             }
             else
             {
-                SetMiedo(miedoActual - 0.5f * Time.deltaTime);
+                // En oscuridad el miedo sube, mas rapido cuanto mas cerca esta
+                // la Presencia (multiplicadorPresencia) y menos si hay items que
+                // lo mitigan (multiplicadorItems).
+                SetMiedo(miedoActual + velocidadSubidaOscuridad * multiplicadorPresencia * multiplicadorItems * Time.deltaTime);
             }
         }
 

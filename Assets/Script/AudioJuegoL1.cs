@@ -8,9 +8,9 @@ namespace Terror
     // Nota: se suscribe en Start() (no OnEnable) para dar tiempo a que
     // GameStateManager/FearManager ya hayan corrido su Awake().
     [RequireComponent(typeof(AudioSource))]
-    public class AudioManager : MonoBehaviour
+    public class AudioJuegoL1 : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
+        public static AudioJuegoL1 Instance { get; private set; }
 
         [Header("Clips (asignar cuando lleguen los assets finales)")]
         public AudioClip sfxFosforoEncendido;
