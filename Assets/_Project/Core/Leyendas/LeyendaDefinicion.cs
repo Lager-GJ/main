@@ -31,5 +31,8 @@ namespace Terror
 
         [Tooltip("Marcar solo en la Leyenda 1: es la unica jugable de arranque.")]
         public bool desbloqueadaPorDefecto;
+
+        [Tooltip("Al completar ESTA leyenda, se desbloquea automaticamente la que se arrastre aca. Vacio en la ultima de la secuencia (hoy: El Patio de la Procesion).")]
+        public LeyendaDefinicion siguienteLeyenda;
     }
 }

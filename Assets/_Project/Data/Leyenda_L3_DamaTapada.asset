@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f51e0d58ef1947758ae3cc8f57dba43, type: 3}
+  m_Name: Leyenda_L3_DamaTapada
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.LeyendaDefinicion
+  id: L3_DamaTapada
+  nombre: El recibidor del velo
+  descripcion: 
+  teaser: 
+  portada: {fileID: 21300000, guid: 57f0a5e9d1564f94a5f413f6cfdd6c87, type: 3}
+  nombreEscena: 
+  desbloqueadaPorDefecto: 0
+  siguienteLeyenda: {fileID: 11400000, guid: ef22263c54ee84b4e85ab234528cc9a0, type: 2}

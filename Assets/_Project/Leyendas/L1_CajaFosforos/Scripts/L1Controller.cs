@@ -60,7 +60,14 @@ namespace Terror
                 case GameState.Victoria:
                     yaTermino = true;
                     if (definicion != null)
+                    {
                         SaveSystem.MarcarCompletada(definicion.id);
+
+                        // Secuencia de "Los secretos de la casa": completar un cuarto
+                        // desbloquea el siguiente. Vacio en el ultimo de la cadena.
+                        if (definicion.siguienteLeyenda != null)
+                            SaveSystem.Desbloquear(definicion.siguienteLeyenda.id);
+                    }
                     Terminar(ResultadoLeyenda.Victoria);
                     break;
 

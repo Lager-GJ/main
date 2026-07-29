@@ -948,7 +948,7 @@ MonoBehaviour:
   - {fileID: 1345474279}
   - {fileID: 1884338070}
   - {fileID: 614710087}
-  nombreDeLaEscenaDelJuego: JUEGO
+  nombreDeLaEscenaDelJuego: L1_Juego
 --- !u!4 &675749961
 Transform:
   m_ObjectHideFlags: 0

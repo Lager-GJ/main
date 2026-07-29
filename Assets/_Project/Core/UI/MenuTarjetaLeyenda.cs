@@ -5,17 +5,23 @@ using UnityEngine.UI;
 namespace Terror
 {
     /// <summary>
-    /// Una tarjeta del menu. Se pinta sola a partir de su LeyendaDefinicion: nombre,
-    /// portada, y si esta bloqueada muestra el candado con el teaser y deja de
-    /// responder al click.
+    /// Una tarjeta del menu ("Los secretos de la casa"). Se pinta sola a partir de
+    /// su LeyendaDefinicion, en uno de 3 estados:
+    ///   - Bloqueada: candado visible, sin texto de estado, no clickeable.
+    ///   - Activa (desbloqueada, sin completar): "ENFRÉNTALO", clickeable.
+    ///   - Completada (desbloqueada y ya jugada): "ESCAPASTE", sigue clickeable
+    ///     -- se puede volver a jugar (decision de David, 2026-07-26).
     ///
-    /// En el Editor: se arma UNA tarjeta completa y se duplica para las otras 4,
+    /// En el Editor: se arma UNA tarjeta completa y se duplica para las demas,
     /// cambiando solo el campo 'leyenda'. El Button tiene que llamar a
     /// OnClickTarjeta() desde su OnClick.
     /// </summary>
     [RequireComponent(typeof(Button))]
     public class MenuTarjetaLeyenda : MonoBehaviour
     {
+        private const string TextoActiva = "ENFRÉNTALO";
+        private const string TextoCompletada = "ESCAPASTE";
+
         [Header("Datos")]
         [SerializeField] private MenuPrincipal menu;
         [SerializeField] private LeyendaDefinicion leyenda;
@@ -24,6 +30,11 @@ namespace Terror
         [SerializeField] private TMP_Text textoNombre;
         [SerializeField] private Image imagenPortada;
         [SerializeField] private GameObject candado;
+
+        [Tooltip("Muestra ENFRÉNTALO o ESCAPASTE. Se oculta si la tarjeta esta bloqueada.")]
+        [SerializeField] private TMP_Text textoEstado;
+
+        [Tooltip("Frase corta debajo del candado. Opcional -- el mockup actual no la usa, pero queda disponible.")]
         [SerializeField] private TMP_Text textoTeaser;
 
         private void Start()
@@ -44,6 +55,7 @@ namespace Terror
                 imagenPortada.sprite = leyenda.portada;
 
             bool desbloqueada = menu != null && menu.EstaDesbloqueada(leyenda);
+            bool completada = menu != null && menu.EstaCompletada(leyenda);
 
             if (candado != null)
                 candado.SetActive(!desbloqueada);
@@ -54,8 +66,16 @@ namespace Terror
                 textoTeaser.text = leyenda.teaser;
             }
 
-            // Doble cierre: el Button deshabilitado ya no dispara OnClick, y aunque
-            // lo hiciera, MenuPrincipal.EntrarALeyenda vuelve a chequear el bloqueo.
+            if (textoEstado != null)
+            {
+                textoEstado.gameObject.SetActive(desbloqueada);
+                textoEstado.text = completada ? TextoCompletada : TextoActiva;
+            }
+
+            // Completada tambien cuenta como desbloqueada (son cosas independientes):
+            // una vez que se juega, se puede volver a entrar. Doble cierre: el Button
+            // deshabilitado ya no dispara OnClick, y aunque lo hiciera,
+            // MenuPrincipal.EntrarALeyenda vuelve a chequear el bloqueo.
             GetComponent<Button>().interactable = desbloqueada;
         }
 

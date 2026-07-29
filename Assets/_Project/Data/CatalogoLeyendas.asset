@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a00f209d65ecf46eca6d4d369172420d, type: 3}
+  m_Name: CatalogoLeyendas
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.CatalogoLeyendas
+  leyendas:
+  - {fileID: 11400000, guid: 5a0f6799045974991b2c3a909311b86d, type: 2}
+  - {fileID: 11400000, guid: 081b48fee3a534d55bc79cfdf4f3b211, type: 2}
+  - {fileID: 11400000, guid: 549c92a4930004795a0f5e38fab89a03, type: 2}
+  - {fileID: 11400000, guid: ef22263c54ee84b4e85ab234528cc9a0, type: 2}
