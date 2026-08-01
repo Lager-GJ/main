@@ -1,13 +1,15 @@
 # Plan Maestro — Lumbre
 ## De dos prototipos separados a un juego terminado
 
-**Producto:** juego de terror 2D en primera persona fija. Un niño en la casa de su abuela, de noche, con una caja de fósforos limitada. Cada fósforo da luz para explorar pero acerca a algo. Estudio: **LAGER**.
+**Producto:** juego de terror 2D. Un niño en la casa de su abuela, de noche, con una caja de fósforos limitada. Cada fósforo da luz para explorar pero acerca a algo. Estudio: **LAGER**.
+
+**La idea que une todo:** cada cuarto tiene **su propia temática e historia**, ligadas al fuego y a la lumbre, y esas historias son **las leyendas**. El fósforo no es solo una mecánica: es el hilo narrativo entre los cuartos.
 
 **Equipo:** David (sistemas, integración, balanceo) + Anavi (arte, audio, contenido, escenas). Los dos programan con asistencia de IA.
 
 **Plazo:** entrega de clase/jam, ~1 mes o más desde 2026-07-31.
 
-**Plataforma:** ⚠️ **sin definir** — hay builds de Windows (`.exe`) hechas, y el plan original apuntaba a WebGL/itch.io. Ver §3, decisión abierta #1.
+**Plataforma:** se decide al final del desarrollo. Hay builds de Windows hechas; el plan original apuntaba a WebGL/itch.io.
 
 ---
 
@@ -43,51 +45,48 @@ Intro  →  Nivel  →  CreditosPan  →  Historia  →  JUEGO
 
 ## Lo que está a medias
 
-- **El menú de cuartos ("Los secretos de la casa")**: el código está portado (`Assets/Script/Shell/`) pero **nada está colocado en ninguna escena**, ni existen los assets de datos. Ver §4, Fase B.
-- **Tutorial duplicado**: `TutorialManager.cs` y `ManagerTutorial.cs` hacen casi lo mismo (los dos pausan con `Time.timeScale`, los dos muestran un panel tras una espera) y **los dos están colocados**. Uno sobra.
-- **`JUEGO 1.unity`** existe pero no está en Build Settings — es un backup/experimento, no el flujo activo.
+- **El menú de cuartos**: el código está portado (`Assets/Script/Shell/`) y los datos ya existen (`Assets/Datos/`, los 4 cuartos encadenados con sus portadas), pero **falta armar las tarjetas en `Nivel.unity`**. Ver §4, Fase B.
+- **Todo el contenido vive en una sola escena** (`JUEGO.unity`). Para que cada cuarto tenga su propia historia y cargue solo lo suyo, hay que separarlo. Ver §4, Fase D.
+- **Tutorial duplicado**: `TutorialManager.cs` y `ManagerTutorial.cs` hacen casi lo mismo y los dos están colocados. **Decisión: se quedan los dos por ahora**, no es prioridad.
+- **`JUEGO 1.unity`** existe pero no está en Build Settings — backup/experimento.
 - **`PanelInspeccion.cs`** sigue en el proyecto sin que nadie lo use.
 
 ---
 
 # 2. Las reglas del juego (mecánica confirmada)
 
-Esto no cambió y sigue vigente:
-
 1. **Encender un fósforo → alivio real.** La barra de miedo **baja** activamente mientras arde. Encender es un refugio momentáneo.
 2. **El fósforo se apaga → el miedo empieza a subir**, cada vez más rápido según qué tan cerca esté la Presencia (multiplicador).
 3. **Sin fósforo encendido, no se puede interactuar** con los objetos del escenario.
 4. **Cada fósforo encendido acerca a la Presencia** — ese es el costo.
-5. Los **ítems de supervivencia** encontrados reducen un 30% la velocidad de subida del miedo (acumulativo).
+5. **Se gana encontrando la caja de galletas** (el tesoro de la abuela). Es el único camino de victoria.
+6. Los **objetos de supervivencia** ralentizan un 30% la subida del miedo (acumulativo). Son ayudas para aguantar más, **no** ganan la partida.
+7. Encontrar la caja **sin fósforos o con el miedo al máximo** = derrota igual (`CondiciondeVictoria.cs`).
 
-| Perilla | Valor hoy | Valor de diseño | Estado |
-|---|---|---|---|
-| Fósforos totales | **4** | 5 | ⚠️ desalineado |
-| Duración de un fósforo | **5 s** | ~20 s | ⚠️ muy corto |
-| Ítems para ganar | 3 | 3 | ✅ |
-| Miedo: velocidad de subida | 5/s × multiplicadores | — | a balancear |
-| Miedo: velocidad de bajada | 8/s | — | a balancear |
-
-El desfase de fósforos viene de que el ajuste a 5/20s se hizo en la otra rama y no llegó a esta. **No es un simple "arreglarlo"** — con 5 segundos el juego es mucho más frenético, y puede que Anavi haya balanceado el resto del contenido alrededor de ese valor. Ver §3, decisión #3.
+| Perilla | Valor | Estado |
+|---|---|---|
+| Fósforos totales | **4** | ✅ confirmado 31/07 |
+| Duración de un fósforo | **5 s** | ✅ confirmado 31/07 |
+| Objetos de supervivencia | 3 | ✅ |
+| Reducción de miedo por objeto | 30% acumulativo | a balancear |
+| Miedo: velocidad de subida | 5/s × multiplicadores | a balancear |
+| Miedo: velocidad de bajada | 8/s | a balancear |
 
 ---
 
-# 3. Decisiones abiertas (resolver antes de avanzar mucho)
+# 3. Decisiones ya tomadas (2026-07-31)
 
-Estas no son técnicas, son de producto. **Cada una bloquea o cambia parte del plan.**
+- **Victoria**: encontrar la caja de galletas, y solo eso. Los objetos de supervivencia ya no ganan la partida — se quitó ese segundo camino, que convivía con el primero.
+- **Fósforos**: se quedan en 4 de 5 segundos. No se toca.
+- **Plataforma**: se define al final del desarrollo.
+- **Builds en el repo**: se quedan como están (492 MB entre `EXE/` y `Ejecutable/`, que son la misma build duplicada). Si el repo se vuelve incómodo de clonar, revisar.
+- **Tutoriales duplicados**: se quedan los dos.
 
-### #1 — ¿WebGL, Windows, o los dos?
-Hay builds de Windows commiteadas y el plan viejo decía WebGL/itch.io. Cambia bastante: WebGL obliga a cuidar el peso de audio/texturas (hoy hay ~18 `.wav` sin comprimir) y tiene sus propios dolores de carga. **Impacto: alto.** Decidir pronto.
+## Lo único que sigue abierto
 
-### #2 — ¿Cuál es la condición de victoria real?
-Hoy hay **dos caminos independientes**, cualquiera dispara la victoria:
-- Juntar los 3 `ItemSupervivencia` → `InventarioSupervivencia.RecolectarItem()` llama a `Ganar()`.
-- Agarrar la Llave (`esObjetivoDeVictoria: 1`) → `ObjetoInteractivo` llama a `Ganar()`.
+**Acceso al repo compartido.** David no tiene permiso de escritura en `Seanlim22004/Main1Escenario`. Hoy se trabaja en la rama `integracion-anavi` con respaldo en `Lager-GJ/main`. Mientras no se resuelva, el trabajo vive en dos lugares y no le llega a Anavi.
 
-Encima, `CondiciondeVictoria.cs` intercepta la victoria y **la convierte en derrota** si no quedan fósforos o el miedo llegó a 100. Probablemente la Llave sea residuo del sistema viejo y los ítems sean lo nuevo, pero hay que confirmarlo con Anavi. **Impacto: alto** — define de qué se trata el juego.
-
-### #3 — ¿Fósforos 4/5s o 5/20s?
-Ver la tabla de §2. Hay que jugarlo y decidir, no resolverlo por documento.
+**Pedido de arte pendiente:** portadas de los cuartos 3 y 4 sin el candado dibujado dentro de la ilustración (las actuales lo tienen incrustado, así que se ven con candado doble).
 
 ### #4 — ¿Qué hacemos con los 492 MB de builds en el repo?
 `EXE/` y `Ejecutable/` son **la misma build de Windows, duplicada**, 246 MB cada una. El repo git pesa 135 MB y GitHub ya avisa por archivos de +50 MB. Cada clon y cada push se vuelven lentos. Recomendación: sacarlas del control de versiones (agregar al `.gitignore`) y distribuir las builds por otro lado (Drive, itch.io, releases de GitHub). **Impacto: medio** — no rompe nada, pero empeora con el tiempo.
@@ -101,30 +100,25 @@ David **no tiene permiso de escritura** en `Seanlim22004/Main1Escenario` (el rep
 
 Ordenado por prioridad, no por semanas fijas: primero lo que **desbloquea o arregla**, después lo que **agrega**.
 
-## Fase A — Cerrar decisiones y arreglar lo torcido `[David + Anavi]`
+## Fase A — Arreglar lo torcido ✅ (hecho 2026-07-31)
 
-*Objetivo: que no haya ambigüedad sobre qué es el juego, y que lo que hay funcione bien.*
+- [x] **[D]** Cerrar las decisiones de producto (§3).
+- [x] **[P]** Dejar **un solo** camino de victoria: la caja de galletas. `InventarioSupervivencia` ya no llama a `Ganar()`.
+- [x] **[P]** Corregir la dirección del alivio del miedo (subía con el fósforo encendido, ahora baja).
+- [x] **[P]** Resolver la colisión de nombres de `AudioManager` (el de la leyenda pasa a `AudioJuegoL1`).
+- [ ] **[P]** Limpiar lo muerto: `PanelInspeccion.cs` si sigue sin usarse, `JUEGO 1.unity` si es backup. *(no urgente)*
 
-- **[D]** Resolver las decisiones #1, #2 y #3 de §3 (conversación con Anavi + jugarlo).
-- **[P]** Según #2: dejar **un solo** camino de victoria y borrar/desactivar el otro.
-- **[P]** Según #3: alinear los números del fósforo, en código y en la escena.
-- **[P]** Eliminar la duplicación de tutorial (`TutorialManager` vs `ManagerTutorial`): elegir uno, sacar el otro de la escena y del proyecto.
-- **[P]** Sacar las builds del repo (#4) y agregar `EXE/`, `Ejecutable/` al `.gitignore`.
-- **[P]** Limpiar lo muerto: `PanelInspeccion.cs` si sigue sin usarse, `JUEGO 1.unity` si es backup.
-
-**✅ Listo cuando:** se puede jugar de principio a fin, hay una sola forma de ganar, y nadie duda de qué versión de qué sistema está activa.
-
-## Fase B — El menú de cuartos `[David]`
+## Fase B — El menú de cuartos `[David, Editor]`
 
 *Objetivo: que el juego se sienta un producto con progresión, no una escena suelta.*
 
-El código ya está (`Assets/Script/Shell/`). Falta el trabajo de Editor. **Va en `Nivel.unity`**, que ya es la pantalla de selección — no hay que crear escenas nuevas.
+Ya está hecho el código (`Assets/Script/Shell/`) **y los datos** (`Assets/Datos/`: los 4 cuartos encadenados, con portadas, solo el primero desbloqueado). **Va en `Nivel.unity`**, que ya es la pantalla de selección paginada de Anavi — no hay que crear escenas nuevas.
 
-- **[P]** Crear los 4 assets `LeyendaDefinicion` + el `CatalogoLeyendas`, encadenados por `siguienteLeyenda`.
-- **[P]/[U]** Armar las 4 tarjetas en `Nivel.unity` con `MenuTarjetaLeyenda` (estados: bloqueada con candado / **ENFRÉNTALO** / **ESCAPASTE**).
-- **[P]** Colocar `MenuPrincipal` y el `AudioManager` del shell.
-- **[P]** Colocar `L1Controller` en `JUEGO.unity` para que ganar marque el cuarto como completado y desbloquee el siguiente.
-- **[A]** *(Anavi)* portadas de los cuartos 2-4 sin el candado dibujado encima (las actuales lo tienen incrustado en la ilustración).
+- [x] **[P]** Los 4 assets `LeyendaDefinicion` + el `CatalogoLeyendas`, encadenados por `siguienteLeyenda`.
+- [ ] **[P]/[U]** Armar las 4 tarjetas en `Nivel.unity` con `MenuTarjetaLeyenda` (estados: bloqueada con candado / **ENFRÉNTALO** / **ESCAPASTE**).
+- [ ] **[P]** Colocar `MenuPrincipal` y el `AudioManager` del shell.
+- [ ] **[P]** Colocar `L1Controller` en `JUEGO.unity` para que ganar marque el cuarto como completado y desbloquee el siguiente.
+- [ ] **[A]** *(Anavi)* portadas de los cuartos 3 y 4 sin el candado dibujado encima.
 
 **✅ Listo cuando:** entrás a Niveles, ves los 4 cuartos, solo el primero se puede jugar, y al ganarlo el segundo se desbloquea y queda así aunque cierres el juego.
 
@@ -140,15 +134,24 @@ El código ya está (`Assets/Script/Shell/`). Falta el trabajo de Editor. **Va e
 
 **✅ Listo cuando:** un desconocido lo juega completo sin ayuda y sin que truene.
 
-## Fase D — Contenido: los cuartos 2 a 4 `[Anavi contenido + David sistemas]`
+## Fase D — Cada cuarto con su propio contenido `[Anavi contenido + David sistemas]`
 
-*Objetivo: que el juego tenga la duración que promete el menú.*
+*Objetivo: que cada cuarto tenga su leyenda, su temática de fuego, y cargue solo lo suyo.*
 
-Acá es donde se ve si valió la pena la arquitectura: si el cuarto 1 está bien armado, cada cuarto nuevo debería ser sobre todo **contenido**, no sistemas nuevos.
+Esta es la fase donde el juego se vuelve lo que dice ser. Hoy **todo el contenido vive en `JUEGO.unity`** — una sola escena con todo adentro. Para que cada cuarto tenga su historia propia y una carga liviana, hay que separarlos.
 
-- **[P]** Primero: hacer **un solo** cuarto nuevo (el 2, "El altillo olvidado") como prueba de que escala. Si cuesta mucho más de lo esperado, hay que arreglar la arquitectura antes de hacer los otros dos.
-- **[A]/[D]** *(Anavi)* escenario, objetos e historia de cada cuarto.
-- **[P]** Cablear cada cuarto al catálogo y al desbloqueo secuencial.
+**Primero, la arquitectura de contenido `[David]`:**
+- **[P]** Que cada cuarto sea **su propia escena**, con sus propios objetos, arte y audio — no una variante de la misma. Así cargar un cuarto no arrastra el contenido de los otros.
+- **[P]** Que lo compartido (fósforo, miedo, Presencia, pausa, HUD) viva en un solo lugar reutilizable, en vez de copiarse por escena. Si cada cuarto duplica esos sistemas, mantenerlos se vuelve inviable.
+- **[P]** Que la historia de cada cuarto sea **dato, no código**: la leyenda, sus textos y sus objetos deberían poder escribirse sin tocar scripts.
+
+**Después, el contenido `[Anavi]`:**
+- **[A]/[D]** Escenario, objetos, leyenda y textos de cada cuarto.
+- **[S]** Ambiente sonoro propio de cada uno.
+
+**Estrategia: hacer primero un solo cuarto nuevo** (el 2, "El altillo olvidado") de punta a punta. Es la única forma real de saber si la arquitectura escala. Si ese cuarto cuesta mucho más de lo esperado, hay que arreglar la arquitectura **antes** de hacer los otros dos, no después.
+
+**✅ Listo cuando:** se juegan los 4 cuartos en secuencia, cada uno con su leyenda y su ambiente, y agregar uno nuevo es sobre todo trabajo de contenido, no de sistemas.
 
 **✅ Listo cuando:** se juegan los 4 cuartos en secuencia, cada uno desbloqueando el siguiente.
 
@@ -173,8 +176,8 @@ Múltiples escenarios por cuarto · combate · diálogos ramificados · múltipl
 | Riesgo | Cómo lo evitamos |
 |---|---|
 | **Volver a duplicar trabajo** (ya pasó una vez, costó días) | Reparto claro: Anavi arte/audio/contenido, David sistemas/integración. Antes de construir algo, chequear si ya existe del otro lado. |
-| **Las decisiones abiertas de §3 se arrastran** | Son lo primero de la Fase A. Un juego con dos condiciones de victoria no se puede balancear. |
-| **El repo se vuelve inmanejable** por las builds | Sacarlas del control de versiones en la Fase A, no "después". |
+| **Todo el contenido en una sola escena** no escala a 4 cuartos con historias propias | La Fase D empieza por la arquitectura, no por el contenido. Y se prueba con **un** cuarto antes de comprometerse con tres. |
+| **El repo pesa 135 MB** por las builds duplicadas | Decisión tomada: se quedan. Si clonar o pushear se vuelve molesto, revisar. |
 | **David no puede pushear al repo real** | Resolver #5 pronto o el trabajo se sigue fragmentando en dos remotos. |
 | **Se agregan cuartos antes de que el primero esté pulido** | La Fase C va antes que la D a propósito. Un cuarto bueno vale más que cuatro a medias. |
 | **WebGL se descubre tarde** | Si se elige WebGL, hacer un build de prueba en la Fase A, no en la E. El audio sin comprimir es el riesgo obvio. |
