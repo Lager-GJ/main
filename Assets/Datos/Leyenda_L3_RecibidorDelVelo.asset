@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba98bcf328e2c42ec8262a3d0ea29c57, type: 3}
   m_Name: Leyenda_L3_RecibidorDelVelo
   m_EditorClassIdentifier: Assembly-CSharp::Terror.LeyendaDefinicion
-  id: L3_DamaTapada
+  id: L4_RecibidorDelVelo
   nombre: "El recibidor del velo"
+  leyenda: 
   descripcion:
   teaser:
   portada: {fileID: 21300000, guid: 57f0a5e9d1564f94a5f413f6cfdd6c87, type: 3}
   nombreEscena: 
   desbloqueadaPorDefecto: 0
-  siguienteLeyenda: {fileID: 11400000, guid: b0e7389904c94c1fa6c0606441a76676, type: 2}
+  siguienteLeyenda: {fileID: 0}

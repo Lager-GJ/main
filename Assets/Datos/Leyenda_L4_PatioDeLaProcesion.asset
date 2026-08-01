@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba98bcf328e2c42ec8262a3d0ea29c57, type: 3}
   m_Name: Leyenda_L4_PatioDeLaProcesion
   m_EditorClassIdentifier: Assembly-CSharp::Terror.LeyendaDefinicion
-  id: L4_PadreAlmeida
+  id: L2_CajaRonca
   nombre: "El patio de la procesi\xF3n"
+  leyenda: La Caja Ronca
   descripcion:
   teaser:
   portada: {fileID: 21300000, guid: c60e61aa99b746dd842b22ce2b54f44c, type: 3}
-  nombreEscena: 
+  nombreEscena: Patio
   desbloqueadaPorDefecto: 0
-  siguienteLeyenda: {fileID: 0}
+  siguienteLeyenda: {fileID: 11400000, guid: d1798c494f834d2a95fe1c93ac490a8a, type: 2}

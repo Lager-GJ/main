@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Terror.LeyendaDefinicion
   id: L1_CajaFosforos
   nombre: "La habitaci\xF3n prohibida"
+  leyenda: 
   descripcion:
   teaser:
   portada: {fileID: 21300000, guid: ab7bb39ce4b54dc3abde0a92749fe9f7, type: 3}
   nombreEscena: Historia
   desbloqueadaPorDefecto: 1
-  siguienteLeyenda: {fileID: 11400000, guid: d1798c494f834d2a95fe1c93ac490a8a, type: 2}
+  siguienteLeyenda: {fileID: 11400000, guid: b0e7389904c94c1fa6c0606441a76676, type: 2}

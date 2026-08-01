@@ -12,7 +12,11 @@ namespace Terror
         [Tooltip("Id estable, usado en el perfil guardado. NO cambiar una vez publicado.")]
         public string id;
 
+        [Tooltip("Nombre del cuarto, el que se ve en la tarjeta. Ej: El patio de la procesión")]
         public string nombre;
+
+        [Tooltip("Que leyenda cuenta este cuarto. Ej: La Caja Ronca")]
+        public string leyenda;
 
         [TextArea]
         public string descripcion;
