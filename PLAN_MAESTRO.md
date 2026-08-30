@@ -17,7 +17,7 @@
 
 El proyecto pasó por una etapa confusa: **dos personas construyeron el mismo juego en paralelo, sin saberlo**, en copias distintas del repo. Eso ya se resolvió: la versión de Anavi resultó sustancialmente más completa, y es la base actual.
 
-**Rama de trabajo: `integracion-anavi`** en `final/Main1Escenario`. Parte del commit `a400b4b` de Anavi, más el shell de menú que aportamos encima.
+**Dónde se trabaja:** `final/Main1Escenario`, rama **`main`**, remoto **`Lager-GJ/main`**. Parte del commit `a400b4b` de Anavi, más el shell de menú que aportamos encima.
 
 ## Lo que YA funciona, verificado
 
@@ -82,17 +82,11 @@ Intro  →  Nivel  →  CreditosPan  →  Historia  →  JUEGO
 - **Builds en el repo**: se quedan como están (492 MB entre `EXE/` y `Ejecutable/`, que son la misma build duplicada). Si el repo se vuelve incómodo de clonar, revisar.
 - **Tutoriales duplicados**: se quedan los dos.
 
+- **Repo:** de acá en adelante se trabaja **todo en `Lager-GJ/main`** (rama `main`). `Seanlim22004/Main1Escenario` queda como archivo histórico — solo sirvió para traer la versión de la que partimos, y David no tiene permiso de escritura ahí. En el proyecto local, `origin` apunta a Lager-GJ y el viejo quedó como `seanlim-viejo`.
+
 ## Lo único que sigue abierto
 
-**Acceso al repo compartido.** David no tiene permiso de escritura en `Seanlim22004/Main1Escenario`. Hoy se trabaja en la rama `integracion-anavi` con respaldo en `Lager-GJ/main`. Mientras no se resuelva, el trabajo vive en dos lugares y no le llega a Anavi.
-
-**Pedido de arte pendiente:** portadas de los cuartos 3 y 4 sin el candado dibujado dentro de la ilustración (las actuales lo tienen incrustado, así que se ven con candado doble).
-
-### #4 — ¿Qué hacemos con los 492 MB de builds en el repo?
-`EXE/` y `Ejecutable/` son **la misma build de Windows, duplicada**, 246 MB cada una. El repo git pesa 135 MB y GitHub ya avisa por archivos de +50 MB. Cada clon y cada push se vuelven lentos. Recomendación: sacarlas del control de versiones (agregar al `.gitignore`) y distribuir las builds por otro lado (Drive, itch.io, releases de GitHub). **Impacto: medio** — no rompe nada, pero empeora con el tiempo.
-
-### #5 — Acceso al repo compartido
-David **no tiene permiso de escritura** en `Seanlim22004/Main1Escenario` (el repo real del equipo). Hoy se trabaja con un respaldo en `Lager-GJ/main`. Hay que resolverlo (pedir acceso, o acordar que Anavi integre) o el trabajo va a seguir viviendo en dos lugares.
+**Pedido de arte:** portadas de los cuartos 3 y 4 sin el candado dibujado dentro de la ilustración (las actuales lo tienen incrustado, así que se ven con candado doble).
 
 ---
 
@@ -178,7 +172,7 @@ Múltiples escenarios por cuarto · combate · diálogos ramificados · múltipl
 | **Volver a duplicar trabajo** (ya pasó una vez, costó días) | Reparto claro: Anavi arte/audio/contenido, David sistemas/integración. Antes de construir algo, chequear si ya existe del otro lado. |
 | **Todo el contenido en una sola escena** no escala a 4 cuartos con historias propias | La Fase D empieza por la arquitectura, no por el contenido. Y se prueba con **un** cuarto antes de comprometerse con tres. |
 | **El repo pesa 135 MB** por las builds duplicadas | Decisión tomada: se quedan. Si clonar o pushear se vuelve molesto, revisar. |
-| **David no puede pushear al repo real** | Resolver #5 pronto o el trabajo se sigue fragmentando en dos remotos. |
+| ~~David no puede pushear al repo real~~ | ✅ resuelto: se trabaja todo en `Lager-GJ/main`, donde sí tiene permiso. |
 | **Se agregan cuartos antes de que el primero esté pulido** | La Fase C va antes que la D a propósito. Un cuarto bueno vale más que cuatro a medias. |
 | **WebGL se descubre tarde** | Si se elige WebGL, hacer un build de prueba en la Fase A, no en la E. El audio sin comprimir es el riesgo obvio. |
 
@@ -190,7 +184,7 @@ Múltiples escenarios por cuarto · combate · diálogos ramificados · múltipl
 
 **Coordinación:** antes de tocar un sistema que ya existe, avisar. La duplicación de esta semana (dos barras de miedo, dos pausas, dos tutoriales) salió de no hacerlo.
 
-**Ramas:** el trabajo va en `integracion-anavi` hasta que se resuelva #5. Cuando se resuelva, acordar cómo se integra al repo real.
+**Repo:** todo va a **`Lager-GJ/main`**, rama `main`. Ahí David tiene permiso de escritura, así que no hay motivo para trabajar en ramas paralelas salvo que se quiera aislar algo grande. `Seanlim22004/Main1Escenario` es archivo histórico: sirvió para traer la versión de la que partimos y no se toca más.
 
 **Verificar antes de afirmar:** las escenas `.unity` referencian scripts por **GUID**, no por nombre de clase. Que un archivo exista no significa que esté puesto en la escena. Se chequea con el GUID del `.meta`, no con `grep` del nombre.
 
