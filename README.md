@@ -1,6 +1,6 @@
 # Lumbre — Los secretos de la casa
 
-Juego de terror 2D hecho en Unity 6 (`6000.3.14f1`). Un niño explora la casa de su abuela de noche con una caja de fósforos limitada: cada fósforo da luz para explorar pero acerca a algo. Estudio: **LAGER**.
+Juego de terror 2D hecho en Unity 6 (`6000.3.14f1`). Un niño explora la casa de su abuela de noche con una caja de fósforos limitada: cada fósforo da luz para explorar pero acerca a algo. Estudio: **LAGER**. Primer git de prueba
 
 ## Estado del proyecto
 
