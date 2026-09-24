@@ -58,8 +58,6 @@ namespace Terror.UI
         /// </summary>
         public void AlternarArmario()
         {
-            Debug.Log($"[ControladorArmario] AlternarArmario() llamado. estaAbierto antes={estaAbierto}, vistaPrimerPlano={(vistaPrimerPlano != null ? vistaPrimerPlano.name : "NULL")}, PanelInspeccion.Instance={(PanelInspeccion.Instance != null ? "OK" : "NULL")}");
-
             if (estaAbierto)
             {
                 CerrarArmario();
@@ -71,9 +69,7 @@ namespace Terror.UI
 
             if (vistaPrimerPlano != null && PanelInspeccion.Instance != null)
             {
-                Debug.Log("[ControladorArmario] Llamando PanelInspeccion.Instance.Mostrar(vistaPrimerPlano)...");
                 PanelInspeccion.Instance.Mostrar(vistaPrimerPlano);
-                Debug.Log($"[ControladorArmario] Después de Mostrar(): vistaPrimerPlano.activeSelf={vistaPrimerPlano.activeSelf}, activeInHierarchy={vistaPrimerPlano.activeInHierarchy}");
             }
             else
             {

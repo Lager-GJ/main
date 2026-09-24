@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using Terror;
 
 /// <summary>
@@ -29,22 +30,30 @@ public class SecuenciaAperturaLata : MonoBehaviour
     [Header("Tiempos (segundos)")]
     [SerializeField] private float duracionTemblor = 0.6f;
     [SerializeField] private float temblorPorSegundo = 14f;
+    [Tooltip("En unidades locales: ~0.05 si la lata es un SpriteRenderer en mundo, ~10 si es un Image de UI.")]
     [SerializeField] private float amplitudTemblor = 0.05f;
     [SerializeField] private float esperaAntesDeGanar = 2.5f;
 
     private ObjetoInteractivo objetoInteractivo;
     private SpriteRenderer spriteRenderer;
+    private Image imagen; // la lata vive en UI dentro del primer plano del armario
     private Vector3 posicionOriginal;
 
     private void Awake()
     {
         objetoInteractivo = GetComponent<ObjetoInteractivo>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        imagen = GetComponent<Image>();
         posicionOriginal = transform.localPosition;
     }
 
     private void OnEnable() => ObjetoInteractivo.OnObjetivoDeVictoriaEncontrado += ManejarEncontrado;
-    private void OnDisable() => ObjetoInteractivo.OnObjetivoDeVictoriaEncontrado -= ManejarEncontrado;
+
+    private void OnDisable()
+    {
+        ObjetoInteractivo.OnObjetivoDeVictoriaEncontrado -= ManejarEncontrado;
+        LiberarCierre();
+    }
 
     private void ManejarEncontrado(ObjetoInteractivo objeto)
     {
@@ -54,6 +63,11 @@ public class SecuenciaAperturaLata : MonoBehaviour
 
     private IEnumerator SecuenciaApertura()
     {
+        // Mientras dura la secuencia la vista no se puede cerrar (Escape / click
+        // afuera): la coroutine vive dentro de ella y la victoria no se dispararía.
+        if (PanelInspeccion.Instance != null)
+            PanelInspeccion.Instance.CierreBloqueado = true;
+
         // La tapa tiembla (wobble de posición, sin necesitar un sprite aparte).
         float t = 0f;
         while (t < duracionTemblor)
@@ -61,6 +75,7 @@ public class SecuenciaAperturaLata : MonoBehaviour
             if (SeInterrumpio())
             {
                 transform.localPosition = posicionOriginal;
+                LiberarCierre();
                 yield break;
             }
 
@@ -71,11 +86,18 @@ public class SecuenciaAperturaLata : MonoBehaviour
         }
         transform.localPosition = posicionOriginal;
 
-        if (SeInterrumpio()) yield break;
+        if (SeInterrumpio())
+        {
+            LiberarCierre();
+            yield break;
+        }
 
         // Se revela el interior: hilos y agujas + el texto del chiste.
-        if (spriteRenderer != null && spriteAbierta != null)
-            spriteRenderer.sprite = spriteAbierta;
+        if (spriteAbierta != null)
+        {
+            if (spriteRenderer != null) spriteRenderer.sprite = spriteAbierta;
+            if (imagen != null) imagen.sprite = spriteAbierta;
+        }
 
         if (textoChiste != null)
             textoChiste.SetActive(true);
@@ -86,6 +108,7 @@ public class SecuenciaAperturaLata : MonoBehaviour
             if (SeInterrumpio())
             {
                 if (textoChiste != null) textoChiste.SetActive(false);
+                LiberarCierre();
                 yield break;
             }
             espera += Time.deltaTime;
@@ -95,8 +118,15 @@ public class SecuenciaAperturaLata : MonoBehaviour
         if (textoChiste != null)
             textoChiste.SetActive(false);
 
+        LiberarCierre();
         gameObject.SetActive(false);
         GameStateManager.Instance.Ganar();
+    }
+
+    private static void LiberarCierre()
+    {
+        if (PanelInspeccion.Instance != null)
+            PanelInspeccion.Instance.CierreBloqueado = false;
     }
 
     // Si el miedo llegó a 100 (u otra cosa sacó al juego de GameState.Juego)

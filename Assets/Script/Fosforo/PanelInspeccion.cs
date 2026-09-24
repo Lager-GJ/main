@@ -19,6 +19,11 @@ namespace Terror
 
         public bool EstaAbierto => vistaActual != null;
 
+        // Mientras sea true, ni Escape ni click afuera ni Cerrar() cierran la vista.
+        // Lo usa SecuenciaAperturaLata: su coroutine vive dentro de la vista, así
+        // que cerrarla a mitad de camino dejaría la victoria sin dispararse.
+        public bool CierreBloqueado { get; set; }
+
         private GameObject vistaActual;
 
         private void Awake()
@@ -46,9 +51,7 @@ namespace Terror
 
         public void Mostrar(GameObject vista)
         {
-            Debug.Log($"[PanelInspeccion] Mostrar('{(vista != null ? vista.name : "NULL")}') llamado. vistaActual antes={(vistaActual != null ? vistaActual.name : "NULL")}");
-
-            if (vista == null)
+            if (vista == null || CierreBloqueado)
             {
                 return;
             }
@@ -62,17 +65,27 @@ namespace Terror
             Cerrar();
 
             vistaActual = vista;
-            vistaActual.SetActive(true);
 
-            Debug.Log($"[PanelInspeccion] '{vista.name}'.SetActive(true) ejecutado. activeSelf={vista.activeSelf}");
+            // Si la vista trae TransicionPanel, ella se encarga del fade de entrada.
+            var transicion = vista.GetComponent<Terror.UI.TransicionPanel>();
+            if (transicion != null)
+                transicion.Mostrar();
+            else
+                vista.SetActive(true);
         }
 
         public void Cerrar()
         {
-            if (vistaActual != null)
+            if (vistaActual != null && !CierreBloqueado)
             {
-                vistaActual.SetActive(false);
+                var vista = vistaActual;
                 vistaActual = null;
+
+                var transicion = vista.GetComponent<Terror.UI.TransicionPanel>();
+                if (transicion != null)
+                    transicion.Ocultar();
+                else
+                    vista.SetActive(false);
 
                 if (FosforoManager.Instance != null)
                 {

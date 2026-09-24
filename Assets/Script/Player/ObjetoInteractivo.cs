@@ -55,6 +55,15 @@ public class ObjetoInteractivo : MonoBehaviour
     {
         Terror.GameEvents.OnFosforoEncendido += Mostrar;
         Terror.GameEvents.OnFosforoApagado += Ocultar;
+
+        // Al reactivarse (ej. una vista de primer plano que se abre otra vez) no nos
+        // llegó el evento de encendido: sin esto el objeto quedaría oculto con lo que
+        // dejó el último OnFosforoApagado. La primera vez, Start() ya lo resuelve.
+        if (FosforoManager.Instance != null)
+        {
+            if (FosforoManager.Instance.PuedeInteractuar()) Mostrar();
+            else Ocultar();
+        }
     }
 
     private void OnDisable()
