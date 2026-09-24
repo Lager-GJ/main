@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,12 +11,23 @@ namespace Terror
     {
         public static PanelInspeccion Instance { get; private set; }
 
+        // Estatico (no un evento de instancia) a proposito, mismo patron que
+        // GameEvents/FosforoManager: quien se suscribe en su propio OnEnable no
+        // depende de que Instance ya exista (a diferencia de suscribirse a
+        // GameStateManager.Instance.OnStateChanged, que si tiene ese riesgo).
+        public static event Action OnCerrado;
+
         public bool EstaAbierto => vistaActual != null;
 
         private GameObject vistaActual;
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
             Instance = this;
         }
 
@@ -34,6 +46,8 @@ namespace Terror
 
         public void Mostrar(GameObject vista)
         {
+            Debug.Log($"[PanelInspeccion] Mostrar('{(vista != null ? vista.name : "NULL")}') llamado. vistaActual antes={(vistaActual != null ? vistaActual.name : "NULL")}");
+
             if (vista == null)
             {
                 return;
@@ -49,6 +63,8 @@ namespace Terror
 
             vistaActual = vista;
             vistaActual.SetActive(true);
+
+            Debug.Log($"[PanelInspeccion] '{vista.name}'.SetActive(true) ejecutado. activeSelf={vista.activeSelf}");
         }
 
         public void Cerrar()
@@ -57,11 +73,13 @@ namespace Terror
             {
                 vistaActual.SetActive(false);
                 vistaActual = null;
-                
+
                 if (FosforoManager.Instance != null)
                 {
                     FosforoManager.Instance.ReanudarQuemado();
                 }
+
+                OnCerrado?.Invoke();
             }
         }
     }

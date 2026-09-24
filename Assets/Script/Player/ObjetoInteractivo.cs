@@ -33,6 +33,13 @@ public class ObjetoInteractivo : MonoBehaviour
     public static event Action<ObjetoInteractivo> OnObjetoInspeccionado;
     public static event Action OnInspeccionCerrada;
 
+    // Se dispara en vez de ganar al toque cuando el objeto es esObjetivoDeVictoria.
+    // Si nadie está escuchando, se gana de una como antes (compatibilidad con
+    // futuros objetivos que no necesiten una secuencia propia). Si alguien SÍ
+    // escucha (ej. SecuenciaAperturaLata en la lata de galletas), esa clase queda
+    // a cargo de llamar GameStateManager.Instance.Ganar() cuando corresponda.
+    public static event Action<ObjetoInteractivo> OnObjetivoDeVictoriaEncontrado;
+
     private Renderer[] renderers;
     private UnityEngine.UI.Graphic[] graficosUI;
     private bool yaInteractuo = false;
@@ -131,12 +138,20 @@ public class ObjetoInteractivo : MonoBehaviour
         // ¡AQUÍ ESTÁ LA CONDICIÓN DE VICTORIA!
         if (esObjetivoDeVictoria && GameStateManager.Instance != null)
         {
-            Debug.Log("[Victoria] ¡Encontraste el objetivo final y lo agarraste!");
-            
-            // Hacemos que el objeto desaparezca para simular que lo hemos recogido
-            gameObject.SetActive(false);
+            Debug.Log("[Victoria] ¡Encontraste el objetivo final!");
 
-            GameStateManager.Instance.Ganar();
+            if (OnObjetivoDeVictoriaEncontrado != null)
+            {
+                // Alguien se encarga de la secuencia (ej. una animación de apertura)
+                // y de llamar a Ganar() cuando corresponda. No lo hacemos nosotros.
+                OnObjetivoDeVictoriaEncontrado.Invoke(this);
+            }
+            else
+            {
+                // Sin nadie escuchando: comportamiento de siempre, victoria al toque.
+                gameObject.SetActive(false);
+                GameStateManager.Instance.Ganar();
+            }
         }
     }
 
