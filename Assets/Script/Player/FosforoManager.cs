@@ -23,7 +23,7 @@ public class FosforoManager : MonoBehaviour
     [SerializeField] private int fosforosIniciales = 4;
 
     [Tooltip("Segundos que dura encendido un fósforo antes de apagarse solo.")]
-    [SerializeField] private float duracionFosforo = 5f;
+    [SerializeField] private float duracionFosforo = 15f;
 
     [Header("Referencias")]
     [Tooltip("Luz 2D que representa el fósforo encendido. Se activa/desactiva junto con el estado.")]
