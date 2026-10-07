@@ -20,3 +20,7 @@ UserSettings/
 EXE/
 Ejecutable/
 *_BurstDebugInformation_DoNotShip/
+
+# Escenas de recuperacion que Unity crea tras un cierre inesperado
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
