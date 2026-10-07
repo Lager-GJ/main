@@ -15,3 +15,8 @@ UserSettings/
 .DS_Store
 .vscode/
 *.slnx
+
+# Builds (no versionar; se generan desde Unity)
+EXE/
+Ejecutable/
+*_BurstDebugInformation_DoNotShip/
