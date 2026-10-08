@@ -6794,6 +6794,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Terror.FearManager
   miedoActual: 0
   velocidadSubidaOscuridad: 2.5
+  velocidadSubidaConFosforo: 0.5
 --- !u!4 &1666457923
 Transform:
   m_ObjectHideFlags: 0
@@ -8082,9 +8083,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa52e10313c9de4a993dc7883553f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PresenciaManager
-  riesgoPorEncendido: 0.3
-  riesgoPorSegundoEncendido: 0.8
-  recuperacionPorSegundoApagado: 0.15
+  sonidoRespiracion: {fileID: 0}
+  volumenRespiracion: 0.6
+  sonidoPasos: {fileID: 8300000, guid: 9d7b3c9f82371a44caf07950803f870d, type: 3}
+  sonidosRuidos:
+  - {fileID: 8300000, guid: b970e762142e5a448992411da8d7a471, type: 3}
+  - {fileID: 8300000, guid: 11a28b712c5eb034aa0fb25a7ddb82dc, type: 3}
+  intervaloRuidosMinimo: 4
+  intervaloRuidosMaximo: 9
+  volumenRuidos: 0.8
+  factorAlcanceLuz: 0.6
 --- !u!1 &2108159041
 GameObject:
   m_ObjectHideFlags: 0

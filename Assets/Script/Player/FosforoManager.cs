@@ -36,6 +36,8 @@ public class FosforoManager : MonoBehaviour
     private bool pausadoPorInspeccion; // true mientras el jugador tiene abierto el panel de inspección
     private Coroutine coroutineQuemado;
     private float intensidadBaseLuz; // intensidad que configuraste en el Inspector, se guarda una sola vez
+    private float radioInteriorBase; // radios de la luz tal como quedaron en el Inspector
+    private float radioExteriorBase;
 
     // --- Eventos estáticos ---
     // Se usan Action estáticos (no UnityEvents) a propósito: cualquier script del
@@ -67,6 +69,8 @@ public class FosforoManager : MonoBehaviour
         if (luzFosforo != null)
         {
             intensidadBaseLuz = luzFosforo.intensity; // recordamos el valor que dejaste en el Inspector
+            radioInteriorBase = luzFosforo.pointLightInnerRadius;
+            radioExteriorBase = luzFosforo.pointLightOuterRadius;
             luzFosforo.gameObject.SetActive(false); // arranca apagado: sin fósforo, sin luz
         }
     }
@@ -203,6 +207,19 @@ public class FosforoManager : MonoBehaviour
         }
 
         ApagarFosforo();
+    }
+
+    /// <summary>
+    /// Achica (o restaura) el alcance de la luz del fósforo. 1 = radio original del
+    /// Inspector, 0.5 = la mitad. Lo usa PresenciaManager al consumirse el tercer fósforo.
+    /// </summary>
+    public void SetFactorAlcanceLuz(float factor)
+    {
+        if (luzFosforo == null)
+            return;
+
+        luzFosforo.pointLightInnerRadius = radioInteriorBase * factor;
+        luzFosforo.pointLightOuterRadius = radioExteriorBase * factor;
     }
 
     /// <summary>
