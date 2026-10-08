@@ -19,13 +19,15 @@ namespace Terror
 
         private bool yaTermino;
 
-        private void OnEnable()
+        // En Start() (no OnEnable): Unity solo garantiza que todos los Awake() corran
+        // antes que los Start(), así que acá GameStateManager.Instance ya existe.
+        private void Start()
         {
             if (GameStateManager.Instance != null)
                 GameStateManager.Instance.OnStateChanged += ManejarCambioEstado;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (GameStateManager.Instance != null)
                 GameStateManager.Instance.OnStateChanged -= ManejarCambioEstado;
