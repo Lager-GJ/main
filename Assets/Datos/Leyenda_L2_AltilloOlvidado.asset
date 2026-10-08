@@ -18,6 +18,7 @@ MonoBehaviour:
   descripcion:
   teaser:
   portada: {fileID: 21300000, guid: 29a4f343afd343ceb9e52534f79be766, type: 3}
+  fondo: {fileID: 0}
   nombreEscena: 
   desbloqueadaPorDefecto: 0
   siguienteLeyenda: {fileID: 11400000, guid: 8dc4b088b51f4ae886e3b40e769233ed, type: 2}
