@@ -20,19 +20,29 @@ Este directorio (`final/Main1Escenario/`) es el repo real y activo. Todo el trab
 ## Documentación
 
 - **`PLAN_MAESTRO.md`** — fuente de verdad para alcance y prioridades del proyecto.
-- **`../CLAUDE.md`** y **`../final/CLAUDE.md`** — guía técnica detallada para trabajar en el código: arquitectura, convenciones de escenas, gotchas conocidos.
+- **`../CLAUDE.md`** (en `final/`, fuera de este repo) — guía técnica para trabajar en el código: convenciones de escenas, gotchas conocidos.
+- **`FLUJO_GIT.md`** — ramas, remotos y reglas de `main`.
 - **`GUIA_CUARTO_2_PATIO.md`** — notas específicas del cuarto 2.
+- **`GUIA_ARMARIO.md`** — el armario en primer plano: vista a pantalla completa, zonas clicables y la lata escondida en el cajón.
 
 ## Arquitectura (resumen)
 
 ```
-Assets/_Project/
-  Core/          — shell persistente: boot, guardado, audio, ruteo entre escenas, estado de juego, UI de menú
-  Data/          — catálogo de leyendas/cuartos (ScriptableObjects)
-  Leyendas/L1_CajaFosforos/  — contenido del cuarto 1 (fósforos, miedo, presencia, historia)
+Assets/
+  Scenes/    Intro (menú), Historia → JUEGO (cuarto 1), Nivel, CreditosPan. `Patio` (cuarto 2) aún no existe: ver GUIA_CUARTO_2_PATIO.md
+  Script/
+    Core/        estado de juego (GameStateManager, GameEvents) y miedo (FearManager, FearBarUI)
+    Fosforo/     PanelInspeccion, InteraccionVelador
+    Player/      FosforoManager, ObjetoInteractivo, SecuenciaAperturaLata, NinoController
+    Presencia/   la Presencia: audio, feedback visual, HUD
+    Audio/       sonidos por objeto, ambiente, voces
+    Shell/       menú de cuartos: catálogo, perfil, guardado (PlayerPrefs)
+    UI/          armario (ControladorArmario, VistaArmario, HotspotArmario, TransicionPanel), pausa, tutorial
+  Datos/     ScriptableObjects de los cuartos
+  Recursos/  arte y audio
 ```
 
-Ver `final/CLAUDE.md` para el detalle completo (namespaces, gotchas de edición de escenas YAML, archivos Latin-1, etc.).
+Los scripts se referencian en las escenas por **GUID**, no por nombre de clase: al verificar el cableado buscá el GUID del `.meta`, no el nombre.
 
 ## Plataforma
 

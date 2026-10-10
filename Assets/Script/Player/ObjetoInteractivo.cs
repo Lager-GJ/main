@@ -8,8 +8,10 @@ using Terror;
 /// fósforo encendido. Este script NO dibuja el panel de inspección (eso lo arma otro
 /// dev) — solo decide si el click es válido y avisa mediante un evento estático con
 /// los datos del objeto, para no acoplarse al script del panel.
+/// Se clickea de dos formas: con un Collider2D (OnMouseDown, objetos del mundo) o con
+/// un Button de UI que llame a InteractuarManual (la lata del armario). Por eso no
+/// lleva [RequireComponent(typeof(Collider2D))].
 /// </summary>
-[RequireComponent(typeof(Collider2D))]
 public class ObjetoInteractivo : MonoBehaviour
 {
     [Header("Datos para el panel de inspección")]
@@ -33,6 +35,13 @@ public class ObjetoInteractivo : MonoBehaviour
     public static event Action<ObjetoInteractivo> OnObjetoInspeccionado;
     public static event Action OnInspeccionCerrada;
 
+    // Se dispara en vez de ganar al toque cuando el objeto es esObjetivoDeVictoria.
+    // Si nadie está escuchando, se gana de una como antes (compatibilidad con
+    // futuros objetivos que no necesiten una secuencia propia). Si alguien SÍ
+    // escucha (ej. SecuenciaAperturaLata en la lata de galletas), esa clase queda
+    // a cargo de llamar GameStateManager.Instance.Ganar() cuando corresponda.
+    public static event Action<ObjetoInteractivo> OnObjetivoDeVictoriaEncontrado;
+
     private Renderer[] renderers;
     private UnityEngine.UI.Graphic[] graficosUI;
     private bool yaInteractuo = false;
@@ -48,6 +57,15 @@ public class ObjetoInteractivo : MonoBehaviour
     {
         Terror.GameEvents.OnFosforoEncendido += Mostrar;
         Terror.GameEvents.OnFosforoApagado += Ocultar;
+
+        // Al reactivarse (ej. una vista de primer plano que se abre otra vez) no nos
+        // llegó el evento de encendido: sin esto el objeto quedaría oculto con lo que
+        // dejó el último OnFosforoApagado. La primera vez, Start() ya lo resuelve.
+        if (FosforoManager.Instance != null)
+        {
+            if (FosforoManager.Instance.PuedeInteractuar()) Mostrar();
+            else Ocultar();
+        }
     }
 
     private void OnDisable()
@@ -131,12 +149,20 @@ public class ObjetoInteractivo : MonoBehaviour
         // ¡AQUÍ ESTÁ LA CONDICIÓN DE VICTORIA!
         if (esObjetivoDeVictoria && GameStateManager.Instance != null)
         {
-            Debug.Log("[Victoria] ¡Encontraste el objetivo final y lo agarraste!");
-            
-            // Hacemos que el objeto desaparezca para simular que lo hemos recogido
-            gameObject.SetActive(false);
+            Debug.Log("[Victoria] ¡Encontraste el objetivo final!");
 
-            GameStateManager.Instance.Ganar();
+            if (OnObjetivoDeVictoriaEncontrado != null)
+            {
+                // Alguien se encarga de la secuencia (ej. una animación de apertura)
+                // y de llamar a Ganar() cuando corresponda. No lo hacemos nosotros.
+                OnObjetivoDeVictoriaEncontrado.Invoke(this);
+            }
+            else
+            {
+                // Sin nadie escuchando: comportamiento de siempre, victoria al toque.
+                gameObject.SetActive(false);
+                GameStateManager.Instance.Ganar();
+            }
         }
     }
 
