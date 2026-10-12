@@ -58,6 +58,7 @@ public class FosforoManager : MonoBehaviour
 
     public bool Encendido => encendido;
     public int FosforosRestantes => fosforosRestantes;
+    public int FosforosIniciales => fosforosIniciales;
     public float DuracionFosforo => duracionFosforo;
     public bool PausadoPorInspeccion => pausadoPorInspeccion;
     public float TiempoRestante => encendido ? tiempoRestanteQuemado : 0f;

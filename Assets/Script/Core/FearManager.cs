@@ -19,6 +19,10 @@ namespace Terror
         [Tooltip("Cuanto sube el miedo por segundo (antes del multiplicador de la Presencia) cuando no hay fosforo encendido.")]
         public float velocidadSubidaOscuridad = 5f;
 
+        [Header("Modo de miedo")]
+        [Tooltip("Marcado: el miedo solo sube de a escalones, uno por cada fósforo que se gasta (cuando se apaga). Al gastar el último llega a 100 y se pierde. Desmarcado: comportamiento anterior, que cambia con el tiempo.")]
+        public bool miedoPorFosforos = true;
+
         public event Action<float> OnMiedoCambiado;
 
         private bool fosforoEncendido;
@@ -57,7 +61,28 @@ namespace Terror
 
         private void ManejarFosforoEncendido() => fosforoEncendido = true;
 
-        private void ManejarFosforoApagado() => fosforoEncendido = false;
+        private void ManejarFosforoApagado()
+        {
+            fosforoEncendido = false;
+
+            if (miedoPorFosforos) SubirMiedoPorFosforoGastado();
+        }
+
+        // Un escalón por fósforo gastado: con 4 fósforos son 25, 50, 75 y 100.
+        // Se cuenta al APAGARSE y no al encenderse, para que quien esté cerca de ganar
+        // pueda usar el último fósforo completo sin perder apenas lo prende.
+        private void SubirMiedoPorFosforoGastado()
+        {
+            var fosforos = FosforoManager.Instance;
+            if (fosforos == null || fosforos.FosforosIniciales <= 0) return;
+
+            // Si ya se ganó o se perdió (p. ej. el fósforo se apaga con la pantalla de victoria), no tocamos nada.
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego)
+                return;
+
+            int gastados = fosforos.FosforosIniciales - fosforos.FosforosRestantes;
+            SetMiedo(100f * gastados / fosforos.FosforosIniciales);
+        }
 
         private void ManejarCercaniaPresencia(int nivel, float multiplicador) => multiplicadorPresencia = multiplicador;
 
@@ -77,6 +102,9 @@ namespace Terror
                 return;
 
             if (pausadoPorDialogo) return;
+
+            // En este modo el miedo no cambia con el tiempo: solo sube al gastarse un fósforo.
+            if (miedoPorFosforos) return;
 
             if (fosforoEncendido)
             {
