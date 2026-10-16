@@ -21,6 +21,7 @@ namespace Terror.UI
             PasarMarcador,          // el niño llega (hacia la derecha) a la X del marcador
             ObjetoRecogido,         // el jugador recogió un ObjetoRecogible
             FosforoEncendido,       // el jugador encendió un fósforo
+            FosforoApagado,         // se apagó un fósforo (se consumió o lo apagó el jugador con Q)
             ObjetoInspeccionado     // el jugador abrió un ObjetoInteractivo
         }
 
@@ -49,6 +50,12 @@ namespace Terror.UI
 
             [Tooltip("Opcional: objeto que parpadea desde que sale este mensaje hasta que arranca el paso siguiente.")]
             public ResaltadoParpadeo resaltar;
+
+            [Tooltip("Marcado: si se apaga un fósforo antes de que este paso haya salido, el paso se salta. Evita que el tutorial se quede esperando algo que ya no puede pasar con el primer fósforo (por ejemplo, examinar un objeto con un fósforo que ya se consumió).")]
+            public bool saltarSiSeApagaUnFosforo;
+
+            [Tooltip("Marcado: el mensaje no se oculta por tiempo, se queda hasta que arranca el paso siguiente. Úsalo para indicaciones que el jugador debe cumplir (\"Pulsa E\"). En el último paso se queda en pantalla para siempre: sirve para el objetivo fijo.")]
+            public bool mantenerHastaSiguientePaso;
         }
 
         [Header("Referencias")]
@@ -72,17 +79,20 @@ namespace Terror.UI
         private bool fosforosBloqueados;
         private float tiempoActivo;
         private float temporizadorMensaje;
+        private GameObject panelPendiente;  // mensaje que sigue visible esperando al paso siguiente
 
         // Banderas "ya pasó": si el jugador hace algo antes de que le toque ese paso
         // (por ejemplo recoge el objeto antes de llegar al marcador), el tutorial no
         // se queda esperando un evento que ya ocurrió.
         private bool fosforoYaEncendido;
+        private bool fosforoYaApagado;
         private bool objetoYaRecogido;
         private bool objetoYaInspeccionado;
 
         private void OnEnable()
         {
             FosforoManager.OnFosforoEncendido += MarcarFosforoEncendido;
+            FosforoManager.OnFosforoApagado += MarcarFosforoApagado;
             ObjetoRecogible.OnRecogido += MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado += MarcarObjetoInspeccionado;
         }
@@ -90,6 +100,7 @@ namespace Terror.UI
         private void OnDisable()
         {
             FosforoManager.OnFosforoEncendido -= MarcarFosforoEncendido;
+            FosforoManager.OnFosforoApagado -= MarcarFosforoApagado;
             ObjetoRecogible.OnRecogido -= MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado -= MarcarObjetoInspeccionado;
 
@@ -137,6 +148,12 @@ namespace Terror.UI
 
             if (!mensajeVisible)
             {
+                if (paso.saltarSiSeApagaUnFosforo && fosforoYaApagado)
+                {
+                    SaltarPaso();
+                    return;
+                }
+
                 if (DisparadorCumplido(paso)) MostrarPaso(paso);
                 return;
             }
@@ -144,6 +161,11 @@ namespace Terror.UI
             if (paso.esperaMovimiento)
             {
                 if (JugadorPulsoMovimiento()) CerrarPaso(paso);
+            }
+            else if (paso.mantenerHastaSiguientePaso)
+            {
+                // Este paso ya cumplió su parte: pasamos al siguiente, pero su mensaje queda a la vista.
+                CerrarPaso(paso);
             }
             else
             {
@@ -177,6 +199,9 @@ namespace Terror.UI
                 case Disparador.FosforoEncendido:
                     return fosforoYaEncendido;
 
+                case Disparador.FosforoApagado:
+                    return fosforoYaApagado;
+
                 case Disparador.ObjetoInspeccionado:
                     return objetoYaInspeccionado;
 
@@ -190,6 +215,13 @@ namespace Terror.UI
             // El resalte del paso anterior dura hasta que arranca este.
             if (indice > 0 && pasos[indice - 1].resaltar != null)
                 pasos[indice - 1].resaltar.Desactivar();
+
+            // Igual que el mensaje que se quedó esperando: se oculta cuando arranca el siguiente.
+            if (panelPendiente != null)
+            {
+                panelPendiente.SetActive(false);
+                panelPendiente = null;
+            }
 
             mensajeVisible = true;
             temporizadorMensaje = paso.segundosVisible;
@@ -208,7 +240,11 @@ namespace Terror.UI
 
         private void CerrarPaso(Paso paso)
         {
-            if (paso.panel != null) paso.panel.SetActive(false);
+            if (paso.panel != null)
+            {
+                if (paso.mantenerHastaSiguientePaso) panelPendiente = paso.panel;
+                else paso.panel.SetActive(false);
+            }
 
             if (pausandoJuego)
             {
@@ -219,6 +255,14 @@ namespace Terror.UI
             mensajeVisible = false;
             indice++;
 
+            if (indice >= pasos.Length) Terminar();
+        }
+
+        private void SaltarPaso()
+        {
+            Debug.Log($"[Tutorial] Paso {indice + 1} saltado: ya se apagó un fósforo.");
+
+            indice++;
             if (indice >= pasos.Length) Terminar();
         }
 
@@ -252,6 +296,8 @@ namespace Terror.UI
         }
 
         private void MarcarFosforoEncendido() => fosforoYaEncendido = true;
+
+        private void MarcarFosforoApagado() => fosforoYaApagado = true;
 
         private void MarcarObjetoRecogido(ObjetoRecogible objeto)
         {
