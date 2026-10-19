@@ -32,11 +32,20 @@ namespace Terror.UI
         {
             // Nos suscribimos al evento del ObjetoInteractivo
             ObjetoInteractivo.OnObjetoInspeccionado += AbrirNarrativa;
+            FosforoManager.OnFosforoApagado += AlApagarseElFosforo;
         }
 
         private void OnDisable()
         {
             ObjetoInteractivo.OnObjetoInspeccionado -= AbrirNarrativa;
+            FosforoManager.OnFosforoApagado -= AlApagarseElFosforo;
+        }
+
+        // Igual que el armario y el cajón: sin luz no se sigue leyendo (si se apaga con Q).
+        private void AlApagarseElFosforo()
+        {
+            if (panelNarrativa != null && panelNarrativa.activeSelf)
+                Cerrar();
         }
 
         private void Start()

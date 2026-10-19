@@ -249,6 +249,7 @@ namespace Terror.UI
         internal void ClicEnZona(ZonaCajon zona)
         {
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego) return;
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
 
             if (zona == zonaFosforos)
             {
@@ -302,7 +303,7 @@ namespace Terror.UI
             Decir(textoTomarFosforos);
             StartCoroutine(Levantar(zonaFosforos));
 
-            yield return new WaitForSecondsRealtime(esperaAntesDelPortazo);
+            yield return EsperarSinPausa(esperaAntesDelPortazo);
 
             // El portazo: se va la luz de afuera y el cajón queda casi a oscuras.
             Sonar(sonidoPortazo);
@@ -316,7 +317,7 @@ namespace Terror.UI
             }));
             CambiarTinte(tinteOscuro, duracionApagarLuz);
 
-            yield return new WaitForSecondsRealtime(duracionApagarLuz);
+            yield return EsperarSinPausa(duracionApagarLuz);
             if (luzPuerta != null) luzPuerta.gameObject.SetActive(false);
 
             TerminarPausaDeMiedo();
@@ -632,6 +633,17 @@ namespace Terror.UI
                 yield return null;
             }
             objetivo.localScale = Vector3.one;
+        }
+
+        // Como WaitForSecondsRealtime, pero el reloj se detiene con el menú de pausa
+        // (timeScale 0): así el portazo no ocurre por debajo de la pausa.
+        private static IEnumerator EsperarSinPausa(float segundos)
+        {
+            for (float t = 0f; t < segundos; )
+            {
+                if (Time.timeScale > 0f) t += Time.unscaledDeltaTime;
+                yield return null;
+            }
         }
 
         private static IEnumerator Animar(float duracion, Action<float> paso)

@@ -103,6 +103,19 @@ public class FosforoManager : MonoBehaviour
         bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
         bool teclaQ = Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
 
+        // Con el juego pausado (menú de pausa o un paso del tutorial, timeScale 0), o ya
+        // ganado/perdido, E y Q no hacen nada: antes gastaban fósforos y subían la Presencia.
+        if (Time.timeScale == 0f)
+            return;
+        if (Terror.GameStateManager.Instance != null &&
+            Terror.GameStateManager.Instance.CurrentState != Terror.GameState.Juego)
+            return;
+
+        // Mientras corre la apertura de la lata la vista no se puede cerrar; apagar el
+        // fósforo con Q en ese momento contaba como fósforo consumido en plena victoria.
+        if (teclaQ && Terror.PanelInspeccion.Instance != null && Terror.PanelInspeccion.Instance.CierreBloqueado)
+            teclaQ = false;
+
         if (teclaE && !encendido && fosforosRestantes > 0 && encendidoHabilitado)
         {
             EncenderFosforo();

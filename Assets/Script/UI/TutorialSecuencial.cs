@@ -148,6 +148,10 @@ namespace Terror.UI
         {
             if (terminado) return;
 
+            // Con el menú de pausa abierto el tutorial espera: si no, pulsar A/D en la
+            // pausa cerraba el paso de movimiento y ponía timeScale en 1 debajo del menú.
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+
             tiempoActivo += Time.deltaTime;
             Paso paso = pasos[indice];
 

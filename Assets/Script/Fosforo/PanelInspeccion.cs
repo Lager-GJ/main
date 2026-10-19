@@ -24,6 +24,10 @@ namespace Terror
         // que cerrarla a mitad de camino dejaría la victoria sin dispararse.
         public bool CierreBloqueado { get; set; }
 
+        // Frame en que se cerró la última vista. PauseManager lo mira para que un
+        // mismo Escape no cierre la vista y abra la pausa a la vez.
+        public int FrameUltimoCierre { get; private set; } = -1;
+
         private GameObject vistaActual;
 
         private void Awake()
@@ -39,6 +43,13 @@ namespace Terror
         private void Update()
         {
             if (!EstaAbierto)
+            {
+                return;
+            }
+
+            // Con el menú de pausa abierto, Escape es de la pausa (la cierra) y no
+            // debe cerrar además la vista que quedó debajo.
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado)
             {
                 return;
             }
@@ -80,6 +91,7 @@ namespace Terror
             {
                 var vista = vistaActual;
                 vistaActual = null;
+                FrameUltimoCierre = Time.frameCount;
 
                 var transicion = vista.GetComponent<Terror.UI.TransicionPanel>();
                 if (transicion != null)

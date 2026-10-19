@@ -32,6 +32,8 @@ namespace Terror
 
         public bool EstaPausado { get; private set; }
 
+        private float timeScaleAntesDePausar = 1f;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -62,10 +64,10 @@ namespace Terror
             if (Keyboard.current == null)
                 return;
 
-            bool teclaPausa = Keyboard.current.pKey.wasPressedThisFrame ||
-                               Keyboard.current.escapeKey.wasPressedThisFrame;
+            bool teclaP = Keyboard.current.pKey.wasPressedThisFrame;
+            bool teclaEscape = Keyboard.current.escapeKey.wasPressedThisFrame;
 
-            if (!teclaPausa)
+            if (!teclaP && !teclaEscape)
                 return;
 
             // Desde la configuración, Escape/P regresa al panel de pausa en vez de
@@ -76,11 +78,20 @@ namespace Terror
                 return;
             }
 
-            // Si el panel de inspección está abierto, dejamos que Escape lo cierre a
-            // él primero (su propio Update ya lo maneja) — no pausamos encima en el
-            // mismo click para evitar que las dos cosas reaccionen a la vez.
-            if (!EstaPausado && PanelInspeccion.Instance != null && PanelInspeccion.Instance.EstaAbierto)
-                return;
+            // Con un primer plano abierto, Escape lo cierra a él (su propio Update lo
+            // maneja) y no pausa encima. Si se cerró en este mismo frame tampoco: según
+            // el orden de los Update, el panel ya puede figurar como cerrado.
+            // P pausa siempre, y Escape también si el primer plano no se puede cerrar
+            // (el cajón del inicio antes del primer fósforo): si no, en todo el inicio
+            // no había forma de llegar al menú de pausa.
+            if (!EstaPausado && teclaEscape && !teclaP && PanelInspeccion.Instance != null)
+            {
+                var panel = PanelInspeccion.Instance;
+                if (panel.FrameUltimoCierre == Time.frameCount)
+                    return;
+                if (panel.EstaAbierto && !panel.CierreBloqueado)
+                    return;
+            }
 
             // Solo se puede iniciar la pausa durante la partida (no en Inicio/Derrota/Victoria).
             if (!EstaPausado && GameStateManager.Instance != null &&
@@ -95,6 +106,12 @@ namespace Terror
 
         public void Pausar()
         {
+            if (EstaPausado)
+                return;
+
+            // Un paso del tutorial también congela el juego con timeScale 0: al
+            // reanudar se vuelve a ese valor, no a 1, para no soltar al tutorial.
+            timeScaleAntesDePausar = Time.timeScale;
             EstaPausado = true;
             Time.timeScale = 0f;
 
@@ -105,8 +122,11 @@ namespace Terror
         /// <summary>Conectado al botón "Continuar" del panel de pausa.</summary>
         public void Reanudar()
         {
+            if (!EstaPausado)
+                return;
+
             EstaPausado = false;
-            Time.timeScale = 1f;
+            Time.timeScale = timeScaleAntesDePausar;
 
             if (panelPausa != null)
                 panelPausa.SetActive(false);
