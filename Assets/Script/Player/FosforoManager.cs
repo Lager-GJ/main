@@ -38,6 +38,7 @@ public class FosforoManager : MonoBehaviour
     private float intensidadBaseLuz; // intensidad que configuraste en el Inspector, se guarda una sola vez
     private float radioInteriorBase; // radios de la luz tal como quedaron en el Inspector
     private float radioExteriorBase;
+    private bool encendidoHabilitado = true; // el tutorial lo apaga hasta que el jugador recoge los fósforos
 
     // --- Eventos estáticos ---
     // Se usan Action estáticos (no UnityEvents) a propósito: cualquier script del
@@ -52,8 +53,27 @@ public class FosforoManager : MonoBehaviour
     // sin hacer polling en su propio Update() ni pedir una referencia a este script.
     public static event Action<int> OnFosforosRestantesCambiado;
 
+    // Progreso de la luz del fósforo encendido: 1 = recién encendido, 0 = apagado.
+    // Se publica como evento para que la barra de luz de la UI se dibuje sin
+    // hacer polling ni depender de esta clase (mismo patrón que el contador).
+    public static event Action<float> OnProgresoFosforoCambiado;
+
     public bool Encendido => encendido;
     public int FosforosRestantes => fosforosRestantes;
+    public int FosforosIniciales => fosforosIniciales;
+    public float DuracionFosforo => duracionFosforo;
+    public bool PausadoPorInspeccion => pausadoPorInspeccion;
+    public float TiempoRestante => encendido ? tiempoRestanteQuemado : 0f;
+    public float ProgresoRestante => encendido ? Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo) : 0f;
+
+    /// <summary>
+    /// Permite o bloquea el encendido con la tecla E. Por defecto está permitido; solo
+    /// el tutorial lo bloquea hasta que el jugador recoge los fósforos de la mesita.
+    /// </summary>
+    public void HabilitarEncendido(bool habilitado)
+    {
+        encendidoHabilitado = habilitado;
+    }
 
     private void Awake()
     {
@@ -83,7 +103,7 @@ public class FosforoManager : MonoBehaviour
         bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
         bool teclaQ = Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
 
-        if (teclaE && !encendido && fosforosRestantes > 0)
+        if (teclaE && !encendido && fosforosRestantes > 0 && encendidoHabilitado)
         {
             EncenderFosforo();
         }
@@ -123,6 +143,7 @@ public class FosforoManager : MonoBehaviour
         OnFosforoEncendido?.Invoke();
         Terror.GameEvents.RaiseFosforoEncendido(); // <-- CONEXION A FEAR MANAGER
         OnFosforosRestantesCambiado?.Invoke(fosforosRestantes);
+        OnProgresoFosforoCambiado?.Invoke(1f);
 
         // Avisamos "sin fósforos" apenas se usa el último, no solo cuando se apague:
         // así la Presencia o el manager de game over pueden empezar a reaccionar antes.
@@ -170,11 +191,15 @@ public class FosforoManager : MonoBehaviour
     /// </summary>
     private void ActualizarIntensidadLuz()
     {
+        // 1 = recién encendido, 0 = a punto de apagarse.
+        float progreso = Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo);
+
+        // Se publica aunque no haya Light2D asignada: la barra de UI no depende de la luz.
+        OnProgresoFosforoCambiado?.Invoke(progreso);
+
         if (luzFosforo == null)
             return;
 
-        // 1 = recién encendido, 0 = a punto de apagarse.
-        float progreso = Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo);
         luzFosforo.intensity = intensidadBaseLuz * progreso;
     }
 
@@ -190,6 +215,7 @@ public class FosforoManager : MonoBehaviour
 
         OnFosforoApagado?.Invoke();
         Terror.GameEvents.RaiseFosforoApagado(); // <-- CONEXION A FEAR MANAGER
+        OnProgresoFosforoCambiado?.Invoke(0f);
     }
 
     /// <summary>

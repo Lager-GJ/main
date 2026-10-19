@@ -9,6 +9,9 @@ public class StoryManager : MonoBehaviour
     [Header("Configuración de Escena")]
     public string nombreDeLaEscenaDelJuego = "Nivel1"; // Escribe aquí el nombre exacto de tu escena
 
+    [Header("Navegación")]
+    public GameObject botonAnterior; // Se oculta en la primera página
+
     private int currentPageIndex = 0;
 
     void Start()
@@ -22,6 +25,8 @@ public class StoryManager : MonoBehaviour
         {
             storyPages[0].SetActive(true);
         }
+
+        ActualizarBotonAnterior();
     }
 
     public void NextPage()
@@ -31,12 +36,32 @@ public class StoryManager : MonoBehaviour
             storyPages[currentPageIndex].SetActive(false);
             currentPageIndex++;
             storyPages[currentPageIndex].SetActive(true);
+            ActualizarBotonAnterior();
         }
         else
         {
             // Cuando ya no hay más páginas, cargamos la siguiente escena
             CargarJuego();
         }
+    }
+
+    public void PreviousPage()
+    {
+        // En la primera página no hay a dónde volver
+        if (currentPageIndex > 0)
+        {
+            storyPages[currentPageIndex].SetActive(false);
+            currentPageIndex--;
+            storyPages[currentPageIndex].SetActive(true);
+            ActualizarBotonAnterior();
+        }
+    }
+
+    void ActualizarBotonAnterior()
+    {
+        // Por estética, el botón solo aparece si hay una página anterior
+        if (botonAnterior != null)
+            botonAnterior.SetActive(currentPageIndex > 0);
     }
 
     void CargarJuego()
