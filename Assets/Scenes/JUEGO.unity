@@ -311,7 +311,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &150038087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7332,7 +7332,7 @@ MonoBehaviour:
   target: {fileID: 991542895}
   smoothSpeed: 0.125
   offset: {x: 0, y: 0, z: -10}
-  minBounds: {x: -9510, y: -708}
+  minBounds: {x: -3590, y: -708}
   maxBounds: {x: 67, y: -708}
 --- !u!224 &968444686
 RectTransform:
@@ -7573,7 +7573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   velocidad: 1000
-  limiteIzquierdo: -10824
+  limiteIzquierdo: -4904
   limiteDerecho: 1395
   animator: {fileID: 0}
 --- !u!212 &991542894
@@ -7644,7 +7644,7 @@ Transform:
   m_GameObject: {fileID: 991542892}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9510, y: -1040, z: 0}
+  m_LocalPosition: {x: -4450, y: -1040, z: 0}
   m_LocalScale: {x: 21.396406, y: 21.396406, z: 21.396406}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -8243,8 +8243,35 @@ MonoBehaviour:
   retrasoInicial: 1
   bloquearFosforosHastaRecoger: 1
   pasos:
+  - nombre: MsgEncender
+    disparador: 3
+    marcador: {fileID: 0}
+    panel: {fileID: 190511319}
+    esperaMovimiento: 0
+    segundosVisible: 0
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 1
+  - nombre: MsgExaminar
+    disparador: 4
+    marcador: {fileID: 0}
+    panel: {fileID: 623913364}
+    esperaMovimiento: 0
+    segundosVisible: 5
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 0
+  - nombre: MsgBarra
+    disparador: 1
+    marcador: {fileID: 0}
+    panel: {fileID: 885639706}
+    esperaMovimiento: 0
+    segundosVisible: 4
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 1
+    mantenerHastaSiguientePaso: 0
   - nombre: PanelAD
-    disparador: 0
+    disparador: 7
     marcador: {fileID: 0}
     panel: {fileID: 1653836792}
     esperaMovimiento: 1
@@ -8261,51 +8288,6 @@ MonoBehaviour:
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
-  - nombre: MsgMesita
-    disparador: 2
-    marcador: {fileID: 649132452}
-    panel: {fileID: 1119963726}
-    esperaMovimiento: 0
-    segundosVisible: 0
-    resaltar: {fileID: 150038087}
-    saltarSiSeApagaUnFosforo: 0
-    mantenerHastaSiguientePaso: 1
-  - nombre: MsgEncender
-    disparador: 3
-    marcador: {fileID: 0}
-    panel: {fileID: 190511319}
-    esperaMovimiento: 0
-    segundosVisible: 0
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 0
-    mantenerHastaSiguientePaso: 1
-  - nombre: MsgExaminar
-    disparador: 4
-    marcador: {fileID: 0}
-    panel: {fileID: 623913364}
-    esperaMovimiento: 0
-    segundosVisible: 0
-    resaltar: {fileID: 916316580}
-    saltarSiSeApagaUnFosforo: 0
-    mantenerHastaSiguientePaso: 1
-  - nombre: MsgBarra
-    disparador: 6
-    marcador: {fileID: 0}
-    panel: {fileID: 885639706}
-    esperaMovimiento: 0
-    segundosVisible: 4
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 1
-    mantenerHastaSiguientePaso: 0
-  - nombre: MsgLeer
-    disparador: 1
-    marcador: {fileID: 0}
-    panel: {fileID: 931744251}
-    esperaMovimiento: 0
-    segundosVisible: 5
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 1
-    mantenerHastaSiguientePaso: 0
   - nombre: MsgMiedo
     disparador: 5
     marcador: {fileID: 0}
@@ -8315,9 +8297,18 @@ MonoBehaviour:
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
+  - nombre: MsgLeer
+    disparador: 6
+    marcador: {fileID: 0}
+    panel: {fileID: 931744251}
+    esperaMovimiento: 0
+    segundosVisible: 5
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 0
   - nombre: ObjetivoFijo
-    disparador: 2
-    marcador: {fileID: 1653710928}
+    disparador: 1
+    marcador: {fileID: 0}
     panel: {fileID: 2032767953}
     esperaMovimiento: 0
     segundosVisible: 0
@@ -12015,9 +12006,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1919334045}
-        m_TargetAssemblyTypeName: InteraccionVelador, Assembly-CSharp
-        m_MethodName: AbrirCajaDeFosforos
+      - m_Target: {fileID: 730000003}
+        m_TargetAssemblyTypeName: Terror.UI.InicioCuarto, Assembly-CSharp
+        m_MethodName: AbrirCajon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12084,7 +12075,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1919334039}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5548735cf2251a4b8ad56f2336a4e5b, type: 3}
   m_Name: 
@@ -13928,6 +13919,206 @@ MonoBehaviour:
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
+--- !u!1 &730000011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 730000012}
+  - component: {fileID: 730000013}
+  m_Layer: 0
+  m_Name: LuzPuerta
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &730000012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730000011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.70710677, w: 0.70710677}
+  m_LocalPosition: {x: -4780, y: -700, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+--- !u!114 &730000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730000011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 2
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.65
+  m_Color: {r: 0.74, g: 0.8, b: 1, a: 1}
+  m_Intensity: 3
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 00000000
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 0
+  m_ShadowIntensity: 0.659
+  m_ShadowSoftness: 0.242
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 40
+  m_PointLightOuterAngle: 100
+  m_PointLightInnerRadius: 300
+  m_PointLightOuterRadius: 3400
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+--- !u!1 &730000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 730000002}
+  - component: {fileID: 730000003}
+  m_Layer: 0
+  m_Name: InicioCuarto
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &730000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &730000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07e7c8a58f94d6f8b067d47d6f89844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.InicioCuarto
+  contenedorUI: {fileID: 744201470}
+  insertarDespuesDe: {fileID: 14855983}
+  luzPuerta: {fileID: 730000013}
+  fosforosRecogibles: {fileID: 150038088}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
+  empezarConCajonAbierto: 1
+  fondoCajon: {fileID: 21300000, guid: a55028f1133847f5af13963613569f6c, type: 3}
+  tamanoCajon: {x: 1260, y: 720}
+  posicionCajon: {x: 0, y: -60}
+  brilloFosforo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
+  nombreFosforos: "Fuego maldito"
+  spriteFosforos: {fileID: 21300000, guid: 7102f28d0c944d6881c125a042e98fa4, type: 3}
+  posicionFosforos: {x: 18, y: 0}
+  tamanoFosforos: {x: 306, y: 198}
+  rotacionFosforos: 0
+  nombreNota: "Una nota"
+  spriteNota: {fileID: 21300000, guid: fd4756b0c19549c1a0228f39c4bb49ce, type: 3}
+  posicionNota: {x: 18, y: -9}
+  tamanoNota: {x: 270, y: 198}
+  rotacionNota: 0
+  textosNota:
+  - "Es la letra de la abuelita... (pr\xF3ximamente)"
+  alLeerNota:
+    m_PersistentCalls:
+      m_Calls: []
+  elementos:
+  - nombre: "Rosario"
+    sprite: {fileID: 21300000, guid: 5edf584097024bc6bf9ad859847cde77, type: 3}
+    posicion: {x: -261, y: 54}
+    tamano: {x: 378, y: 306}
+    rotacion: 0
+    textos:
+    - "El rosario de la abuelita. Lo reza todas las noches..."
+    - "\xBFPor qu\xE9 no se lo llev\xF3? Nunca sale sin \xE9l."
+    sonido: {fileID: 0}
+  - nombre: "Hilo y aguja"
+    sprite: {fileID: 21300000, guid: 66f8461e65404635b90b28e6ddd74d49, type: 3}
+    posicion: {x: 351, y: 117}
+    tamano: {x: 234, y: 216}
+    rotacion: 0
+    textos:
+    - "Hilo negro y una aguja. Con esto me remienda los pantalones."
+    - "Mejor no lo toco... me voy a pinchar."
+    sonido: {fileID: 0}
+  - nombre: "Cabo de vela"
+    sprite: {fileID: 21300000, guid: 1a5c723d9ba44dd1a8482b7c4b176410, type: 3}
+    posicion: {x: 288, y: -68}
+    tamano: {x: 252, y: 153}
+    rotacion: 0
+    textos:
+    - "Una vela... toda consumida. No sirve ni para un ratito."
+    - "Con raz\xF3n la abuelita tuvo que salir a comprar velitas."
+    sonido: {fileID: 0}
+  textoAlAbrir: "Aqu\xED guarda la abuelita sus cosas... y los f\xF3sforos."
+  textoTomarFosforos: "\xABFuego maldito\xBB... qu\xE9 nombre tan raro para unos f\xF3sforos."
+  textoPortazo: "\xA1PUM! La puerta se cerr\xF3 sola..."
+  textoSinLuz: "Est\xE1 muy oscuro. No veo nada."
+  textoNotaAparece: "Debajo de los f\xF3sforos hab\xEDa una nota..."
+  textoAyudaCerrar: "Esc o clic afuera para volver al cuarto"
+  sonidoAbrirCajon: {fileID: 8300000, guid: 169924c01ee115f4c941c32b63a7061e, type: 3}
+  sonidoTomarFosforos: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
+  sonidoPortazo: {fileID: 8300000, guid: b970e762142e5a448992411da8d7a471, type: 3}
+  sonidoRevelarNota: {fileID: 8300000, guid: 30775c42267099140a77ba3293055ea7, type: 3}
+  sonidoObjeto: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
+  tintePuerta: {r: 0.78, g: 0.82, b: 0.92, a: 1}
+  tinteOscuro: {r: 0.17, g: 0.17, b: 0.19, a: 1}
+  tinteFosforo: {r: 1, g: 0.93, b: 0.82, a: 1}
+  fondoConPuertaAbierta: 0.55
+  fondoAOscuras: 0.9
+  esperaAntesDelPortazo: 0.7
+  duracionApagarLuz: 0.25
+  sacudidaPortazo: 22
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -13952,3 +14143,5 @@ SceneRoots:
   - {fileID: 150038092}
   - {fileID: 649132452}
   - {fileID: 1653710928}
+  - {fileID: 730000002}
+  - {fileID: 730000012}
