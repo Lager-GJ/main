@@ -60,6 +60,8 @@ namespace Terror.UI
         [SerializeField] private TMP_FontAsset fuente;
         [Tooltip("Desmarcado: el juego arranca sin la secuencia (útil para probar el resto del cuarto).")]
         [SerializeField] private bool empezarConCajonAbierto = true;
+        [Tooltip("HUD que no se ve durante el inicio (barra de miedo, emoji). Aparece con el primer fósforo.")]
+        [SerializeField] private GameObject[] ocultarHastaPrimerFosforo;
 
         [Header("Cajón")]
         [SerializeField] private Sprite fondoCajon;
@@ -173,8 +175,9 @@ namespace Terror.UI
             FosforoManager.OnFosforoApagado -= AlApagarFosforo;
             PanelInspeccion.OnCerrado -= AlCerrarseUnPrimerPlano;
 
-            // Nunca dejamos el miedo pausado ni al niño quieto si esto se apaga a mitad de camino.
+            // Nunca dejamos el miedo pausado, el HUD oculto ni al niño quieto si esto se apaga a mitad de camino.
             TerminarPausaDeMiedo();
+            AlfaHudOculto(1f);
             if (nino != null) nino.enabled = true;
         }
 
@@ -200,6 +203,7 @@ namespace Terror.UI
 
             Construir();
             StartCoroutine(SilenciarMusicaDelMenu());
+            AlfaHudOculto(0f);
 
             FosforoManager.Instance?.HabilitarEncendido(false);
 
@@ -346,6 +350,7 @@ namespace Terror.UI
             StartCoroutine(Pop(zonaNota.transform));
             Sonar(sonidoRevelarNota);
             Decir(textoNotaAparece);
+            StartCoroutine(Animar(0.8f, AlfaHudOculto));
 
             if (PanelInspeccion.Instance != null)
                 PanelInspeccion.Instance.CierreBloqueado = false;
@@ -655,6 +660,19 @@ namespace Terror.UI
                 yield return null;
             }
             paso(1f);
+        }
+
+        // Con CanvasGroup y no SetActive: la barra de miedo sigue escuchando sus eventos.
+        private void AlfaHudOculto(float alfa)
+        {
+            if (ocultarHastaPrimerFosforo == null) return;
+            foreach (var go in ocultarHastaPrimerFosforo)
+            {
+                if (go == null) continue;
+                var grupo = go.GetComponent<CanvasGroup>();
+                if (grupo == null) grupo = go.AddComponent<CanvasGroup>();
+                grupo.alpha = alfa;
+            }
         }
 
         private void TerminarPausaDeMiedo()
