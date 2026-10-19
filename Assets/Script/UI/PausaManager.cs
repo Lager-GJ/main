@@ -89,7 +89,7 @@ namespace Terror
                 var panel = PanelInspeccion.Instance;
                 if (panel.FrameUltimoCierre == Time.frameCount)
                     return;
-                if (panel.EstaAbierto && !panel.CierreBloqueado)
+                if (panel.EscapeLoManejaElPanel)
                     return;
             }
 

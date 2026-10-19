@@ -40,7 +40,9 @@ namespace Terror.UI
             public Vector2 posicion;
             public Vector2 tamano = new Vector2(200f, 200f);
             public float rotacion;
-            [Tooltip("Una línea por click, en orden; al final da la vuelta.")]
+            [Tooltip("Arte de la tarjeta que se abre al tocarlo (como las de Historia). Vacío = el dibujo del objeto en grande sobre una tarjeta gris provisoria.")]
+            public Sprite ilustracion;
+            [Tooltip("Textos de su tarjeta, en orden: el botón > pasa al siguiente y el último cierra la tarjeta.")]
             [TextArea(1, 3)] public string[] textos;
             [Tooltip("Vacío = sonidoObjeto.")]
             public AudioClip sonido;
@@ -82,12 +84,24 @@ namespace Terror.UI
         [SerializeField] private Vector2 posicionNota = new Vector2(40f, -18f);
         [SerializeField] private Vector2 tamanoNota = new Vector2(270f, 198f);
         [SerializeField] private float rotacionNota = 4f;
+        [Tooltip("Arte de la tarjeta de la nota. Vacío = el dibujo de la nota en grande.")]
+        [SerializeField] private Sprite ilustracionNota;
         [TextArea(1, 3)] [SerializeField] private string[] textosNota =
         {
             "Es la letra de la abuelita... (próximamente)"
         };
         [Tooltip("Para conectar el contenido real de la nota cuando exista.")]
         [SerializeField] private UnityEvent alLeerNota;
+
+        [Header("Tarjetas (mismo concepto que Historia)")]
+        [Tooltip("Borde del cajón y de las tarjetas provisorias. Vacío = borde de tiza generado en código.")]
+        [SerializeField] private Sprite marcoTarjeta;
+        [Tooltip("Botón > (el mismo de Historia).")]
+        [SerializeField] private Sprite spriteSiguiente;
+        [SerializeField] private bool cajonConMarco = true;
+        [SerializeField] private Vector2 tamanoTarjeta = new Vector2(1000f, 510f);
+        [SerializeField] private Vector2 posicionTarjeta = new Vector2(0f, 70f);
+        [SerializeField] private Color colorTarjetaProvisoria = new Color(0.5f, 0.5f, 0.5f, 1f);
 
         [Header("Otros objetos del cajón")]
         [SerializeField] private ElementoCajon[] elementos;
@@ -130,7 +144,6 @@ namespace Terror.UI
         private Fase fase = Fase.Iluminado;
         private bool construido;
         private bool pausaDeMiedoActiva;
-        private int clicksNota;
 
         private GameObject panel;
         private CanvasGroup grupoPanel;
@@ -156,9 +169,24 @@ namespace Terror.UI
         private Coroutine rutinaSacudida;
         private ZonaCajon zonaEncima;
 
+        private GameObject tarjeta;
+        private CanvasGroup grupoTarjeta;
+        private RectTransform rectTarjeta;
+        private Image fondoTarjeta;
+        private Image ilustracionTarjeta;
+        private Image objetoTarjeta;
+        private Image bordeTarjeta;
+        private TextMeshProUGUI nombreTarjeta;
+        private TextMeshProUGUI textoTarjeta;
+        private string[] textosTarjeta;
+        private int indiceTarjeta;
+        private Image marcoCajon;
+
         public Color Tinte => tinteActual;
 
         private bool PanelAbierto => panel != null && panel.activeSelf;
+
+        private bool TarjetaAbierta => tarjeta != null && tarjeta.activeSelf;
 
         // ---------- Ciclo de vida ----------
 
@@ -254,6 +282,7 @@ namespace Terror.UI
         {
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego) return;
             if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+            if (TarjetaAbierta) return;
 
             if (zona == zonaFosforos)
             {
@@ -272,11 +301,7 @@ namespace Terror.UI
 
             if (zona == zonaNota)
             {
-                if (textosNota != null && textosNota.Length > 0)
-                    Decir(textosNota[clicksNota % textosNota.Length]);
-                clicksNota++;
-                Sonar(sonidoObjeto);
-                Sacudir(4f);
+                AbrirTarjeta(nombreNota, spriteNota, ilustracionNota, textosNota, sonidoObjeto);
                 alLeerNota?.Invoke();
                 OnNotaLeida?.Invoke();
                 return;
@@ -286,11 +311,67 @@ namespace Terror.UI
             if (i < 0) return;
 
             ElementoCajon e = elementos[i];
-            if (e.textos != null && e.textos.Length > 0)
-                Decir(e.textos[clicksElementos[i] % e.textos.Length]);
             clicksElementos[i]++;
-            Sonar(e.sonido != null ? e.sonido : sonidoObjeto);
-            Sacudir(4f);
+            AbrirTarjeta(e.nombre, e.sprite, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto);
+        }
+
+        // ---------- Tarjeta de un objeto ----------
+
+        private void AbrirTarjeta(string nombre, Sprite dibujo, Sprite ilustracion, string[] textos, AudioClip sonido)
+        {
+            if (tarjeta == null) return;
+
+            textosTarjeta = textos != null ? textos : Array.Empty<string>();
+            indiceTarjeta = 0;
+
+            // Con arte final la ilustración es la tarjeta entera (trae su propio borde,
+            // como las de Historia). Sin arte: el dibujo del objeto en grande sobre gris.
+            bool conArte = ilustracion != null;
+            ilustracionTarjeta.sprite = ilustracion;
+            ilustracionTarjeta.enabled = conArte;
+            fondoTarjeta.color = conArte ? new Color(0f, 0f, 0f, 0f) : colorTarjetaProvisoria;
+            bordeTarjeta.enabled = !conArte;
+            objetoTarjeta.enabled = !conArte;
+            objetoTarjeta.sprite = dibujo;
+            objetoTarjeta.color = dibujo != null ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
+            objetoTarjeta.rectTransform.sizeDelta = dibujo != null ? tamanoTarjeta * 0.7f : new Vector2(tamanoTarjeta.y * 0.75f, tamanoTarjeta.y * 0.55f);
+            nombreTarjeta.gameObject.SetActive(!conArte);
+            nombreTarjeta.text = nombre;
+
+            MostrarTextoTarjeta();
+            tarjeta.SetActive(true);
+            StartCoroutine(Animar(0.25f, p =>
+            {
+                grupoTarjeta.alpha = p;
+                rectTarjeta.localScale = Vector3.one * Mathf.Lerp(0.9f, 1f, p);
+            }));
+            Sonar(sonido);
+            ActualizarEtiqueta();
+        }
+
+        private void MostrarTextoTarjeta()
+        {
+            textoTarjeta.text = indiceTarjeta < textosTarjeta.Length ? textosTarjeta[indiceTarjeta] : "";
+        }
+
+        /// <summary>Botón &gt; y click sobre la tarjeta: siguiente texto; después del último, cierra.</summary>
+        private void AvanzarTarjeta()
+        {
+            if (!TarjetaAbierta) return;
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+
+            indiceTarjeta++;
+            if (indiceTarjeta >= textosTarjeta.Length)
+                CerrarTarjeta();
+            else
+                MostrarTextoTarjeta();
+        }
+
+        private void CerrarTarjeta()
+        {
+            if (!TarjetaAbierta) return;
+            tarjeta.SetActive(false);
+            ActualizarEtiqueta();
         }
 
         internal void EncimaDeZona(ZonaCajon zona, bool encima)
@@ -371,6 +452,9 @@ namespace Terror.UI
 
         private void AlCerrarseUnPrimerPlano()
         {
+            if (tarjeta != null && panel != null && !panel.activeSelf)
+                tarjeta.SetActive(false);
+
             if (panel != null && !panel.activeSelf && nino != null)
                 nino.enabled = true;
         }
@@ -457,17 +541,92 @@ namespace Terror.UI
             textoEtiqueta = NuevoTexto("EtiquetaCajon", panel.transform, new Vector2(0f, -515f), new Vector2(1500f, 44f), 26f, FontStyles.Italic);
             textoEtiqueta.color = new Color(0.8f, 0.8f, 0.8f, 0.85f);
 
+            // El cajón se presenta como una tarjeta de Historia: con su borde blanco de tiza.
+            if (cajonConMarco)
+            {
+                marcoCajon = NuevaImagen("MarcoTarjeta", interior, Vector2.zero, tamanoCajon + new Vector2(30f, 30f), SpriteMarco());
+                marcoCajon.type = Image.Type.Sliced;
+                marcoCajon.raycastTarget = false;
+            }
+
+            ConstruirTarjeta();
+
+            if (PanelInspeccion.Instance != null)
+            {
+                PanelInspeccion.Instance.SubvistaAbierta = () => TarjetaAbierta && PanelAbierto;
+                PanelInspeccion.Instance.CerrarSubvista = CerrarTarjeta;
+            }
+
             panel.SetActive(false);
+        }
+
+        private Sprite SpriteMarco() => marcoTarjeta != null ? marcoTarjeta : MarcoDibujado.Obtener(128, 7f, 6f, 1f);
+
+        private void ConstruirTarjeta()
+        {
+            tarjeta = new GameObject("TarjetaObjeto", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup));
+            tarjeta.transform.SetParent(panel.transform, false);
+            Estirar((RectTransform)tarjeta.transform);
+            grupoTarjeta = tarjeta.GetComponent<CanvasGroup>();
+            tarjeta.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.85f);
+            var botonFondo = tarjeta.GetComponent<Button>();
+            botonFondo.transition = Selectable.Transition.None;
+            botonFondo.onClick.AddListener(CerrarTarjeta); // click afuera de la tarjeta: la cierra
+
+            rectTarjeta = NuevoRect("Tarjeta", tarjeta.transform, posicionTarjeta, tamanoTarjeta);
+            fondoTarjeta = rectTarjeta.gameObject.AddComponent<Image>();
+            var botonTarjeta = rectTarjeta.gameObject.AddComponent<Button>();
+            botonTarjeta.transition = Selectable.Transition.None;
+            botonTarjeta.onClick.AddListener(AvanzarTarjeta);
+
+            objetoTarjeta = NuevaImagen("Dibujo", rectTarjeta, new Vector2(0f, -10f), tamanoTarjeta * 0.7f, null);
+            objetoTarjeta.preserveAspect = true;
+            objetoTarjeta.raycastTarget = false;
+
+            ilustracionTarjeta = NuevaImagen("Ilustracion", rectTarjeta, Vector2.zero, tamanoTarjeta, null);
+            ilustracionTarjeta.preserveAspect = true;
+            ilustracionTarjeta.raycastTarget = false;
+
+            bordeTarjeta = NuevaImagen("Borde", rectTarjeta, Vector2.zero, tamanoTarjeta + new Vector2(14f, 14f), SpriteMarco());
+            bordeTarjeta.type = Image.Type.Sliced;
+            bordeTarjeta.raycastTarget = false;
+
+            nombreTarjeta = NuevoTexto("Nombre", rectTarjeta, new Vector2(0f, tamanoTarjeta.y * 0.5f - 40f), new Vector2(tamanoTarjeta.x - 60f, 50f), 30f, FontStyles.Italic);
+            nombreTarjeta.color = new Color(1f, 1f, 1f, 0.75f);
+
+            textoTarjeta = NuevoTexto("TextoTarjeta", tarjeta.transform,
+                new Vector2(0f, posicionTarjeta.y - tamanoTarjeta.y * 0.5f - 100f), new Vector2(1500f, 140f), 42f, FontStyles.Normal);
+
+            Image siguiente = NuevaImagen("BotonSiguiente", tarjeta.transform, new Vector2(800f, -420f), new Vector2(130f, 110f), spriteSiguiente);
+            siguiente.preserveAspect = true;
+            if (spriteSiguiente == null)
+            {
+                siguiente.color = new Color(0f, 0f, 0f, 0f);
+                NuevoTexto("Flecha", siguiente.transform, Vector2.zero, new Vector2(130f, 110f), 80f, FontStyles.Normal).text = ">";
+            }
+            var botonSiguiente = siguiente.gameObject.AddComponent<Button>();
+            botonSiguiente.onClick.AddListener(AvanzarTarjeta);
+
+            tarjeta.SetActive(false);
         }
 
         private ZonaCajon NuevaZona(string nombre, Sprite sprite, Vector2 posicion, Vector2 tamano, float rotacion)
         {
             Image img = NuevaImagen(string.IsNullOrEmpty(nombre) ? "Objeto" : nombre, interior, posicion, tamano, sprite);
             img.preserveAspect = true;
-            if (sprite == null) img.color = new Color(0.6f, 0.6f, 0.6f, 1f);
             img.rectTransform.localEulerAngles = new Vector3(0f, 0f, rotacion);
+
+            // Sin dibujo todavía: un papel gris con borde blanco (sirve para la foto y la estampita).
+            Image borde = null;
+            if (sprite == null)
+            {
+                borde = NuevaImagen("Borde", img.transform, Vector2.zero, tamano, MarcoDibujado.Obtener(64, 4f, 3f, 1f));
+                borde.type = Image.Type.Sliced;
+                borde.raycastTarget = false;
+            }
+
             var zona = img.gameObject.AddComponent<ZonaCajon>();
-            zona.Iniciar(this, nombre, img);
+            zona.Iniciar(this, nombre, img, borde);
             return zona;
         }
 
@@ -540,6 +699,7 @@ namespace Terror.UI
         private void AplicarTinte()
         {
             if (imagenInterior != null && fondoCajon != null) imagenInterior.color = tinteActual;
+            if (marcoCajon != null) marcoCajon.color = tinteActual;
             zonaFosforos?.AplicarTinte();
             zonaNota?.AplicarTinte();
             if (zonasElementos != null)
@@ -578,6 +738,8 @@ namespace Terror.UI
 
             if (zonaEncima != null && !string.IsNullOrEmpty(zonaEncima.Nombre))
                 textoEtiqueta.text = zonaEncima.Nombre;
+            else if (TarjetaAbierta)
+                textoEtiqueta.text = "";
             else if (fase == Fase.Iluminado)
                 textoEtiqueta.text = textoAyudaCerrar;
             else
@@ -705,14 +867,18 @@ namespace Terror.UI
         private bool encima;
         private bool bloqueada;
 
+        private Image borde;
+
         public string Nombre { get; private set; }
         public Image Imagen { get; private set; }
 
-        internal void Iniciar(InicioCuarto inicio, string nombre, Image imagen)
+        internal void Iniciar(InicioCuarto inicio, string nombre, Image imagen, Image bordeSinDibujo)
         {
             dueno = inicio;
             Nombre = nombre;
             Imagen = imagen;
+            borde = bordeSinDibujo;
+            AplicarTinte();
         }
 
         internal void Bloquear()
@@ -725,10 +891,14 @@ namespace Terror.UI
 
         internal void AplicarTinte()
         {
-            if (Imagen == null || bloqueada || Imagen.sprite == null) return;
+            if (Imagen == null || bloqueada) return;
             Color c = dueno.Tinte;
             float f = encima ? 1.3f : 1f;
-            Imagen.color = new Color(Mathf.Min(1f, c.r * f), Mathf.Min(1f, c.g * f), Mathf.Min(1f, c.b * f), 1f);
+            // Sin dibujo, la zona es un papel gris: se tiñe igual para que no brille en la oscuridad.
+            float baseGris = Imagen.sprite == null ? 0.62f : 1f;
+            Imagen.color = new Color(Mathf.Min(1f, c.r * f * baseGris), Mathf.Min(1f, c.g * f * baseGris), Mathf.Min(1f, c.b * f * baseGris), 1f);
+            if (borde != null)
+                borde.color = new Color(Mathf.Min(1f, c.r * f), Mathf.Min(1f, c.g * f), Mathf.Min(1f, c.b * f), 1f);
         }
 
         private void OnDisable()

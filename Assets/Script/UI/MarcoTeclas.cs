@@ -29,8 +29,6 @@ namespace Terror.UI
         [SerializeField] private bool latir = true;
         [SerializeField] private float velocidadLatido = 2.2f;
 
-        private static Sprite marcoGenerado;
-
         private TMP_Text texto;
         private readonly List<Image> marcos = new List<Image>();
         private bool sucio = true;
@@ -134,7 +132,7 @@ namespace Terror.UI
             rt.pivot = new Vector2(0.5f, 0.5f);
 
             var img = go.GetComponent<Image>();
-            img.sprite = marco != null ? marco : MarcoGenerado();
+            img.sprite = marco != null ? marco : MarcoDibujado.Obtener(64, 3.2f, 14f, 0.5f);
             img.type = Image.Type.Sliced;
             img.pixelsPerUnitMultiplier = marco != null ? 1f : finuraBorde;
             img.color = colorMarco;
@@ -142,36 +140,6 @@ namespace Terror.UI
 
             marcos.Add(img);
             return img;
-        }
-
-        // Borde blanco de esquinas redondeadas, apenas irregular para que no se vea "de sistema".
-        private static Sprite MarcoGenerado()
-        {
-            if (marcoGenerado != null) return marcoGenerado;
-
-            const int lado = 64;
-            const float radio = 14f;
-            const float grosor = 3.2f;
-            var tex = new Texture2D(lado, lado, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
-
-            for (int y = 0; y < lado; y++)
-            for (int x = 0; x < lado; x++)
-            {
-                // Distancia al borde de un rectángulo redondeado (negativa adentro).
-                float px = Mathf.Abs(x + 0.5f - lado * 0.5f) - (lado * 0.5f - radio - 1f);
-                float py = Mathf.Abs(y + 0.5f - lado * 0.5f) - (lado * 0.5f - radio - 1f);
-                float fuera = new Vector2(Mathf.Max(px, 0f), Mathf.Max(py, 0f)).magnitude + Mathf.Min(Mathf.Max(px, py), 0f) - radio;
-
-                float g = grosor * (0.85f + 0.3f * Mathf.PerlinNoise(x * 0.31f, y * 0.29f));
-                float a = Mathf.Clamp01(1f - Mathf.Abs(fuera + g * 0.5f) / (g * 0.5f + 0.6f));
-                tex.SetPixel(x, y, new Color(1f, 1f, 1f, a * a));
-            }
-            tex.Apply();
-
-            float b = radio + 4f;
-            marcoGenerado = Sprite.Create(tex, new Rect(0, 0, lado, lado), new Vector2(0.5f, 0.5f), 100f, 0,
-                SpriteMeshType.FullRect, new Vector4(b, b, b, b));
-            return marcoGenerado;
         }
     }
 }

@@ -14083,7 +14083,7 @@ MonoBehaviour:
   nombreFosforos: "Fuego maldito"
   spriteFosforos: {fileID: 1548913901372772283, guid: 44aff36dfd0a78941a569d2a0c92ec44, type: 3}
   posicionFosforos: {x: 18, y: 0}
-  tamanoFosforos: {x: 270, y: 270}
+  tamanoFosforos: {x: 300, y: 300}
   rotacionFosforos: 0
   nombreNota: "Una nota"
   spriteNota: {fileID: 21300000, guid: fd4756b0c19549c1a0228f39c4bb49ce, type: 3}
@@ -14095,6 +14095,12 @@ MonoBehaviour:
   alLeerNota:
     m_PersistentCalls:
       m_Calls: []
+  marcoTarjeta: {fileID: 0}
+  spriteSiguiente: {fileID: -1419229221178902814, guid: 37f5c8da8677bfc4a86852a0ecea89a3, type: 3}
+  cajonConMarco: 1
+  tamanoTarjeta: {x: 1000, y: 510}
+  posicionTarjeta: {x: 0, y: 70}
+  colorTarjetaProvisoria: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   elementos:
   - nombre: "Rosario"
     sprite: {fileID: 21300000, guid: 5edf584097024bc6bf9ad859847cde77, type: 3}
@@ -14122,6 +14128,26 @@ MonoBehaviour:
     textos:
     - "Una vela... toda consumida. No sirve ni para un ratito."
     - "Con raz\xF3n la abuelita tuvo que salir a comprar velitas."
+    sonido: {fileID: 0}
+  - nombre: "Foto vieja"
+    sprite: {fileID: 0}
+    posicion: {x: -390, y: -80}
+    tamano: {x: 170, y: 125}
+    rotacion: -7
+    ilustracion: {fileID: 0}
+    textos:
+    - "Una foto vieja de la abuelita, cuando era joven."
+    - "A su lado hab\xEDa alguien m\xE1s... pero lo recortaron con tijera."
+    sonido: {fileID: 0}
+  - nombre: "Estampita"
+    sprite: {fileID: 0}
+    posicion: {x: -185, y: -95}
+    tamano: {x: 90, y: 130}
+    rotacion: 8
+    ilustracion: {fileID: 0}
+    textos:
+    - "Una estampita de un santo, gastada de tanto rezarle."
+    - "Atr\xE1s, con l\xE1piz: \xABQue nunca se te apague la luz, mijito\xBB."
     sonido: {fileID: 0}
   textoAlAbrir: "Aqu\xED guarda la abuelita sus cosas... y los f\xF3sforos."
   textoTomarFosforos: "\xABFuego maldito\xBB... qu\xE9 nombre tan raro para unos f\xF3sforos."
