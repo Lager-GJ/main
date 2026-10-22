@@ -11,7 +11,9 @@ using UnityEngine;
 ///   3er fósforo consumido → la luz del fósforo alcanza menos.
 ///   Último fósforo (el 4to) consumido → silencio breve y derrota automática.
 /// Cada nivel suma: la respiración se oye más fuerte y agitada, y los ruidos se
-/// vuelven más frecuentes y se acercan.
+/// vuelven más frecuentes y se acercan. Los efectos visuales de cada nivel (temblor
+/// de cámara, viñeta, llama que parpadea, pensamientos de Luis) están en
+/// EfectosPresencia, que escucha el mismo evento.
 /// Desde 2026-10-22 no hay barra de miedo: la Presencia es lo único que avanza.
 /// El nivel se avisa por GameEvents.OnNivelPresenciaCambiado (y, por compatibilidad,
 /// por OnCercaniaPresenciaCambiada con multiplicador 1).
@@ -178,6 +180,7 @@ public class PresenciaManager : MonoBehaviour
             fuenteRuidos.panStereo = Random.Range(-0.8f, 0.8f);
             float cercania = nivel >= 3 ? 1f : 0.7f;
             fuenteRuidos.PlayOneShot(clip, volumenRuidos * cercania);
+            GameEvents.RaiseRuidoPresencia(cercania);
         }
     }
 

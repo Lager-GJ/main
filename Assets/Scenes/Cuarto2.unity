@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 14855983}
   - component: {fileID: 14855986}
   - component: {fileID: 14855985}
+  - component: {fileID: 910000001}
   m_Layer: 5
   m_Name: OSCURO
   m_TagString: Untagged
@@ -186,6 +187,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &910000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14855982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54f8c77d01254cc7b07bd86abc106f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.VinetaPresencia
+  color: {r: 0.05, g: 0, b: 0, a: 1}
+  segundosTransicion: 1.5
+  frecuenciaPulso: 1.1
 --- !u!222 &14855986
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3739,6 +3755,7 @@ GameObject:
   - component: {fileID: 2087550694}
   - component: {fileID: 2087550693}
   - component: {fileID: 2087550695}
+  - component: {fileID: 910000011}
   m_Layer: 0
   m_Name: FosforoManager
   m_TagString: Untagged
@@ -3788,8 +3805,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa52e10313c9de4a993dc7883553f4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PresenciaManager
-  sonidoRespiracion: {fileID: 0}
-  volumenRespiracion: 0.6
+  sonidoRespiracion: {fileID: 8300000, guid: b726c6fd3bbd4c84da3b5a26edb6dfba, type: 3}
+  volumenRespiracion: 0.35
   sonidoPasos: {fileID: 8300000, guid: 9d7b3c9f82371a44caf07950803f870d, type: 3}
   sonidosRuidos:
   - {fileID: 8300000, guid: b970e762142e5a448992411da8d7a471, type: 3}
@@ -3798,6 +3815,55 @@ MonoBehaviour:
   intervaloRuidosMaximo: 9
   volumenRuidos: 0.8
   factorAlcanceLuz: 0.6
+--- !u!114 &910000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087550692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7306653f82ae4295837a9031150a8e57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.EfectosPresencia
+  niveles:
+  - sacudida: 12
+    duracionSacudida: 0.4
+    vineta: 0.25
+    pulsoVineta: 0
+    parpadeoLuz: 0
+    golpe: {fileID: 8300000, guid: b970e762142e5a448992411da8d7a471, type: 3}
+    volumenGolpe: 0.35
+    pensamiento: "\xBFAbuelita...? \xBFEres t\xFA?"
+  - sacudida: 22
+    duracionSacudida: 0.6
+    vineta: 0.45
+    pulsoVineta: 0.25
+    parpadeoLuz: 0.15
+    golpe: {fileID: 8300000, guid: 11a28b712c5eb034aa0fb25a7ddb82dc, type: 3}
+    volumenGolpe: 0.6
+    pensamiento: "Algo camina en el cuarto..."
+  - sacudida: 35
+    duracionSacudida: 0.8
+    vineta: 0.65
+    pulsoVineta: 0.4
+    parpadeoLuz: 0.35
+    golpe: {fileID: 8300000, guid: b46bb49432b55144db35a36e883a6960, type: 3}
+    volumenGolpe: 0.8
+    pensamiento: "Est\xE1 aqu\xED. Me est\xE1 mirando."
+  - sacudida: 50
+    duracionSacudida: 1.2
+    vineta: 0.9
+    pulsoVineta: 0
+    parpadeoLuz: 0
+    golpe: {fileID: 0}
+    volumenGolpe: 0
+    pensamiento: ""
+  sacudidaPorRuido: 6
+  vineta: {fileID: 910000001}
+  fuentePensamientos: {fileID: 11400000, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
+  segundosPensamiento: 3.5
 --- !u!1 &2108159041
 GameObject:
   m_ObjectHideFlags: 0
