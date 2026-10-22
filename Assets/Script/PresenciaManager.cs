@@ -12,8 +12,9 @@ using UnityEngine;
 ///   Último fósforo (el 4to) consumido → silencio breve y derrota automática.
 /// Cada nivel suma: la respiración se oye más fuerte y agitada, y los ruidos se
 /// vuelven más frecuentes y se acercan.
-/// El nivel se avisa por GameEvents.OnCercaniaPresenciaCambiada (multiplicador 1:
-/// la Presencia ya no acelera la barra de miedo).
+/// Desde 2026-10-22 no hay barra de miedo: la Presencia es lo único que avanza.
+/// El nivel se avisa por GameEvents.OnNivelPresenciaCambiado (y, por compatibilidad,
+/// por OnCercaniaPresenciaCambiada con multiplicador 1).
 /// </summary>
 public class PresenciaManager : MonoBehaviour
 {
@@ -116,6 +117,7 @@ public class PresenciaManager : MonoBehaviour
 
         nivel++;
         Debug.Log($"[Presencia] Fósforo consumido. Nivel {nivel}.");
+        GameEvents.RaiseNivelPresenciaCambiado(nivel);
         GameEvents.RaiseCercaniaPresenciaCambiada(nivel, 1f);
 
         if (FosforoManager.Instance != null && FosforoManager.Instance.FosforosRestantes == 0)

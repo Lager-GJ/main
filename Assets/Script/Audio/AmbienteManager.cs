@@ -5,11 +5,9 @@ namespace Terror
 {
     /// <summary>
     /// Sonido de ambiente en loop: grillos, ambiente de Presencia, latidos/patas de
-    /// cabra (miedo nivel 3 de 4), y el búho ocasional. Es un script NUEVO, aparte del
-    /// Core/AudioManager que ya existe — no lo reemplaza ni lo modifica, solo se
-    /// suscribe a FearManager.OnMiedoCambiado (evento público que ya existe) para
-    /// cubrir los sonidos continuos que ese AudioManager no maneja (el suyo son solo
-    /// sfx puntuales de una sola vez).
+    /// cabra, y el búho ocasional. Avanza con el nivel de la Presencia (uno por
+    /// fósforo consumido, GameEvents.OnNivelPresenciaCambiado): desde 2026-10-22 no
+    /// hay barra de miedo y lo único que progresa son los fósforos.
     /// </summary>
     public class AmbienteManager : MonoBehaviour
     {
@@ -23,10 +21,9 @@ namespace Terror
         [SerializeField] private AudioClip sonidoLatidos;
         [SerializeField] private AudioClip sonidoBuho;
 
-        [Header("Umbrales sobre FearManager.miedoActual (rango 0 a 100)")]
-        [SerializeField] private float umbralAmbientePresencia = 50f;
-        [Tooltip("Nivel 3 de 4 del miedo (75 de 100).")]
-        [SerializeField] private float umbralLatidos = 75f;
+        [Header("Nivel de Presencia (1 por fósforo consumido) en que entra cada sonido")]
+        [SerializeField] private int nivelAmbientePresencia = 2;
+        [SerializeField] private int nivelLatidos = 3;
 
         [Header("Búho (solo suena con el ambiente tranquilo)")]
         [SerializeField] private float buhoIntervaloMinimo = 8f;
@@ -36,10 +33,7 @@ namespace Terror
 
         private void Start()
         {
-            // Nos suscribimos en Start() (no OnEnable), igual que Core/AudioManager,
-            // para dar tiempo a que FearManager ya haya corrido su Awake().
-            if (FearManager.Instance != null)
-                FearManager.Instance.OnMiedoCambiado += ActualizarAmbiente;
+            GameEvents.OnNivelPresenciaCambiado += ActualizarAmbiente;
 
             CambiarAmbiente(sonidoGrillos);
             IniciarBuhoSiCorresponde();
@@ -47,17 +41,16 @@ namespace Terror
 
         private void OnDestroy()
         {
-            if (FearManager.Instance != null)
-                FearManager.Instance.OnMiedoCambiado -= ActualizarAmbiente;
+            GameEvents.OnNivelPresenciaCambiado -= ActualizarAmbiente;
         }
 
-        private void ActualizarAmbiente(float miedo)
+        private void ActualizarAmbiente(int nivel)
         {
-            AudioClip clipDeseado = miedo >= umbralAmbientePresencia ? sonidoAmbientePresencia : sonidoGrillos;
+            AudioClip clipDeseado = nivel >= nivelAmbientePresencia ? sonidoAmbientePresencia : sonidoGrillos;
             CambiarAmbiente(clipDeseado);
             IniciarBuhoSiCorresponde();
 
-            bool debeSonarLatidos = miedo >= umbralLatidos;
+            bool debeSonarLatidos = nivel >= nivelLatidos;
             if (fuenteLatidos == null || sonidoLatidos == null)
                 return;
 

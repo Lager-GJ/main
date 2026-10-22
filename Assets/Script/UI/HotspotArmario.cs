@@ -8,8 +8,8 @@ namespace Terror.UI
     /// <summary>
     /// Zona clicable dentro del armario en primer plano (una prenda, una puerta, el
     /// cajón...). Es un Image casi transparente sobre el dibujo: se ilumina al pasar
-    /// el mouse y, al hacer click, dispara sonido, una línea de texto, una sacudida,
-    /// opcionalmente un susto (o alivio) de miedo y opcionalmente revela un objeto
+    /// el mouse y, al hacer click, dispara sonido, una línea de texto, una sacudida
+    /// y opcionalmente revela un objeto
     /// escondido (ej. la lata dentro del cajón). Todo se configura en el Inspector.
     ///
     /// No pausa el fósforo: rebuscar en el armario cuesta luz, igual que el resto de
@@ -31,8 +31,6 @@ namespace Terror.UI
         [Header("Efectos")]
         [Tooltip("Píxeles de sacudida del armario (0 = ninguna).")]
         [SerializeField] private float sacudida = 4f;
-        [Tooltip("Se suma al miedo en cada click. Positivo = susto, negativo = alivio.")]
-        [SerializeField] private float miedo = 0f;
 
         [Header("Revelar al primer click (opcional)")]
         [Tooltip("Objeto que empieza apagado y aparece con un 'pop' (ej. la lata en el cajón).")]
@@ -92,9 +90,6 @@ namespace Terror.UI
 
                 vista.Sacudir(sacudida);
             }
-
-            if (!Mathf.Approximately(miedo, 0f) && FearManager.Instance != null)
-                FearManager.Instance.SetMiedo(FearManager.Instance.miedoActual + miedo);
 
             if (revelar != null && !revelar.activeSelf)
             {
