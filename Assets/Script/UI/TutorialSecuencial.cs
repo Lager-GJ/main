@@ -23,8 +23,9 @@ namespace Terror.UI
             FosforoEncendido,       // el jugador encendió un fósforo
             FosforoApagado,         // se apagó un fósforo (se consumió o lo apagó el jugador con Q)
             ObjetoInspeccionado,    // el jugador abrió un ObjetoInteractivo
-            PrimerPlanoCerrado      // se cerró una vista de primer plano (el cajón del inicio, el armario...).
-                                    // Va al final: los pasos se guardan en la escena por número.
+            PrimerPlanoCerrado,     // se cerró una vista de primer plano (el cajón del inicio, el armario...).
+            ObjetoGuardado          // se guardó algo en el Inventario (la foto, una llave...).
+                                    // Los nuevos van al final: los pasos se guardan en la escena por número.
         }
 
         // Los campos son public porque el tutorial (otra clase) los lee; es solo un
@@ -91,6 +92,7 @@ namespace Terror.UI
         private bool objetoYaRecogido;
         private bool objetoYaInspeccionado;
         private bool primerPlanoYaCerrado;
+        private bool objetoYaGuardado;
 
         private void OnEnable()
         {
@@ -99,6 +101,7 @@ namespace Terror.UI
             ObjetoRecogible.OnRecogido += MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado += MarcarObjetoInspeccionado;
             PanelInspeccion.OnCerrado += MarcarPrimerPlanoCerrado;
+            Inventario.OnObjetoAgregado += MarcarObjetoGuardado;
         }
 
         private void OnDisable()
@@ -108,6 +111,7 @@ namespace Terror.UI
             ObjetoRecogible.OnRecogido -= MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado -= MarcarObjetoInspeccionado;
             PanelInspeccion.OnCerrado -= MarcarPrimerPlanoCerrado;
+            Inventario.OnObjetoAgregado -= MarcarObjetoGuardado;
 
             // timeScale es global y sobrevive al cambio de escena: nunca lo dejamos en 0.
             if (pausandoJuego)
@@ -216,6 +220,8 @@ namespace Terror.UI
 
                 case Disparador.PrimerPlanoCerrado:
                     return primerPlanoYaCerrado;
+                case Disparador.ObjetoGuardado:
+                    return objetoYaGuardado;
 
                 default:
                     return true;
@@ -320,5 +326,6 @@ namespace Terror.UI
         private void MarcarObjetoInspeccionado(ObjetoInteractivo objeto) => objetoYaInspeccionado = true;
 
         private void MarcarPrimerPlanoCerrado() => primerPlanoYaCerrado = true;
+        private void MarcarObjetoGuardado(DefinicionObjeto _) => objetoYaGuardado = true;
     }
 }

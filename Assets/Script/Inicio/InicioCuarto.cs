@@ -110,7 +110,7 @@ namespace Terror.UI
         [Header("Textos")]
         [TextArea(1, 3)] [SerializeField] private string textoAlAbrir = "Aquí guarda la abuelita sus cosas... y los fósforos.";
         [TextArea(1, 3)] [SerializeField] private string textoTomarFosforos = "«Fuego maldito»... qué nombre tan raro para unos fósforos.";
-        [TextArea(1, 3)] [SerializeField] private string textoPortazo = "¡PUM! La puerta se cerró sola...";
+        [TextArea(1, 3)] [SerializeField] private string textoPortazo = "¡PUM! La puerta se cerró sola... y con llave.";
         [TextArea(1, 3)] [SerializeField] private string textoSinLuz = "Está muy oscuro. No veo nada.";
         [TextArea(1, 3)] [SerializeField] private string textoNotaAparece = "Debajo de los fósforos había una nota...";
         [SerializeField] private string textoAyudaCerrar = "Esc o clic afuera para volver al cuarto";

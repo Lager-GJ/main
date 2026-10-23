@@ -6870,6 +6870,7 @@ GameObject:
   - component: {fileID: 931744252}
   - component: {fileID: 931744254}
   - component: {fileID: 931744253}
+  - component: {fileID: 950000001}
   m_Layer: 5
   m_Name: MsgLeer
   m_TagString: Untagged
@@ -6916,7 +6917,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Mientras lees, el f\xF3sforo no se gasta"
+  m_text: "Guardaste algo. Pulsa <space=0.35em><link=tecla><b><color=#FFFFFF><size=115%>I</size></color></b></link><space=0.35em> o <space=0.35em><link=tecla><b><color=#FFFFFF><size=115%>Tab</size></color></b></link><space=0.35em> para ver lo que llevas.\nMientras miras algo de cerca, el <color=#FF5A3C>f\xF3sforo</color> no se gasta."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
   m_sharedMaterial: {fileID: 8075134317032868742, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
@@ -6988,6 +6989,24 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &950000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931744251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164e3f88da3743e98adfe65a8ed31c99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.MarcoTeclas
+  marco: {fileID: 0}
+  colorMarco: {r: 1, g: 1, b: 1, a: 0.9}
+  relleno: {x: 16, y: 6}
+  finuraBorde: 1.6
+  latir: 1
+  velocidadLatido: 2.2
 --- !u!222 &931744254
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8185,7 +8204,7 @@ MonoBehaviour:
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
   - nombre: MsgLeer
-    disparador: 6
+    disparador: 8
     marcador: {fileID: 0}
     panel: {fileID: 931744251}
     esperaMovimiento: 0
@@ -12003,7 +12022,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Objetivo: encuentra la caja de galletas'
+  m_text: "Objetivo: encuentra la llave de la puerta"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
   m_sharedMaterial: {fileID: 8075134317032868742, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
@@ -12213,7 +12232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Encuentra la caja de galletas de la abuela
+  m_text: "Encuentra la llave para salir del cuarto"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
   m_sharedMaterial: {fileID: 8075134317032868742, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
@@ -13659,7 +13678,8 @@ MonoBehaviour:
   tamanoNota: {x: 270, y: 198}
   rotacionNota: 0
   textosNota:
-  - "Es la letra de la abuelita... (pr\xF3ximamente)"
+  - "Es la letra de la abuelita..."
+  - "\xABMijito: la llave del cuarto la guardo donde nadie la busca. Todo empieza por la foto del campo que se cay\xF3 del marco.\xBB"
   alLeerNota:
     m_PersistentCalls:
       m_Calls: []
@@ -13719,7 +13739,7 @@ MonoBehaviour:
     sonido: {fileID: 0}
   textoAlAbrir: "Aqu\xED guarda la abuelita sus cosas... y los f\xF3sforos."
   textoTomarFosforos: "\xABFuego maldito\xBB... qu\xE9 nombre tan raro para unos f\xF3sforos."
-  textoPortazo: "\xA1PUM! La puerta se cerr\xF3 sola..."
+  textoPortazo: "\xA1PUM! La puerta se cerr\xF3 sola... y con llave."
   textoSinLuz: "Est\xE1 muy oscuro. No veo nada."
   textoNotaAparece: "Debajo de los f\xF3sforos hab\xEDa una nota..."
   textoAyudaCerrar: "Esc o clic afuera para volver al cuarto"
