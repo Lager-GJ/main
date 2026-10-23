@@ -156,7 +156,7 @@ namespace Terror.UI
             // pausa cerraba el paso de movimiento y ponía timeScale en 1 debajo del menú.
             if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
 
-            tiempoActivo += Time.deltaTime;
+            tiempoActivo += PasoDeTiempo();
             Paso paso = pasos[indice];
 
             if (!mensajeVisible)
@@ -182,10 +182,14 @@ namespace Terror.UI
             }
             else
             {
-                temporizadorMensaje -= Time.deltaTime;
+                temporizadorMensaje -= PasoDeTiempo();
                 if (temporizadorMensaje <= 0f) CerrarPaso(paso);
             }
         }
+
+        // Tiempo real, pero quieto con el juego congelado (timeScale 0): así la cámara
+        // lenta de los primeros planos no estira los mensajes del tutorial.
+        private static float PasoDeTiempo() => Time.timeScale > 0f ? Time.unscaledDeltaTime : 0f;
 
         private bool DisparadorCumplido(Paso paso)
         {
