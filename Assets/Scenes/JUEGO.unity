@@ -2517,6 +2517,8 @@ RectTransform:
   - {fileID: 162418195}
   - {fileID: 482698640}
   - {fileID: 1141903983}
+  - {fileID: 920000006}
+  - {fileID: 920000018}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5205,6 +5207,11 @@ MonoBehaviour:
   temblorPorSegundo: 14
   amplitudTemblor: 10
   esperaAntesDeGanar: 2.5
+  ganarAlTerminar: 0
+  entregarAlTerminar: llave_armario
+  alTerminar:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &900000030
 GameObject:
   m_ObjectHideFlags: 0
@@ -5270,8 +5277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Abr\xEDs la lata de galletas de la abuela...\n\xA1y son puros hilos y
-    agujas! Como en la casa de toda abuela."
+  m_text: "\xA1Puros hilos y agujas...\ny una llave con una cinta roja!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   m_sharedMaterial: {fileID: 8858683890673008838, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
@@ -5414,6 +5420,7 @@ RectTransform:
   - {fileID: 900000171}
   - {fileID: 900000181}
   - {fileID: 1772151882}
+  - {fileID: 920000012}
   m_Father: {fileID: 900000011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5541,9 +5548,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1772151879}
-        m_TargetAssemblyTypeName: ObjetoInteractivo, Assembly-CSharp
-        m_MethodName: InteractuarManual
+      - m_Target: {fileID: 920000010}
+        m_TargetAssemblyTypeName: Terror.Cerradura, Assembly-CSharp
+        m_MethodName: Intentar
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5553,6 +5560,50 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &920000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772151877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec12817f160146f3b4fdab6059a92c4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.Cerradura
+  idRequerido: llave_pequena
+  consumir: 1
+  requiereFosforo: 1
+  abrirAlTocarSiNoPideNada: 1
+  entregar: []
+  imagenCambiar: {fileID: 0}
+  spriteAbierta: {fileID: 0}
+  alAbrir:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 900000020}
+        m_TargetAssemblyTypeName: SecuenciaAperturaLata, Assembly-CSharp
+        m_MethodName: IniciarApertura
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  alClicAbierta:
+    m_PersistentCalls:
+      m_Calls: []
+  textoBloqueada: "La lata de galletas tiene un candadito. Necesito una llave muy chiquita."
+  textoUsar: "Usas: {0}."
+  textoYaAbierta: "Solo quedan hilos y agujas."
+  sonidoBloqueada: {fileID: 8300000, guid: 65bf419a94ea19542852e82a55e0f03d, type: 3}
+  sonidoAbrir: {fileID: 8300000, guid: 874ab954261a78e46a871b31a0cd8186, type: 3}
+  vista: {fileID: 900000061}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
 --- !u!82 &900000060
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6653,6 +6704,7 @@ GameObject:
   - component: {fileID: 900000182}
   - component: {fileID: 900000183}
   - component: {fileID: 900000184}
+  - component: {fileID: 920000016}
   m_Layer: 5
   m_Name: Cajon
   m_TagString: Untagged
@@ -6731,15 +6783,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.HotspotArmario
   vista: {fileID: 900000061}
   textos:
-  - "El caj\xF3n cede con un chirrido... hay algo adentro."
-  - Solo queda olor a cedro y a costura vieja.
+  - "Adentro, envuelta en un pa\xF1uelo... \xA1la llave de la puerta!"
+  - "Solo queda olor a cedro y a costura vieja."
   sonido: {fileID: 8300000, guid: 169924c01ee115f4c941c32b63a7061e, type: 3}
   sonidoSiguientes: {fileID: 8300000, guid: 11a28b712c5eb034aa0fb25a7ddb82dc, type: 3}
   sacudida: 8
-  revelar: {fileID: 1772151877}
+  cerradura: {fileID: 920000016}
+  revelar: {fileID: 920000011}
   colorHover: {r: 1, g: 0.93, b: 0.75, a: 0.14}
   colorClick: {r: 1, g: 0.93, b: 0.75, a: 0.38}
   duracionFlash: 0.18
+--- !u!114 &920000016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec12817f160146f3b4fdab6059a92c4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.Cerradura
+  idRequerido: llave_armario
+  consumir: 1
+  requiereFosforo: 1
+  abrirAlTocarSiNoPideNada: 1
+  entregar: []
+  imagenCambiar: {fileID: 0}
+  spriteAbierta: {fileID: 0}
+  alAbrir:
+    m_PersistentCalls:
+      m_Calls: []
+  alClicAbierta:
+    m_PersistentCalls:
+      m_Calls: []
+  textoBloqueada: "El caj\xF3n est\xE1 cerrado con llave."
+  textoUsar: "Usas: {0}. \xA1El caj\xF3n se abre!"
+  textoYaAbierta: ""
+  sonidoBloqueada: {fileID: 8300000, guid: 65bf419a94ea19542852e82a55e0f03d, type: 3}
+  sonidoAbrir: {fileID: 8300000, guid: 169924c01ee115f4c941c32b63a7061e, type: 3}
+  vista: {fileID: 900000061}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
 --- !u!1 &908307477
 GameObject:
   m_ObjectHideFlags: 0
@@ -11012,13 +11097,14 @@ GameObject:
   - component: {fileID: 900000054}
   - component: {fileID: 900000055}
   - component: {fileID: 900000056}
+  - component: {fileID: 920000010}
   m_Layer: 5
   m_Name: LataGalletas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1772151879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11033,7 +11119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoInteractivo
   nombreObjeto: Lata de galletas
   descripcion: 
-  esObjetivoDeVictoria: 1
+  esObjetivoDeVictoria: 0
 --- !u!224 &1772151882
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11050,8 +11136,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -215}
-  m_SizeDelta: {x: 220, y: 220}
+  m_AnchoredPosition: {x: 0, y: 420}
+  m_SizeDelta: {x: 190, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1772151883
 MonoBehaviour:
@@ -12330,7 +12416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FosforoManager
   fosforosIniciales: 4
-  duracionFosforo: 8
+  duracionFosforo: 20
   luzFosforo: {fileID: 1188288284}
 --- !u!4 &2087550694
 Transform:
@@ -13671,3 +13757,503 @@ SceneRoots:
   - {fileID: 1653710928}
   - {fileID: 730000002}
   - {fileID: 730000012}
+  - {fileID: 920000002}
+--- !u!1 &920000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 920000002}
+  - component: {fileID: 920000003}
+  - component: {fileID: 920000004}
+  m_Layer: 0
+  m_Name: Inventario
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &920000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &920000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c0201c4934f42c7949161c9a4b63f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.Inventario
+  catalogo:
+  - id: foto_campo
+    nombre: "Foto de la casa del campo"
+    icono: {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
+    ilustracion: {fileID: 0}
+    textos:
+    - "Una foto vieja de una casa en el campo."
+    - "Atr\xE1s, con la letra de la abuelita: \xABVolvimos al campo, 1987\xBB."
+    - "Tiene el tama\xF1o justo de un portarretrato..."
+    dibujoPorTexto:
+    - {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
+    - {fileID: 21300000, guid: 4695537b9772417284dcd48e88a789a1, type: 3}
+    - {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
+  - id: agenda
+    nombre: "Agenda de la abuelita"
+    icono: {fileID: 21300000, guid: dbeb2dbd1a5d4eda9aa2048454c79d1c, type: 3}
+    ilustracion: {fileID: 0}
+    textos:
+    - "La agenda de costura de la abuelita: pedidos, medidas, nombres de las vecinas..."
+    - "\xABDo\xF1a Rosa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta del pantal\xF3n.\xBB"
+    - "En la \xFAltima hoja, subrayado: \xABClave del joyero: el a\xF1o en que volvimos al campo\xBB."
+    dibujoPorTexto: []
+  - id: llave_pequena
+    nombre: "Llave peque\xF1a"
+    icono: {fileID: 21300000, guid: f32e683ecda7481694fe1c45a873635e, type: 3}
+    ilustracion: {fileID: 0}
+    textos:
+    - "Una llavecita dorada. Estaba en el joyero de la abuelita."
+    - "\xBFQu\xE9 se abrir\xE1 con algo tan chiquito?"
+    dibujoPorTexto: []
+  - id: llave_armario
+    nombre: "Llave del armario"
+    icono: {fileID: 21300000, guid: 3776fd09c24e4050af1fef5feec7d6e8, type: 3}
+    ilustracion: {fileID: 0}
+    textos:
+    - "Estaba en la lata de galletas, entre hilos y agujas."
+    - "Tiene una cinta que dice \xABarmario\xBB."
+    dibujoPorTexto: []
+  - id: llave_puerta
+    nombre: "Llave de la puerta"
+    icono: {fileID: 21300000, guid: e3f2fd540fa2460bb895cb007707d04e, type: 3}
+    ilustracion: {fileID: 0}
+    textos:
+    - "\xA1La llave del cuarto! Con esto puedo salir."
+    dibujoPorTexto: []
+--- !u!114 &920000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a6a7d558954257a7d070bcd929ea16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.InventarioUI
+  contenedorUI: {fileID: 744201470}
+  insertarAntesDe: {fileID: 1862443027}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
+  iconoBolsa: {fileID: 21300000, guid: 761deff66a574333b2c9b8362fe544cb, type: 3}
+  spriteRanura: {fileID: 21300000, guid: ec6a19d984a74bab8f28176781f95a0b, type: 3}
+  spriteSiguiente: {fileID: -1419229221178902814, guid: 37f5c8da8677bfc4a86852a0ecea89a3, type: 3}
+  sonidoAbrir: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
+  sonidoGuardar: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
+  sonidoPagina: {fileID: 8300000, guid: 30775c42267099140a77ba3293055ea7, type: 3}
+--- !u!1 &920000005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 920000006}
+  - component: {fileID: 920000007}
+  - component: {fileID: 920000008}
+  - component: {fileID: 920000009}
+  m_Layer: 5
+  m_Name: FotoCampo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &920000006
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000005}
+  m_LocalRotation: {x: 0, y: 0, z: -0.121869, w: 0.992546}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 501822584}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -14}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -120.6, y: -1050}
+  m_SizeDelta: {x: 62, y: 84}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &920000007
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000005}
+  m_CullTransparentMesh: 0
+--- !u!114 &920000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &920000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f2e9d323274be28184e66614aaf373, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.ObjetoInventario
+  idObjeto: foto_campo
+  mostrarTarjetaAlGuardar: 1
+  requiereFosforo: 1
+  sonido: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
+  latir: 1
+  alGuardar:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &920000011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 920000012}
+  - component: {fileID: 920000013}
+  - component: {fileID: 920000014}
+  - component: {fileID: 920000015}
+  m_Layer: 5
+  m_Name: LlavePuerta
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &920000012
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000011}
+  m_LocalRotation: {x: 0, y: 0, z: 0.087156, w: 0.996195}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 900000051}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 10}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 2.88, y: -256.69}
+  m_SizeDelta: {x: 150, y: 150}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &920000013
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000011}
+  m_CullTransparentMesh: 0
+--- !u!114 &920000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e3f2fd540fa2460bb895cb007707d04e, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &920000015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f2e9d323274be28184e66614aaf373, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.ObjetoInventario
+  idObjeto: llave_puerta
+  mostrarTarjetaAlGuardar: 0
+  requiereFosforo: 1
+  sonido: {fileID: 0}
+  latir: 1
+  alGuardar:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &920000017
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 920000018}
+  - component: {fileID: 920000019}
+  - component: {fileID: 920000020}
+  - component: {fileID: 920000021}
+  - component: {fileID: 920000022}
+  - component: {fileID: 920000023}
+  m_Layer: 5
+  m_Name: PuertaSalida
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &920000018
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0, w: 1.0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 501822584}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -3279, y: -568}
+  m_SizeDelta: {x: 208, y: 937}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &920000019
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_CullTransparentMesh: 0
+--- !u!114 &920000020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &920000021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e9a3321071e473387f1ee77cbb388c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.SalidaPorPuerta
+  luzPuerta: {fileID: 730000013}
+  intensidadLuz: 3
+  sonidoAbrir: {fileID: 8300000, guid: f82b94595d85d5447a0a724383a6542f, type: 3}
+  duracionLuz: 1.2
+  duracionFundido: 1.2
+  zoom: 0.7
+--- !u!114 &920000022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec12817f160146f3b4fdab6059a92c4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.Cerradura
+  idRequerido: llave_puerta
+  consumir: 0
+  requiereFosforo: 1
+  abrirAlTocarSiNoPideNada: 1
+  entregar: []
+  imagenCambiar: {fileID: 0}
+  spriteAbierta: {fileID: 0}
+  alAbrir:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 920000021}
+        m_TargetAssemblyTypeName: Terror.SalidaPorPuerta, Assembly-CSharp
+        m_MethodName: Salir
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  alClicAbierta:
+    m_PersistentCalls:
+      m_Calls: []
+  textoBloqueada: "Est\xE1 cerrada con llave... La abuelita siempre la cierra de noche."
+  textoUsar: "Usas: {0}."
+  textoYaAbierta: ""
+  sonidoBloqueada: {fileID: 8300000, guid: 65bf419a94ea19542852e82a55e0f03d, type: 3}
+  sonidoAbrir: {fileID: 0}
+  vista: {fileID: 0}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
+--- !u!114 &920000023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 920000020}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 920000022}
+        m_TargetAssemblyTypeName: Terror.Cerradura, Assembly-CSharp
+        m_MethodName: Intentar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

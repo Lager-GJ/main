@@ -32,6 +32,10 @@ namespace Terror.UI
         [Tooltip("Píxeles de sacudida del armario (0 = ninguna).")]
         [SerializeField] private float sacudida = 4f;
 
+        [Header("Con llave (opcional)")]
+        [Tooltip("Si se asigna, mientras esté cerrada el click solo intenta abrirla (con el objeto del inventario). Una vez abierta, el hotspot funciona normal.")]
+        [SerializeField] private Terror.Cerradura cerradura;
+
         [Header("Revelar al primer click (opcional)")]
         [Tooltip("Objeto que empieza apagado y aparece con un 'pop' (ej. la lata en el cajón).")]
         [SerializeField] private GameObject revelar;
@@ -79,13 +83,22 @@ namespace Terror.UI
             // Misma regla que el resto del juego: sin fósforo encendido no se interactúa.
             if (FosforoManager.Instance != null && !FosforoManager.Instance.PuedeInteractuar()) return;
 
+            if (cerradura != null && !cerradura.Abierta)
+            {
+                cerradura.Intentar();
+                if (flash != null) StopCoroutine(flash);
+                flash = StartCoroutine(Flash());
+                if (!cerradura.Abierta) return;
+            }
+
             bool primerClick = clicks == 0;
 
             if (vista != null)
             {
                 vista.Sonar(!primerClick && sonidoSiguientes != null ? sonidoSiguientes : sonido);
 
-                if (textos != null && textos.Length > 0)
+                // Si recién se abrió con llave, el texto de la cerradura ya se mostró.
+                if (textos != null && textos.Length > 0 && !(cerradura != null && primerClick))
                     vista.Decir(textos[clicks % textos.Length]);
 
                 vista.Sacudir(sacudida);
@@ -94,7 +107,7 @@ namespace Terror.UI
             if (revelar != null && !revelar.activeSelf)
             {
                 revelar.SetActive(true);
-                StartCoroutine(Pop(revelar.transform));
+                StartCoroutine(UIRuntime.Pop(revelar.transform, 0.3f));
             }
 
             clicks++;
@@ -113,21 +126,6 @@ namespace Terror.UI
 
             imagen.color = encima ? colorHover : Transparente();
             flash = null;
-        }
-
-        private static IEnumerator Pop(Transform objetivo)
-        {
-            const float duracion = 0.3f;
-            for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
-            {
-                if (objetivo == null) yield break;
-                float k = Mathf.Clamp01(t / duracion);
-                // ease-out-back: se pasa un poco de 1 y vuelve, se siente "salta".
-                float s = 1f + 2.70158f * Mathf.Pow(k - 1f, 3f) + 1.70158f * Mathf.Pow(k - 1f, 2f);
-                objetivo.localScale = Vector3.one * Mathf.Max(0.01f, s);
-                yield return null;
-            }
-            if (objetivo != null) objetivo.localScale = Vector3.one;
         }
 
         private Color Transparente() => new Color(colorHover.r, colorHover.g, colorHover.b, 0f);
