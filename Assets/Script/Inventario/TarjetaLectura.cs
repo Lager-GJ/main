@@ -13,7 +13,8 @@ namespace Terror
     /// del objeto sobre gris con borde de tiza), texto abajo y botón &gt;. El último &gt;,
     /// el clic afuera o Escape la cierran.
     ///
-    /// Mientras está abierta el fósforo no se gasta y Luis no camina. La arma
+    /// Mientras está abierta el fósforo no se gasta, Luis no camina y el tiempo pasa
+    /// lento. La arma
     /// InventarioUI en runtime; hay una sola por escena (Instance).
     /// </summary>
     public class TarjetaLectura : MonoBehaviour, ICapaEscape
@@ -107,6 +108,7 @@ namespace Terror
             // Si se apaga por fuera (cambio de estado, escena), no dejamos el fósforo pausado.
             FosforoManager.Instance?.ReanudarQuemado(this);
             PanelInspeccion.Instance?.QuitarCapa(this);
+            TiempoLento.Soltar(this);
         }
 
         public void Mostrar(DefinicionObjeto def, Action alCerrarTarjeta = null)
@@ -138,6 +140,7 @@ namespace Terror
             gameObject.SetActive(true);
             PanelInspeccion.Instance?.AbrirCapa(this);
             FosforoManager.Instance?.PausarQuemado(this);
+            TiempoLento.Pedir(this);
             StartCoroutine(Animar(0.25f, p =>
             {
                 grupo.alpha = p;

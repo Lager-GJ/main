@@ -12,8 +12,8 @@ namespace Terror.UI
     /// y opcionalmente revela un objeto
     /// escondido (ej. la lata dentro del cajón). Todo se configura en el Inspector.
     ///
-    /// No pausa el fósforo: rebuscar en el armario cuesta luz, igual que el resto de
-    /// la tensión (decisión de diseño 2026-09-15, ver ControladorArmario).
+    /// Desde 2026-10-22 el fósforo NO se gasta mientras el primer plano está abierto
+    /// (lo pausa PanelInspeccion, junto con la cámara lenta y el zoom).
     /// </summary>
     [RequireComponent(typeof(Image))]
     public class HotspotArmario : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler

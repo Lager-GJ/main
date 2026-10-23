@@ -27,9 +27,44 @@ public class CamaraController : MonoBehaviour
     private float tiempoSacudida;
     private float semillaSacudida;
 
+    // Enfoque de primer plano: la cámara se acerca al objeto que se está mirando
+    // (zoom ortográfico) y vuelve al soltarlo. Corre con tiempo real, así que no se
+    // frena con la cámara lenta.
+    private Camera cam;
+    private float tamanoBase;
+    private Vector3 puntoEnfoque;
+    private float zoomEnfoque = 1f;
+    private float pesoEnfoque;        // 0 = cámara normal, 1 = enfocada
+    private float pesoObjetivo;
+    private float duracionEnfoque = 0.45f;
+
+    /// <summary>True mientras la cámara está acercándose, enfocada o volviendo.</summary>
+    public bool Enfocando => pesoEnfoque > 0f || pesoObjetivo > 0f;
+
     private void Awake()
     {
         Instance = this;
+        cam = GetComponent<Camera>();
+        if (cam != null) tamanoBase = cam.orthographicSize;
+    }
+
+    /// <summary>
+    /// Acerca la cámara a 'punto' (mundo). zoom = fracción del tamaño normal
+    /// (0.55 = se ve un 55% de la altura de siempre).
+    /// </summary>
+    public void Enfocar(Vector3 punto, float zoom, float duracion)
+    {
+        puntoEnfoque = punto;
+        zoomEnfoque = Mathf.Clamp(zoom, 0.1f, 1f);
+        duracionEnfoque = Mathf.Max(0.01f, duracion);
+        pesoObjetivo = 1f;
+    }
+
+    /// <summary>Vuelve a la cámara normal (siguiendo a Luis).</summary>
+    public void Soltar(float duracion)
+    {
+        duracionEnfoque = Mathf.Max(0.01f, duracion);
+        pesoObjetivo = 0f;
     }
 
     private void OnDestroy()
@@ -79,7 +114,13 @@ public class CamaraController : MonoBehaviour
         // 3. Movemos la cámara de forma fluida
         posicionSuave = Vector3.Lerp(posicionSuave, clampedPosition, smoothSpeed);
 
-        transform.position = posicionSuave + OffsetSacudida();
+        pesoEnfoque = Mathf.MoveTowards(pesoEnfoque, pesoObjetivo, Time.unscaledDeltaTime / duracionEnfoque);
+        float e = Mathf.SmoothStep(0f, 1f, pesoEnfoque);
+        Vector3 foco = new Vector3(puntoEnfoque.x, puntoEnfoque.y, posicionSuave.z);
+        transform.position = Vector3.Lerp(posicionSuave, foco, e) + OffsetSacudida();
+
+        if (cam != null && cam.orthographic && tamanoBase > 0f)
+            cam.orthographicSize = Mathf.Lerp(tamanoBase, tamanoBase * zoomEnfoque, e);
     }
 
     private Vector3 OffsetSacudida()

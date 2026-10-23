@@ -19,7 +19,8 @@ namespace Terror
     /// - Aviso "Guardaste: ..." al recoger algo.
     /// - Tecla I o Tab (o clic en la bolsa): abre/cierra la lista. Clic en un objeto
     ///   abre su tarjeta (TarjetaLectura) para releer pistas.
-    /// Mientras está abierto, el fósforo no se gasta y Luis no camina.
+    /// Mientras está abierto, el fósforo no se gasta, Luis no camina y el tiempo del
+    /// cuarto pasa lento (TiempoLento).
     ///
     /// Los objetos se USAN solos: al tocar algo cerrado, si Luis lleva lo que hace
     /// falta, se usa (ver Cerradura). El inventario es para ver lo que se lleva.
@@ -83,6 +84,7 @@ namespace Terror
             Inventario.OnObjetoAgregado -= AlGuardar;
             Inventario.OnCambiado -= Rearmar;
             FosforoManager.Instance?.ReanudarQuemado(this);
+            TiempoLento.Soltar(this);
         }
 
         private void Start()
@@ -139,6 +141,7 @@ namespace Terror
             panel.SetActive(true);
             PanelInspeccion.Instance?.AbrirCapa(this);
             FosforoManager.Instance?.PausarQuemado(this);
+            TiempoLento.Pedir(this);
             StartCoroutine(Animar(0.2f, p => grupoPanel.alpha = p));
             Sonar(sonidoAbrir);
         }
@@ -151,6 +154,7 @@ namespace Terror
             etiquetaNombre.text = "";
             PanelInspeccion.Instance?.QuitarCapa(this);
             FosforoManager.Instance?.ReanudarQuemado(this);
+            TiempoLento.Soltar(this);
         }
 
         private void AlCambiarEstado(GameState estado)
