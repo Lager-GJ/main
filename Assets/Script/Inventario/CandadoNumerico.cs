@@ -208,7 +208,7 @@ namespace Terror
             Estirar((RectTransform)panel.transform);
             if (insertarDespuesDe != null && insertarDespuesDe.parent == padre)
                 panel.transform.SetSiblingIndex(insertarDespuesDe.GetSiblingIndex() + 1);
-            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.85f);
+            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f); // se ve el cuarto (con zoom) detrás
             BotonPlano(panel, () => PanelInspeccion.Instance?.Cerrar()); // clic afuera: cierra
 
             interior = NuevoRect("Joyero", panel.transform, new Vector2(0f, 40f), tamanoJoyero);

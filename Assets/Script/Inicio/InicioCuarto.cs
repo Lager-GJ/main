@@ -58,6 +58,8 @@ namespace Terror.UI
         [SerializeField] private RectTransform insertarDespuesDe;
         [Tooltip("Luz que entra por la puerta abierta. Se apaga con el portazo.")]
         [SerializeField] private Light2D luzPuerta;
+        [Tooltip("Mueble del cuarto donde está el cajón (VeladorB): la cámara hace zoom hacia él al abrirlo.")]
+        [SerializeField] private Transform origenZoom;
         [Tooltip("ObjetoRecogible de los fósforos (el de la Mesita de Diego). Al tomar la caja se llama a su Recoger(): muestra el contador de fósforos y avanza el tutorial.")]
         [SerializeField] private ObjetoRecogible fosforosRecogibles;
         [SerializeField] private TMP_FontAsset fuente;
@@ -475,19 +477,29 @@ namespace Terror.UI
         private void Mostrar()
         {
             if (PanelInspeccion.Instance != null)
-                PanelInspeccion.Instance.Mostrar(panel);
+                PanelInspeccion.Instance.Mostrar(panel, origenZoom);
             else
                 panel.SetActive(true);
 
             // Mientras se mira el cajón, el niño no camina por el cuarto de fondo.
             if (nino != null) nino.enabled = false;
 
-            StartCoroutine(Animar(0.3f, p =>
+            grupoPanel.alpha = 0f;
+            StartCoroutine(AparecerCuandoSeMuestre());
+            ActualizarEtiqueta();
+        }
+
+        // El panel recién se activa cuando la cámara termina de acercarse al velador.
+        private IEnumerator AparecerCuandoSeMuestre()
+        {
+            for (float t = 0f; !panel.activeInHierarchy && t < 2f; t += Time.unscaledDeltaTime)
+                yield return null;
+
+            yield return Animar(0.3f, p =>
             {
                 grupoPanel.alpha = p;
                 interior.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, p);
-            }));
-            ActualizarEtiqueta();
+            });
         }
 
         // ---------- Construcción ----------

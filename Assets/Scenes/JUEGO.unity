@@ -5120,7 +5120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.02, g: 0.02, b: 0.03, a: 0.96}
+  m_Color: {r: 0.02, g: 0.02, b: 0.03, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8158,33 +8158,36 @@ MonoBehaviour:
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 1
-  - nombre: MsgExaminar
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 1
+    permanente: 0
+    enCualquierOrden: 0
+  - nombre: OcultarPulsaE
     disparador: 4
     marcador: {fileID: 0}
-    panel: {fileID: 623913364}
+    panel: {fileID: 0}
     esperaMovimiento: 0
-    segundosVisible: 5
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 0
-    mantenerHastaSiguientePaso: 0
-  - nombre: MsgBarra
-    disparador: 1
-    marcador: {fileID: 0}
-    panel: {fileID: 885639706}
-    esperaMovimiento: 0
-    segundosVisible: 4
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 1
-    mantenerHastaSiguientePaso: 0
-  - nombre: PanelAD
-    disparador: 7
-    marcador: {fileID: 0}
-    panel: {fileID: 1653836792}
-    esperaMovimiento: 1
     segundosVisible: 0
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 1
+    permanente: 0
+    enCualquierOrden: 0
+  - nombre: PanelAD
+    disparador: 7
+    marcador: {fileID: 0}
+    panel: {fileID: 1653836792}
+    esperaMovimiento: 0
+    segundosVisible: 6
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 1
+    permitirEnPrimerPlano: 0
+    permanente: 0
+    enCualquierOrden: 0
   - nombre: MsgObjetivo
     disparador: 1
     marcador: {fileID: 0}
@@ -8194,6 +8197,36 @@ MonoBehaviour:
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 0
+    permanente: 0
+    enCualquierOrden: 0
+  - nombre: ObjetivoFijo
+    disparador: 1
+    marcador: {fileID: 0}
+    panel: {fileID: 2032767953}
+    esperaMovimiento: 0
+    segundosVisible: 0
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 0
+    permanente: 1
+    enCualquierOrden: 0
+  - nombre: MsgBarra
+    disparador: 9
+    marcador: {fileID: 0}
+    panel: {fileID: 885639706}
+    esperaMovimiento: 0
+    segundosVisible: 5
+    resaltar: {fileID: 0}
+    saltarSiSeApagaUnFosforo: 0
+    mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 0
+    permanente: 0
+    enCualquierOrden: 1
   - nombre: MsgMiedo
     disparador: 5
     marcador: {fileID: 0}
@@ -8203,24 +8236,23 @@ MonoBehaviour:
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 0
+    permanente: 0
+    enCualquierOrden: 1
   - nombre: MsgLeer
     disparador: 8
     marcador: {fileID: 0}
     panel: {fileID: 931744251}
     esperaMovimiento: 0
-    segundosVisible: 5
+    segundosVisible: 6
     resaltar: {fileID: 0}
     saltarSiSeApagaUnFosforo: 0
     mantenerHastaSiguientePaso: 0
-  - nombre: ObjetivoFijo
-    disparador: 1
-    marcador: {fileID: 0}
-    panel: {fileID: 2032767953}
-    esperaMovimiento: 0
-    segundosVisible: 0
-    resaltar: {fileID: 0}
-    saltarSiSeApagaUnFosforo: 0
-    mantenerHastaSiguientePaso: 1
+    cerrarAlMoverse: 0
+    permitirEnPrimerPlano: 0
+    permanente: 0
+    enCualquierOrden: 1
 --- !u!1 &1119963726
 GameObject:
   m_ObjectHideFlags: 0
@@ -13659,6 +13691,7 @@ MonoBehaviour:
   contenedorUI: {fileID: 744201470}
   insertarDespuesDe: {fileID: 14855983}
   luzPuerta: {fileID: 730000013}
+  origenZoom: {fileID: 1919334040}
   fosforosRecogibles: {fileID: 150038088}
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   empezarConCajonAbierto: 1
@@ -13751,8 +13784,8 @@ MonoBehaviour:
   tintePuerta: {r: 0.78, g: 0.82, b: 0.92, a: 1}
   tinteOscuro: {r: 0.17, g: 0.17, b: 0.19, a: 1}
   tinteFosforo: {r: 1, g: 0.93, b: 0.82, a: 1}
-  fondoConPuertaAbierta: 0.55
-  fondoAOscuras: 0.9
+  fondoConPuertaAbierta: 0.35
+  fondoAOscuras: 0.5
   esperaAntesDelPortazo: 0.7
   duracionApagarLuz: 0.25
   sacudidaPortazo: 22
@@ -14344,7 +14377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.02, g: 0.02, b: 0.03, a: 0.96}
+  m_Color: {r: 0.02, g: 0.02, b: 0.03, a: 0.4}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
