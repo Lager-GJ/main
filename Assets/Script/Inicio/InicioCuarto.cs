@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
+using static Terror.UI.UIRuntime;
 
 namespace Terror.UI
 {
@@ -28,7 +29,7 @@ namespace Terror.UI
     /// así Escape, el click afuera y el resto de los sistemas lo tratan como cualquier
     /// otro primer plano (el armario, por ejemplo).
     /// </summary>
-    public class InicioCuarto : MonoBehaviour
+    public class InicioCuarto : MonoBehaviour, ICapaEscape
     {
         [Serializable]
         public class ElementoCajon
@@ -187,6 +188,10 @@ namespace Terror.UI
 
         private bool TarjetaAbierta => tarjeta != null && tarjeta.activeSelf;
 
+        // La tarjeta de un objeto es una "capa": Escape la cierra antes que el cajón.
+        public bool CapaAbierta => TarjetaAbierta && PanelAbierto;
+        public void CerrarCapa() => CerrarTarjeta();
+
         // ---------- Ciclo de vida ----------
 
         private void OnEnable()
@@ -334,6 +339,9 @@ namespace Terror.UI
 
             MostrarTextoTarjeta();
             tarjeta.SetActive(true);
+            PanelInspeccion.Instance?.AbrirCapa(this);
+            // Mientras se lee, el fósforo no se gasta.
+            FosforoManager.Instance?.PausarQuemado(this);
             StartCoroutine(Animar(0.25f, p =>
             {
                 grupoTarjeta.alpha = p;
@@ -365,7 +373,14 @@ namespace Terror.UI
         {
             if (!TarjetaAbierta) return;
             tarjeta.SetActive(false);
+            SoltarTarjeta();
             ActualizarEtiqueta();
+        }
+
+        private void SoltarTarjeta()
+        {
+            PanelInspeccion.Instance?.QuitarCapa(this);
+            FosforoManager.Instance?.ReanudarQuemado(this);
         }
 
         internal void EncimaDeZona(ZonaCajon zona, bool encima)
@@ -445,8 +460,11 @@ namespace Terror.UI
 
         private void AlCerrarseUnPrimerPlano()
         {
-            if (tarjeta != null && panel != null && !panel.activeSelf)
+            if (tarjeta != null && panel != null && !panel.activeSelf && tarjeta.activeSelf)
+            {
                 tarjeta.SetActive(false);
+                SoltarTarjeta();
+            }
 
             if (panel != null && !panel.activeSelf && nino != null)
                 nino.enabled = true;
@@ -544,12 +562,6 @@ namespace Terror.UI
 
             ConstruirTarjeta();
 
-            if (PanelInspeccion.Instance != null)
-            {
-                PanelInspeccion.Instance.SubvistaAbierta = () => TarjetaAbierta && PanelAbierto;
-                PanelInspeccion.Instance.CerrarSubvista = CerrarTarjeta;
-            }
-
             panel.SetActive(false);
         }
 
@@ -623,42 +635,8 @@ namespace Terror.UI
             return zona;
         }
 
-        private static RectTransform NuevoRect(string nombre, Transform padre, Vector2 posicion, Vector2 tamano)
-        {
-            var go = new GameObject(nombre, typeof(RectTransform));
-            var rt = (RectTransform)go.transform;
-            rt.SetParent(padre, false);
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = posicion;
-            rt.sizeDelta = tamano;
-            return rt;
-        }
-
-        private static Image NuevaImagen(string nombre, Transform padre, Vector2 posicion, Vector2 tamano, Sprite sprite)
-        {
-            var img = NuevoRect(nombre, padre, posicion, tamano).gameObject.AddComponent<Image>();
-            img.sprite = sprite;
-            return img;
-        }
-
         private TextMeshProUGUI NuevoTexto(string nombre, Transform padre, Vector2 posicion, Vector2 tamano, float tamanoFuente, FontStyles estilo)
-        {
-            var t = NuevoRect(nombre, padre, posicion, tamano).gameObject.AddComponent<TextMeshProUGUI>();
-            if (fuente != null) t.font = fuente;
-            t.fontSize = tamanoFuente;
-            t.fontStyle = estilo;
-            t.alignment = TextAlignmentOptions.Center;
-            t.color = Color.white;
-            t.raycastTarget = false;
-            return t;
-        }
-
-        private static void Estirar(RectTransform rt)
-        {
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-        }
+            => UIRuntime.NuevoTexto(nombre, padre, posicion, tamano, tamanoFuente, estilo, fuente);
 
         private static Sprite CrearDegradeHorizontal()
         {
@@ -780,41 +758,6 @@ namespace Terror.UI
                 zona.Imagen.color = new Color(zona.Imagen.color.r, zona.Imagen.color.g, zona.Imagen.color.b, 1f - p);
             });
             zona.gameObject.SetActive(false);
-        }
-
-        private static IEnumerator Pop(Transform objetivo)
-        {
-            const float duracion = 0.35f;
-            for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
-            {
-                float k = Mathf.Clamp01(t / duracion);
-                float s = 1f + 2.70158f * Mathf.Pow(k - 1f, 3f) + 1.70158f * Mathf.Pow(k - 1f, 2f);
-                objetivo.localScale = Vector3.one * Mathf.Max(0.01f, s);
-                yield return null;
-            }
-            objetivo.localScale = Vector3.one;
-        }
-
-        // Como WaitForSecondsRealtime, pero el reloj se detiene con el menú de pausa
-        // (timeScale 0): así el portazo no ocurre por debajo de la pausa.
-        private static IEnumerator EsperarSinPausa(float segundos)
-        {
-            for (float t = 0f; t < segundos; )
-            {
-                if (Time.timeScale > 0f) t += Time.unscaledDeltaTime;
-                yield return null;
-            }
-        }
-
-        private static IEnumerator Animar(float duracion, Action<float> paso)
-        {
-            if (duracion <= 0f) { paso(1f); yield break; }
-            for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
-            {
-                paso(t / duracion);
-                yield return null;
-            }
-            paso(1f);
         }
 
         // Con CanvasGroup y no SetActive: lo oculto sigue escuchando sus eventos.

@@ -3776,7 +3776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FosforoManager
   fosforosIniciales: 4
-  duracionFosforo: 8
+  duracionFosforo: 20
   luzFosforo: {fileID: 1188288284}
 --- !u!4 &2087550694
 Transform:

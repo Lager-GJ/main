@@ -69,7 +69,8 @@ namespace Terror.UI
 
             if (vistaPrimerPlano != null && PanelInspeccion.Instance != null)
             {
-                PanelInspeccion.Instance.Mostrar(vistaPrimerPlano);
+                // La cámara hace zoom hacia este mueble antes de mostrar el primer plano.
+                PanelInspeccion.Instance.Mostrar(vistaPrimerPlano, transform);
             }
             else
             {
@@ -101,7 +102,12 @@ namespace Terror.UI
 
         private void SincronizarConPanelCerrado()
         {
-            if (!estaAbierto) return; // el panel que se cerró no era el nuestro
+            if (!estaAbierto) return;
+            // Si nuestra vista sigue abierta, lo que se cerró fue la de otro mueble
+            // (pasa al abrir este mueble con otro primer plano todavía abierto).
+            if (vistaPrimerPlano != null && PanelInspeccion.Instance != null &&
+                PanelInspeccion.Instance.VistaActual == vistaPrimerPlano)
+                return;
 
             estaAbierto = false;
             AplicarEstado();

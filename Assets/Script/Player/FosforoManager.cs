@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // Mouse.current: el proyecto usa el Input System nuevo (activeInputHandler = 1),
                                // así que UnityEngine.Input.GetMouseButtonDown tiraría una excepción en runtime.
@@ -33,7 +34,11 @@ public class FosforoManager : MonoBehaviour
     private int fosforosRestantes;
     private float tiempoRestanteQuemado;
     private bool encendido;
-    private bool pausadoPorInspeccion; // true mientras el jugador tiene abierto el panel de inspección
+    // Quién tiene pausado el consumo del fósforo (una lectura, el inventario, el candado...).
+    // Es un conjunto y no un bool: cerrar el primer plano no debe soltar la pausa del
+    // inventario abierto encima. Las llamadas sin motivo usan uno compartido.
+    private readonly HashSet<object> motivosPausa = new HashSet<object>();
+    private static readonly object MotivoComun = new object();
     private Coroutine coroutineQuemado;
     private float intensidadBaseLuz; // intensidad que configuraste en el Inspector, se guarda una sola vez
     private float radioInteriorBase; // radios de la luz tal como quedaron en el Inspector
@@ -62,7 +67,7 @@ public class FosforoManager : MonoBehaviour
     public int FosforosRestantes => fosforosRestantes;
     public int FosforosIniciales => fosforosIniciales;
     public float DuracionFosforo => duracionFosforo;
-    public bool PausadoPorInspeccion => pausadoPorInspeccion;
+    public bool PausadoPorInspeccion => motivosPausa.Count > 0;
     public float TiempoRestante => encendido ? tiempoRestanteQuemado : 0f;
     public float ProgresoRestante => encendido ? Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo) : 0f;
 
@@ -183,7 +188,7 @@ public class FosforoManager : MonoBehaviour
     {
         while (tiempoRestanteQuemado > 0f)
         {
-            if (!pausadoPorInspeccion)
+            if (motivosPausa.Count == 0)
                 tiempoRestanteQuemado -= Time.deltaTime;
 
             // Aunque esté pausado se refresca: el tiempo no avanza, pero la llama
@@ -280,17 +285,25 @@ public class FosforoManager : MonoBehaviour
     /// Congela el consumo del fósforo: inspeccionar no debe "costar" tiempo de luz.
     /// No apaga la luz ni detiene la coroutine, solo detiene el descuento del tiempo.
     /// </summary>
-    public void PausarQuemado()
+    public void PausarQuemado() => PausarQuemado(MotivoComun);
+
+    /// <summary>
+    /// Pausa con un motivo propio (el inventario, la tarjeta de lectura, el candado):
+    /// solo ReanudarQuemado(mismo motivo) la suelta.
+    /// </summary>
+    public void PausarQuemado(object motivo)
     {
-        pausadoPorInspeccion = true;
+        motivosPausa.Add(motivo ?? MotivoComun);
     }
 
     /// <summary>
     /// Llamar cuando se cierra el panel de inspección. Reanuda el descuento
     /// justo donde se había quedado.
     /// </summary>
-    public void ReanudarQuemado()
+    public void ReanudarQuemado() => ReanudarQuemado(MotivoComun);
+
+    public void ReanudarQuemado(object motivo)
     {
-        pausadoPorInspeccion = false;
+        motivosPausa.Remove(motivo ?? MotivoComun);
     }
 }
