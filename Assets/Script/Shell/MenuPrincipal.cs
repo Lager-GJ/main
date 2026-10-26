@@ -24,6 +24,9 @@ namespace Terror
                 AudioManager.Instance.CargarDesde(perfil);
         }
 
+        // Para herramientas de debug que tocan el guardado con el menú abierto.
+        public void RecargarPerfil() => perfil = SaveSystem.Cargar();
+
         public bool EstaDesbloqueada(LeyendaDefinicion leyenda)
         {
             if (leyenda == null) return false;

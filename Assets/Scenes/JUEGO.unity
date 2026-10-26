@@ -3127,7 +3127,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 557736364}
         m_TargetAssemblyTypeName: Scriptcambio, Assembly-CSharp
-        m_MethodName: Volver
+        m_MethodName: Niveles
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7989,6 +7989,7 @@ GameObject:
   - component: {fileID: 2063439467}
   - component: {fileID: 2063439466}
   - component: {fileID: 900000001}
+  - component: {fileID: 700000006}
   m_Layer: 0
   m_Name: GameGanarPerderManager
   m_TagString: Untagged
@@ -9935,27 +9936,6 @@ RectTransform:
   m_AnchoredPosition: {x: -1046, y: -565}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 947596120}
-  - {fileID: 768873727}
-  - {fileID: 744201470}
-  - {fileID: 2087550694}
-  - {fileID: 371386809}
-  - {fileID: 991457380}
-  - {fileID: 501822584}
-  - {fileID: 2063439467}
-  - {fileID: 991542895}
-  - {fileID: 1666457923}
-  - {fileID: 1116437325}
-  - {fileID: 317166216}
-  - {fileID: 1315896209}
-  - {fileID: 503766254}
-  - {fileID: 1744529935}
-  - {fileID: 557736365}
-  - {fileID: 553615653}
 --- !u!1 &586428572
 GameObject:
   m_ObjectHideFlags: 0
@@ -11930,3 +11910,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &700000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063439465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c4e6f3df0b634b3e92f391ae08c4f13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.L1Controller
+  definicion: {fileID: 11400000, guid: 0da6a32ed71c4e77b6a73557b9f2463b, type: 2}
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 947596120}
+  - {fileID: 768873727}
+  - {fileID: 744201470}
+  - {fileID: 2087550694}
+  - {fileID: 371386809}
+  - {fileID: 991457380}
+  - {fileID: 501822584}
+  - {fileID: 2063439467}
+  - {fileID: 991542895}
+  - {fileID: 1666457923}
+  - {fileID: 1116437325}
+  - {fileID: 317166216}
+  - {fileID: 1315896209}
+  - {fileID: 503766254}
+  - {fileID: 1744529935}
+  - {fileID: 557736365}
+  - {fileID: 553615653}

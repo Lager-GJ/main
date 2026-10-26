@@ -28,6 +28,9 @@ namespace Terror
         [Tooltip("Portada de la tarjeta. Sin asignar se ve el color de fondo del Image.")]
         public Sprite portada;
 
+        [Tooltip("Fondo del cuarto que aparece cuando la tarjeta se agranda al entrar. Vacío = se usa la portada.")]
+        public Sprite fondo;
+
         [Tooltip("Escena a cargar al entrar. Vacio en las bloqueadas.")]
         public string nombreEscena;
 
