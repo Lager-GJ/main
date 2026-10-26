@@ -44,6 +44,37 @@ namespace Terror.UI
             return t;
         }
 
+        /// <summary>
+        /// Un rectángulo nuevo dentro de 'padre' que ocupa exactamente el mismo lugar del
+        /// mundo que 'molde' (sin heredar su escala, que puede ser desigual en x e y).
+        /// Sirve para armar el mueble abierto encima del mueble cerrado del cuarto.
+        /// </summary>
+        public static RectTransform RectSobre(string nombre, RectTransform molde, Transform padre)
+        {
+            var esquinas = new Vector3[4];
+            molde.GetWorldCorners(esquinas);
+            var rt = NuevoRect(nombre, padre, Vector2.zero, Vector2.zero);
+            Vector3 centro = (esquinas[0] + esquinas[2]) * 0.5f;
+            rt.position = new Vector3(centro.x, centro.y, padre.position.z);
+            Vector3 escala = padre.lossyScale;
+            rt.sizeDelta = new Vector2((esquinas[2].x - esquinas[0].x) / escala.x, (esquinas[2].y - esquinas[0].y) / escala.y);
+            return rt;
+        }
+
+        /// <summary>
+        /// Prepara un objeto del Canvas del mundo para que su UI se dibuje encima de Luis y
+        /// de los muebles abiertos (orden 6) y siga recibiendo clics.
+        /// </summary>
+        public static void CapaEncimaEnCuarto(GameObject go, int orden = 6)
+        {
+            var canvas = go.GetComponent<Canvas>();
+            if (canvas == null) canvas = go.AddComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = orden;
+            if (go.GetComponent<GraphicRaycaster>() == null) go.AddComponent<GraphicRaycaster>();
+            if (go.GetComponent<CanvasGroup>() == null) go.AddComponent<CanvasGroup>();
+        }
+
         /// <summary>Panel a pantalla completa (anclas estiradas, sin márgenes).</summary>
         public static void Estirar(RectTransform rt)
         {

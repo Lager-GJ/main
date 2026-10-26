@@ -8,27 +8,42 @@ Todo lo que se ve de esto es **provisorio**: se hizo en código, con recortes de
 
 **Estilo:** el del cuarto, lápiz en grises, igual que `FondoDefi.png`, `ArmAbr.png` y `BuroAB.png`. Las tarjetas grandes siguen el estilo de las `Ni-img` de Historia, con borde blanco de tiza.
 
-## 1. En el cuarto
+## 0. Cambio de perspectiva (2026-10-26)
 
-Son PNG transparentes, en el mismo ángulo y la misma luz que `FondoDefi`.
+Ya **no hay ventanas de primer plano**. Al tocar un mueble pasa esto:
+1. La cámara se acerca al mueble del cuarto.
+2. El mueble se abre **en su lugar**: se cambia el dibujo cerrado por el abierto, del mismo tamaño y en la misma posición.
+3. Lo que tiene adentro se toca ahí mismo.
+
+Por eso todas las piezas de muebles van **en la perspectiva y la escala del cuarto**, como `ArmCerr`/`ArmAbr`, `Cajoncerr`/`CajonAbr` y `BuroCerr`/`BuroAB`. Usan el mismo estilo: relleno casi negro, contorno negro grueso y vetas.
+
+Hay dos cosas más:
+- El juego oscurece todo con la luz real: el fósforo, la puerta y una luz suave sobre el mueble que se mira. Se dibuja sin sombras de luz propias.
+- Al acercarse, la cámara amplía 4 veces en el velador y el joyero, y ~2 veces en el secretero. Cuanto más resolución tengan esas piezas, mejor se van a ver de cerca.
+
+## 1. En el cuarto
 
 | Archivo | Tamaño | Qué es / dónde va |
 |---|---|---|
-| `Secretero_Cerrado.png` | 320 × 460 | **Mueble nuevo.** Escritorio de la abuela con tapa inclinada, casilleros arriba y 3 cajones. Va entre la silla y la máquina de coser. El fondo no lo tiene, así que la pieza puede incluir su sombra en el piso. |
-| `Marco_Vacio.png` | 220 × 290 | Portarretratos colgado sobre el secretero, **sin foto**. Se ve la marca más clara de la foto que faltaba. |
-| `Marco_ConFoto.png` | 220 × 290 | El mismo marco con la foto de la casa del campo puesta. |
-| `Foto_Campo.png` | 340 × 460 | La foto suelta en el piso, junto a la tele. Es una foto vieja de la casa del campo. El provisorio usa el paisaje de la ventana del fondo. |
+| `Secretero_Cerrado.png` | 380 × 700 | **Mueble nuevo**, entre la silla y la máquina de coser. Es el escritorio de la abuela, con casilleros arriba (2 filas × 3), una tapa inclinada con cerradura y abajo 2 cajones chicos y uno ancho. El casillero **del medio de abajo** es un panel liso: ahí está el cajón secreto. |
+| `Secretero_Abierto.png` | 380 × 700 | El mismo secretero, **mismo tamaño y posición**, con la tapa bajada como escritorio (papeles, tintero, casilleritos). Las zonas para tocar están puestas sobre este dibujo: si se cambia la distribución, hay que mover las zonas en la escena. |
+| `Secretero_CajonSecretoAbierto.png` | 120 × 110 | El cajón secreto salido hacia adelante desde el casillero del medio, visto un poco desde arriba. Adentro va la agenda. |
+| `Marco_Vacio.png` | 160 × 210 | Portarretratos colgado sobre el secretero, **sin foto**. Se ve la marca de la foto que faltaba. |
+| `Marco_ConFoto.png` | 160 × 210 | El mismo marco con la foto de la casa del campo. |
+| `Foto_Campo_Piso.png` | 170 × 70 | La foto **acostada en el piso**, delante de la tele, en la perspectiva del piso. El ícono del inventario sigue siendo `Foto_Campo.png`, la foto de frente. |
+| `Joyero_Cerrado.png` | 220 × 170 | Joyero sobre la cómoda, cerrado, con una **placa de candado de 4 números** en el frente. **Tapa la cajita que ya está dibujada abierta en `FondoDefi`**: tiene que cubrirla entera, incluida la tapa levantada. Los números los pone el juego encima. |
+| `Joyero_Abierto.png` | 220 × 170 | El mismo joyero abierto, con terciopelo adentro. Ahí aparece la llavecita. |
+| Velador | — | Ya está: `Cajoncerr.png` → `CajonAbr.png`. Los objetos del cajón (rosario, estampas, caja de fósforos, nota, carrete, venda) hoy son los dibujos vistos desde arriba, achatados para que parezcan acostados. **Faltan versiones en la perspectiva del cajón abierto**, y más chicas. |
+| Armario | — | Ya está: `ArmCerr.png` → `ArmAbr.png`. La **lata** ahora va en el piso del armario, debajo de la ropa. Haría falta una lata cerrada con cerradura en esa perspectiva. |
 
-## 2. Primeros planos (pantalla completa)
+## 2. Tarjeta del tutorial "Pulsa E"
 
-| Archivo | Tamaño | Qué tiene que mostrar |
+Está en `Assets/Recursos/Tutorial/`. Es una tarjeta con dos imágenes y una flecha entre ellas.
+
+| Archivo | Tamaño | Qué es |
 |---|---|---|
-| `Secretero_PrimerPlano.png` | 900 × 900 | El secretero abierto: tapa bajada como escritorio, casilleros con papeles y frascos ("menjurjes"), 2 cajones abajo y uno ancho. En el centro de los casilleros va un **cajón chico escondido** (el secreto). |
-| `Secretero_CajonSecretoAbierto.png` | 180 × 150 | Ese cajón chico, abierto y salido hacia adelante. Se pone encima cuando se abre. |
-| `Joyero_Cerrado.png` | 700 × 560 | Joyero de la abuela, cerrado, con una **placa de candado de 4 números** en el frente. Los diales los dibuja el juego encima de la placa, así que la placa tiene que quedar lisa, en la zona central de abajo. |
-| `Joyero_Abierto.png` | 700 × 560 | El mismo joyero abierto, con terciopelo adentro. Ahí aparece la llavecita. |
-| Lata de galletas | — | Ya tiene arte (`galletas zoom.png`). Ahora se ve **sobre la cornisa del armario** dentro del primer plano y está cerrada con llave: haría falta una versión con **cerradura chica** en la tapa. |
-| Cajón del armario | — | Ahora está cerrado con llave. Un cajón abierto con la **llave de la puerta** adentro ayudaría (hoy solo se ilumina). |
+| `Tutorial_AOscuras.png` | 440 × 270 | El velador con el cajón abierto, **a oscuras** (casi negro). |
+| `Tutorial_ConFosforo.png` | 440 × 270 | La misma imagen **con la luz cálida de un fósforo**. |
 
 ## 3. Íconos del inventario
 

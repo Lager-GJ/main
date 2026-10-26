@@ -68,6 +68,28 @@ namespace Terror.UI
         [Tooltip("HUD que no se ve durante el inicio. Aparece con el primer fósforo.")]
         [SerializeField] private GameObject[] ocultarHastaPrimerFosforo;
 
+        [Header("En el cuarto (cambio de perspectiva)")]
+        [Tooltip("Marcado: el cajón se abre en el velador del cuarto y la cámara se acerca (sin ventana). Desmarcado: la vista vieja a pantalla completa.")]
+        [SerializeField] private bool enElCuarto = true;
+        [Tooltip("Canvas del mundo (Interactuables).")]
+        [SerializeField] private RectTransform contenedorMundo;
+        [Tooltip("Imagen del velador cerrado en el cuarto (VeladorB). Se esconde mientras el cajón está abierto.")]
+        [SerializeField] private Image veladorCerrado;
+        [Tooltip("Dibujo del velador con el cajón afuera, del mismo tamaño que el cerrado (CajonAbr).")]
+        [SerializeField] private Sprite spriteVeladorAbierto;
+        [Tooltip("Centro del interior del cajón en el dibujo del velador abierto, en píxeles del dibujo (0,0 = arriba a la izquierda).")]
+        [SerializeField] private Vector2 centroCajonEnDibujo = new Vector2(279f, 345f);
+        [Tooltip("Ancho y fondo del interior del cajón en el dibujo, en píxeles.")]
+        [SerializeField] private Vector2 tamanoCajonEnDibujo = new Vector2(180f, 50f);
+        [Tooltip("Tamaño de la cámara respecto del normal (0.25 = cuatro veces más cerca).")]
+        [SerializeField, Range(0.1f, 1f)] private float zoomCajon = 0.25f;
+        [Tooltip("Color de los objetos del cajón. La luz (puerta, fósforo) hace el resto.")]
+        [SerializeField] private Color tinteEnCuarto = new Color(0.85f, 0.83f, 0.8f, 1f);
+        [Tooltip("Vacío = el material con luz del fondo.")]
+        [SerializeField] private Material materialIluminado;
+        [Tooltip("Luz del fósforo sobre el velador mientras se mira el cajón (opcional).")]
+        [SerializeField] private GameObject luzVista;
+
         [Header("Cajón")]
         [SerializeField] private Sprite fondoCajon;
         [SerializeField] private Vector2 tamanoCajon = new Vector2(1260f, 720f);
@@ -166,6 +188,7 @@ namespace Terror.UI
         private Color tinteActual;
         private float intensidadBasePuerta;
         private Vector2 posicionBaseInterior;
+        private Vector3 escalaInterior = Vector3.one;
         private Coroutine rutinaTinte;
         private Coroutine rutinaMensaje;
         private Coroutine rutinaSacudida;
@@ -185,6 +208,8 @@ namespace Terror.UI
         private Image marcoCajon;
 
         public Color Tinte => tinteActual;
+
+        private bool UsaCuarto => enElCuarto && contenedorMundo != null && veladorCerrado != null;
 
         private bool PanelAbierto => panel != null && panel.activeSelf;
 
@@ -242,7 +267,7 @@ namespace Terror.UI
 
             fase = Fase.PuertaAbierta;
             PonerTinte(tintePuerta);
-            fondoOscuro.color = new Color(0f, 0f, 0f, fondoConPuertaAbierta);
+            FondoAlfa(fondoConPuertaAbierta);
             luzPuertaOverlay.color = Color.white;
             brillo.color = new Color(1f, 1f, 1f, 0f);
 
@@ -269,7 +294,7 @@ namespace Terror.UI
 
             Construir();
             PonerTinte(tinteFosforo);
-            fondoOscuro.color = new Color(0f, 0f, 0f, fondoAOscuras);
+            FondoAlfa(fondoAOscuras);
             luzPuertaOverlay.color = new Color(1f, 1f, 1f, 0f);
             brillo.color = new Color(1f, 1f, 1f, 0.55f);
 
@@ -409,7 +434,7 @@ namespace Terror.UI
             {
                 if (luzPuerta != null) luzPuerta.intensity = Mathf.Lerp(intensidadBasePuerta, 0f, p);
                 luzPuertaOverlay.color = new Color(1f, 1f, 1f, 1f - p);
-                fondoOscuro.color = new Color(0f, 0f, 0f, Mathf.Lerp(fondoConPuertaAbierta, fondoAOscuras, p));
+                FondoAlfa(Mathf.Lerp(fondoConPuertaAbierta, fondoAOscuras, p));
             }));
             CambiarTinte(tinteOscuro, duracionApagarLuz);
 
@@ -498,7 +523,7 @@ namespace Terror.UI
             yield return Animar(0.3f, p =>
             {
                 grupoPanel.alpha = p;
-                interior.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, p);
+                interior.localScale = escalaInterior * Mathf.Lerp(0.92f, 1f, p);
             });
         }
 
@@ -522,17 +547,29 @@ namespace Terror.UI
                 panel.transform.SetSiblingIndex(insertarDespuesDe.GetSiblingIndex() + 1);
             grupoPanel = panel.GetComponent<CanvasGroup>();
             fondoOscuro = panel.GetComponent<Image>();
-            fondoOscuro.color = new Color(0f, 0f, 0f, fondoAOscuras);
+            FondoAlfa(fondoAOscuras);
             var botonFondo = panel.GetComponent<Button>();
             botonFondo.transition = Selectable.Transition.None;
             botonFondo.onClick.AddListener(() => PanelInspeccion.Instance?.Cerrar());
 
             // El cajón. El Button vacío evita que un click sobre el dibujo llegue al fondo y lo cierre.
-            interior = NuevoRect("CajonInterior", panel.transform, posicionCajon, tamanoCajon);
+            if (UsaCuarto)
+            {
+                // En el cuarto: el panel de la pantalla queda solo con los textos y las
+                // tarjetas; el velador se abre en su lugar y el cajón lleva los objetos.
+                fondoOscuro.raycastTarget = false;
+                interior = ConstruirEnCuarto();
+            }
+            else
+            {
+                interior = NuevoRect("CajonInterior", panel.transform, posicionCajon, tamanoCajon);
+            }
             posicionBaseInterior = interior.anchoredPosition;
+            escalaInterior = interior.localScale;
             imagenInterior = interior.gameObject.AddComponent<Image>();
-            imagenInterior.sprite = fondoCajon;
-            if (fondoCajon == null) imagenInterior.color = new Color(0.25f, 0.23f, 0.21f, 1f);
+            imagenInterior.sprite = UsaCuarto ? null : fondoCajon;
+            if (UsaCuarto) imagenInterior.color = new Color(0f, 0f, 0f, 0f); // solo para que un clic en el cajón no cierre
+            else if (fondoCajon == null) imagenInterior.color = new Color(0.25f, 0.23f, 0.21f, 1f);
             var botonInterior = interior.gameObject.AddComponent<Button>();
             botonInterior.transition = Selectable.Transition.None;
 
@@ -553,11 +590,13 @@ namespace Terror.UI
             // Luz fría que entra desde la puerta (a la izquierda) y se pierde hacia la derecha.
             luzPuertaOverlay = NuevaImagen("LuzDeLaPuerta", interior, Vector2.zero, tamanoCajon * 1.15f, CrearDegradeHorizontal());
             luzPuertaOverlay.raycastTarget = false;
+            if (UsaCuarto) luzPuertaOverlay.gameObject.SetActive(false); // en el cuarto alumbra la luz de verdad
 
             // Halo cálido del fósforo.
             brillo = NuevaImagen("BrilloFosforo", interior, new Vector2(0f, 30f), tamanoCajon * 1.3f, brilloFosforo);
             brillo.raycastTarget = false;
             brillo.color = new Color(1f, 1f, 1f, 0f);
+            if (UsaCuarto) brillo.gameObject.SetActive(false);
 
             textoMensaje = NuevoTexto("TextoCajon", panel.transform, new Vector2(0f, -462f), new Vector2(1500f, 90f), 40f, FontStyles.Normal);
             textoMensaje.gameObject.SetActive(false);
@@ -565,7 +604,7 @@ namespace Terror.UI
             textoEtiqueta.color = new Color(0.8f, 0.8f, 0.8f, 0.85f);
 
             // El cajón se presenta como una tarjeta de Historia: con su borde blanco de tiza.
-            if (cajonConMarco)
+            if (cajonConMarco && !UsaCuarto)
             {
                 marcoCajon = NuevaImagen("MarcoTarjeta", interior, Vector2.zero, tamanoCajon + new Vector2(30f, 30f), SpriteMarco());
                 marcoCajon.type = Image.Type.Sliced;
@@ -575,6 +614,48 @@ namespace Terror.UI
             ConstruirTarjeta();
 
             panel.SetActive(false);
+        }
+
+        private void FondoAlfa(float alfa)
+        {
+            if (fondoOscuro != null) fondoOscuro.color = new Color(0f, 0f, 0f, UsaCuarto ? 0f : alfa);
+        }
+
+        /// <summary>
+        /// Arma el velador abierto encima del velador del cuarto y devuelve el interior del
+        /// cajón (en el mismo tamaño de diseño que la vista vieja, achatado por la perspectiva).
+        /// </summary>
+        private RectTransform ConstruirEnCuarto()
+        {
+            RectTransform enCuarto = RectSobre("VeladorEnCuarto", veladorCerrado.rectTransform, contenedorMundo);
+            enCuarto.SetAsLastSibling();
+            CapaEncimaEnCuarto(enCuarto.gameObject);
+            Vector2 tam = enCuarto.sizeDelta;
+
+            // Clic afuera del velador: se vuelve al cuarto (si el inicio ya lo permite).
+            var afuera = NuevaImagen("TocarAfueraCierra", enCuarto, Vector2.zero, new Vector2(40000f, 40000f), null);
+            afuera.color = new Color(0f, 0f, 0f, 0f);
+            BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
+
+            var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
+            abierto.color = veladorCerrado.color;
+            BotonPlano(abierto.gameObject, null); // un clic en el mueble no cierra
+            SpriteIluminado.Agregar(abierto, 4, 1f, materialIluminado);
+
+            // Del dibujo (píxeles, y hacia abajo) al rectángulo del velador.
+            Vector2 dibujo = spriteVeladorAbierto != null ? spriteVeladorAbierto.rect.size : new Vector2(626f, 626f);
+            Vector2 centro = new Vector2(
+                (centroCajonEnDibujo.x / dibujo.x - 0.5f) * tam.x,
+                (0.5f - centroCajonEnDibujo.y / dibujo.y) * tam.y);
+            Vector2 tamCajon = new Vector2(tamanoCajonEnDibujo.x / dibujo.x * tam.x, tamanoCajonEnDibujo.y / dibujo.y * tam.y);
+
+            RectTransform cajon = NuevoRect("CajonInterior", enCuarto, centro, tamanoCajon);
+            cajon.localScale = new Vector3(tamCajon.x / tamanoCajon.x, tamCajon.y / tamanoCajon.y, 1f);
+
+            var vista = panel.AddComponent<VistaEnCuarto>();
+            vista.Configurar(enCuarto.gameObject, cajon, zoomCajon, veladorCerrado);
+            vista.Luz = luzVista;
+            return cajon;
         }
 
         private Sprite SpriteMarco() => marcoTarjeta != null ? marcoTarjeta : MarcoDibujado.Obtener(128, 7f, 6f, 1f);
@@ -642,6 +723,12 @@ namespace Terror.UI
                 borde.raycastTarget = false;
             }
 
+            if (UsaCuarto)
+            {
+                SpriteIluminado.Agregar(img, 5, 2f, materialIluminado);
+                if (borde != null) SpriteIluminado.Agregar(borde, 5, 2.5f, materialIluminado);
+            }
+
             var zona = img.gameObject.AddComponent<ZonaCajon>();
             zona.Iniciar(this, nombre, img, borde);
             return zona;
@@ -668,7 +755,8 @@ namespace Terror.UI
 
         private void PonerTinte(Color c)
         {
-            tinteActual = c;
+            // En el cuarto la luz de verdad oscurece y alumbra: el color queda fijo.
+            tinteActual = UsaCuarto ? tinteEnCuarto : c;
             AplicarTinte();
         }
 
@@ -681,7 +769,7 @@ namespace Terror.UI
 
         private void AplicarTinte()
         {
-            if (imagenInterior != null && fondoCajon != null) imagenInterior.color = tinteActual;
+            if (imagenInterior != null && fondoCajon != null && !UsaCuarto) imagenInterior.color = tinteActual;
             if (marcoCajon != null) marcoCajon.color = tinteActual;
             zonaFosforos?.AplicarTinte();
             zonaNota?.AplicarTinte();

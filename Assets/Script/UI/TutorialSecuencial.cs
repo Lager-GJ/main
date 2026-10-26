@@ -98,6 +98,7 @@ namespace Terror.UI
         private GameObject panelPendiente;  // mensaje que sigue visible esperando al paso siguiente
         private bool pendientePermitido;    // ese mensaje puede verse con una vista de cerca abierta
         private GameObject panelPermanente; // objetivo fijo: queda para siempre
+        private readonly System.Collections.Generic.HashSet<GameObject> escondidos = new System.Collections.Generic.HashSet<GameObject>();
 
         // Banderas "ya pasó": si el jugador hace algo antes de que le toque ese paso
         // (por ejemplo recoge el objeto antes de llegar al marcador), el tutorial no
@@ -168,8 +169,8 @@ namespace Terror.UI
             // Con una vista de cerca abierta (cajón, armario, inventario, tarjeta...) los
             // mensajes no se ven: no tienen que ver con lo que se está mirando.
             bool tapado = HayPrimerPlanoAbierto();
-            Mostrar(panelPermanente, !tapado);
-            Mostrar(panelPendiente, !tapado || pendientePermitido);
+            Esconder(panelPermanente, tapado);
+            Esconder(panelPendiente, tapado && !pendientePermitido);
 
             if (terminado) return;
 
@@ -201,7 +202,7 @@ namespace Terror.UI
             // El mensaje ya estaba a la vista y se abrió un primer plano: se esconde y su
             // tiempo no corre hasta que se cierre.
             bool oculto = tapado && !paso.permitirEnPrimerPlano;
-            Mostrar(paso.panel, !oculto);
+            Esconder(paso.panel, oculto);
             if (oculto) return;
 
             if (paso.cerrarAlMoverse && JugadorPulsoMovimiento())
@@ -234,9 +235,30 @@ namespace Terror.UI
             return panel != null && (panel.EstaAbierto || panel.HayCapaAbierta);
         }
 
-        private static void Mostrar(GameObject panel, bool visible)
+        // Solo vuelve a mostrar lo que escondió él: si el jugador cerró un mensaje (la X
+        // de la tarjeta "Pulsa E"), no reaparece al cerrar una vista de cerca.
+        private void Esconder(GameObject panel, bool esconder)
         {
-            if (panel != null && panel.activeSelf != visible) panel.SetActive(visible);
+            if (panel == null) return;
+            if (esconder)
+            {
+                if (panel.activeSelf)
+                {
+                    panel.SetActive(false);
+                    escondidos.Add(panel);
+                }
+            }
+            else if (escondidos.Remove(panel))
+            {
+                panel.SetActive(true);
+            }
+        }
+
+        private void Apagar(GameObject panel)
+        {
+            if (panel == null) return;
+            panel.SetActive(false);
+            escondidos.Remove(panel);
         }
 
         // Entre los pasos "en cualquier orden", el primero cuyo disparador ya se cumplió
@@ -308,7 +330,7 @@ namespace Terror.UI
             // Igual que el mensaje que se quedó esperando: se oculta cuando arranca el siguiente.
             if (panelPendiente != null)
             {
-                panelPendiente.SetActive(false);
+                Apagar(panelPendiente);
                 panelPendiente = null;
             }
 
@@ -337,7 +359,7 @@ namespace Terror.UI
                     panelPendiente = paso.panel;
                     pendientePermitido = paso.permitirEnPrimerPlano;
                 }
-                else paso.panel.SetActive(false);
+                else Apagar(paso.panel);
             }
 
             if (pausandoJuego)

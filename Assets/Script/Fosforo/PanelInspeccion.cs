@@ -178,11 +178,15 @@ namespace Terror
             TiempoLento.Duracion = duracionZoom;
             TiempoLento.Pedir(this);
 
-            Vector3? punto = PuntoDelMundo(origen);
+            // Una vista "en el cuarto" (el mueble se abre en su lugar) dice ella misma
+            // adónde mirar y cuánto acercarse; las demás usan el objeto tocado.
+            var enCuarto = vista.GetComponent<Terror.UI.VistaEnCuarto>();
+            Vector3? punto = enCuarto != null ? enCuarto.PuntoFoco : PuntoDelMundo(origen);
+            float zoom = enCuarto != null ? enCuarto.Zoom : zoomHaciaObjeto;
             var camara = CamaraController.Instance;
             if (punto.HasValue && camara != null)
             {
-                camara.Enfocar(punto.Value, zoomHaciaObjeto, duracionZoom);
+                camara.Enfocar(punto.Value, zoom, duracionZoom);
                 rutinaMostrar = StartCoroutine(MostrarTrasZoom(vista, duracionZoom * esperaAntesDeMostrar));
             }
             else
