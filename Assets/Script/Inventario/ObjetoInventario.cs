@@ -41,6 +41,17 @@ namespace Terror
             colorBase = imagen.color;
         }
 
+        /// <summary>Para los que se crean en runtime (la llave del joyero).</summary>
+        public void Configurar(string id, bool tarjetaAlGuardar, AudioClip sonidoAlGuardar = null)
+        {
+            idObjeto = id;
+            mostrarTarjetaAlGuardar = tarjetaAlGuardar;
+            sonido = sonidoAlGuardar;
+        }
+
+        /// <summary>Se dispara al guardarlo (para quien lo crea en runtime).</summary>
+        public event System.Action AlGuardarse;
+
         private void OnEnable()
         {
             FosforoManager.OnFosforoEncendido += Actualizar;
@@ -105,6 +116,7 @@ namespace Terror
             inv.Agregar(idObjeto);
             if (sonido != null) AudioSource.PlayClipAtPoint(sonido, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
             alGuardar?.Invoke();
+            AlGuardarse?.Invoke();
 
             if (mostrarTarjetaAlGuardar && TarjetaLectura.Instance != null)
                 TarjetaLectura.Instance.Mostrar(inv.Definicion(idObjeto));
