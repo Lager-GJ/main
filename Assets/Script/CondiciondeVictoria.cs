@@ -1,5 +1,5 @@
 using UnityEngine;
-using Terror; // Necesario para acceder a GameStateManager y FearManager
+using Terror; // GameStateManager
 
 public class CondiciondeVictoria : MonoBehaviour
 {
@@ -37,24 +37,10 @@ public class CondiciondeVictoria : MonoBehaviour
         {
             // Condición 1: Ya se recolectó el objeto (por eso entramos a este if)
 
-            // Condición 2: ¿Aún le quedan fósforos? (O tiene uno actualmente encendido)
-            bool tieneFosforos = FosforoManager.Instance.FosforosRestantes > 0 || FosforoManager.Instance.Encendido;
-
-            // Condición 3: ¿Su nivel de miedo es menor al 100%?
-            bool noEstaAterrorizado = FearManager.Instance.miedoActual < 100f;
-
-            if (tieneFosforos && noEstaAterrorizado)
-            {
-                // ¡Todas las condiciones se cumplen! Mostramos la pantalla.
-                MostrarVictoria();
-            }
-            else
-            {
-                // Si agarró el objeto pero ya no tiene fósforos o su miedo llegó a 100
-                // Forzamos la derrota.
-                Debug.Log("Objeto recolectado, pero sin fósforos o con miedo al máximo. ¡Derrota!");
-                GameStateManager.Instance.Perder();
-            }
+            // Ya no hay barra de miedo (2026-10-22). La derrota por fósforos la
+            // decide la Presencia al consumirse el último, así que si se llegó a
+            // Victoria es porque se salió a tiempo: solo queda mostrar la pantalla.
+            MostrarVictoria();
         }
     }
 

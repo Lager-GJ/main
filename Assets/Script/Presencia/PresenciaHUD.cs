@@ -30,7 +30,7 @@ namespace Terror
         {
             GUI.color = Color.white;
             GUI.Label(new Rect(10, 10, 400, 30),
-                $"Presencia: nivel {nivelActual} (miedo x{multiplicadorActual:0.0})");
+                $"Presencia: nivel {nivelActual}");
         }
     }
 }

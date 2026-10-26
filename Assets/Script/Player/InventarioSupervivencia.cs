@@ -4,11 +4,10 @@ using Terror;
 /// <summary>
 /// Lleva la cuenta de los objetos de supervivencia (los caramelos) que junta el niño.
 ///
-/// La única forma de ganar el cuarto 1 es abrir la lata de galletas del armario
-/// (ObjetoInteractivo con esObjetivoDeVictoria + SecuenciaAperturaLata). Decisión de
-/// David, 2026-10-19 (ya se había decidido el 2026-07-31 y volvió a entrar con el PR #3).
-/// Juntar los caramelos solo ralentiza el miedo en el modo continuo de FearManager;
-/// en el modo por fósforos (el de ahora) no cambia nada.
+/// La forma de ganar el cuarto 1 es salir por la puerta con su llave (cadena de
+/// acertijos, 2026-10-22). Los caramelos no tienen función por ahora: quedan como
+/// detalle del cuarto hasta que el equipo decida qué hacer con ellos (la barra de
+/// miedo, que ralentizaban, se eliminó el 2026-10-22).
 ///
 /// La victoria por juntar todos (la versión de Anavi) queda detrás de
 /// ganarAlJuntarTodos, apagada, por si el equipo la quiere probar otra vez.
@@ -24,7 +23,7 @@ public class InventarioSupervivencia : MonoBehaviour
     [Tooltip("Cuántos objetos hay en el cuarto. Solo gana al juntarlos si 'Ganar Al Juntar Todos' está marcado.")]
     public int itemsParaGanar = 4;
 
-    [Tooltip("Apagado: la única victoria es la lata de galletas. Marcado: juntar todos los objetos también gana (regla vieja).")]
+    [Tooltip("Apagado: la única victoria es salir por la puerta. Marcado: juntar todos los objetos también gana (regla vieja).")]
     public bool ganarAlJuntarTodos = false;
 
     private void Awake()
@@ -47,12 +46,6 @@ public class InventarioSupervivencia : MonoBehaviour
     {
         itemsRecolectados++;
         Debug.Log($"[Inventario] Ítem de supervivencia recolectado. Total: {itemsRecolectados}/{itemsParaGanar}");
-
-        // Ralentiza el nivel de miedo en un 30% adicional (multiplicativo)
-        if (FearManager.Instance != null)
-        {
-            FearManager.Instance.ReducirVelocidadSubida(0.3f);
-        }
 
         if (ganarAlJuntarTodos && itemsRecolectados >= itemsParaGanar)
         {

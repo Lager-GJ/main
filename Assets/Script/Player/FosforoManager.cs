@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal; // Light2D vive aquí en URP.
 /// Núcleo mecánico del sistema de fósforos ("La Vela de la Abuela").
 /// Controla el recurso limitado (fósforos), el ciclo de encendido/apagado con
 /// temporizador, y expone el estado mediante eventos estáticos para que el resto
-/// del equipo (Presencia, barra de miedo, UI, audio/VFX) reaccione sin acoplarse
+/// del equipo (Presencia, UI, audio/VFX) reaccione sin acoplarse
 /// directamente a esta clase.
 /// </summary>
 public class FosforoManager : MonoBehaviour
@@ -39,12 +39,12 @@ public class FosforoManager : MonoBehaviour
     private float radioInteriorBase; // radios de la luz tal como quedaron en el Inspector
     private float radioExteriorBase;
     private bool encendidoHabilitado = true; // el tutorial lo apaga hasta que el jugador recoge los fósforos
+    private float fuerzaParpadeo; // 0 = llama quieta; la Presencia la hace temblar más en cada nivel
 
     // --- Eventos estáticos ---
     // Se usan Action estáticos (no UnityEvents) a propósito: cualquier script del
     // equipo puede suscribirse sin necesitar una referencia directa a esta instancia.
-    // Esto es clave porque Presencia y la barra de miedo se programan en paralelo
-    // por otros devs y no deben acoplarse al sistema de fósforo.
+    // Así la Presencia, la UI y el audio no se acoplan al sistema de fósforo.
     public static event Action OnFosforoEncendido;
     public static event Action OnFosforoApagado;
     public static event Action OnSinFosforos;
@@ -154,7 +154,7 @@ public class FosforoManager : MonoBehaviour
         Debug.Log($"[Fosforo] Encendido. Quedan {fosforosRestantes} fósforos.");
 
         OnFosforoEncendido?.Invoke();
-        Terror.GameEvents.RaiseFosforoEncendido(); // <-- CONEXION A FEAR MANAGER
+        Terror.GameEvents.RaiseFosforoEncendido();
         OnFosforosRestantesCambiado?.Invoke(fosforosRestantes);
         OnProgresoFosforoCambiado?.Invoke(1f);
 
@@ -184,10 +184,11 @@ public class FosforoManager : MonoBehaviour
         while (tiempoRestanteQuemado > 0f)
         {
             if (!pausadoPorInspeccion)
-            {
                 tiempoRestanteQuemado -= Time.deltaTime;
-                ActualizarIntensidadLuz();
-            }
+
+            // Aunque esté pausado se refresca: el tiempo no avanza, pero la llama
+            // puede seguir temblando (parpadeo de la Presencia).
+            ActualizarIntensidadLuz();
 
             yield return null;
         }
@@ -213,7 +214,20 @@ public class FosforoManager : MonoBehaviour
         if (luzFosforo == null)
             return;
 
-        luzFosforo.intensity = intensidadBaseLuz * progreso;
+        float parpadeo = 1f;
+        if (fuerzaParpadeo > 0f && Time.timeScale > 0f)
+            parpadeo = 1f - fuerzaParpadeo * Mathf.PerlinNoise(Time.time * 12f, 0.37f);
+
+        luzFosforo.intensity = intensidadBaseLuz * progreso * parpadeo;
+    }
+
+    /// <summary>
+    /// Hace temblar la llama: 0 = quieta, 0.35 = baja hasta un 35% de golpe.
+    /// La usa la Presencia (EfectosPresencia) para que la luz se sienta amenazada.
+    /// </summary>
+    public void SetParpadeo(float fuerza)
+    {
+        fuerzaParpadeo = Mathf.Clamp01(fuerza);
     }
 
     private void ApagarFosforo()
@@ -227,7 +241,7 @@ public class FosforoManager : MonoBehaviour
         Debug.Log("[Fosforo] Apagado (se acabó el tiempo).");
 
         OnFosforoApagado?.Invoke();
-        Terror.GameEvents.RaiseFosforoApagado(); // <-- CONEXION A FEAR MANAGER
+        Terror.GameEvents.RaiseFosforoApagado();
         OnProgresoFosforoCambiado?.Invoke(0f);
     }
 

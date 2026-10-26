@@ -58,11 +58,11 @@ namespace Terror
             SetState(GameState.Victoria);
         }
 
-        // Desde Victoria sí se permite: CondiciondeVictoria fuerza la derrota si se
-        // gana sin fósforos o con el miedo al máximo.
+        // Igual que Ganar: solo durante la partida, para que una derrota tardía
+        // (p. ej. el silencio de la Presencia) no pise una victoria.
         public void Perder()
         {
-            if (CurrentState != GameState.Juego && CurrentState != GameState.Victoria) return;
+            if (CurrentState != GameState.Juego) return;
             SetState(GameState.Derrota);
         }
 

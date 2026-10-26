@@ -53,7 +53,7 @@ namespace Terror.UI
         [Header("Escena")]
         [Tooltip("Canvas de la UI (ControladorGeneral). El cajón se crea adentro.")]
         [SerializeField] private RectTransform contenedorUI;
-        [Tooltip("El cajón se pone justo después de este hijo (OSCURO), para que el oscurecimiento por miedo no lo tape y los mensajes del tutorial queden arriba.")]
+        [Tooltip("El cajón se pone justo después de este hijo (OSCURO), para que la viñeta de la Presencia no lo tape y los mensajes del tutorial queden arriba.")]
         [SerializeField] private RectTransform insertarDespuesDe;
         [Tooltip("Luz que entra por la puerta abierta. Se apaga con el portazo.")]
         [SerializeField] private Light2D luzPuerta;
@@ -62,7 +62,7 @@ namespace Terror.UI
         [SerializeField] private TMP_FontAsset fuente;
         [Tooltip("Desmarcado: el juego arranca sin la secuencia (útil para probar el resto del cuarto).")]
         [SerializeField] private bool empezarConCajonAbierto = true;
-        [Tooltip("HUD que no se ve durante el inicio (barra de miedo, emoji). Aparece con el primer fósforo.")]
+        [Tooltip("HUD que no se ve durante el inicio. Aparece con el primer fósforo.")]
         [SerializeField] private GameObject[] ocultarHastaPrimerFosforo;
 
         [Header("Cajón")]
@@ -143,7 +143,6 @@ namespace Terror.UI
 
         private Fase fase = Fase.Iluminado;
         private bool construido;
-        private bool pausaDeMiedoActiva;
 
         private GameObject panel;
         private CanvasGroup grupoPanel;
@@ -203,8 +202,7 @@ namespace Terror.UI
             FosforoManager.OnFosforoApagado -= AlApagarFosforo;
             PanelInspeccion.OnCerrado -= AlCerrarseUnPrimerPlano;
 
-            // Nunca dejamos el miedo pausado, el HUD oculto ni al niño quieto si esto se apaga a mitad de camino.
-            TerminarPausaDeMiedo();
+            // Nunca dejamos el HUD oculto ni al niño quieto si esto se apaga a mitad de camino.
             AlfaHudOculto(1f);
             if (nino != null) nino.enabled = true;
         }
@@ -234,10 +232,6 @@ namespace Terror.UI
             AlfaHudOculto(0f);
 
             FosforoManager.Instance?.HabilitarEncendido(false);
-
-            // En el modo de miedo continuo, el miedo no sube mientras dura la parte con luz.
-            GameEvents.RaiseDialogoIniciado();
-            pausaDeMiedoActiva = true;
 
             fase = Fase.PuertaAbierta;
             PonerTinte(tintePuerta);
@@ -405,7 +399,6 @@ namespace Terror.UI
             yield return EsperarSinPausa(duracionApagarLuz);
             if (luzPuerta != null) luzPuerta.gameObject.SetActive(false);
 
-            TerminarPausaDeMiedo();
             OnPuertaCerrada?.Invoke();
 
             // Recién ahora los fósforos son del jugador: aparece el contador y el tutorial
@@ -824,7 +817,7 @@ namespace Terror.UI
             paso(1f);
         }
 
-        // Con CanvasGroup y no SetActive: la barra de miedo sigue escuchando sus eventos.
+        // Con CanvasGroup y no SetActive: lo oculto sigue escuchando sus eventos.
         private void AlfaHudOculto(float alfa)
         {
             if (ocultarHastaPrimerFosforo == null) return;
@@ -835,13 +828,6 @@ namespace Terror.UI
                 if (grupo == null) grupo = go.AddComponent<CanvasGroup>();
                 grupo.alpha = alfa;
             }
-        }
-
-        private void TerminarPausaDeMiedo()
-        {
-            if (!pausaDeMiedoActiva) return;
-            pausaDeMiedoActiva = false;
-            GameEvents.RaiseDialogoTerminado();
         }
 
         // La música del menú (PersistentAudio) llegaba hasta acá; antes la cortaba la cinemática.
