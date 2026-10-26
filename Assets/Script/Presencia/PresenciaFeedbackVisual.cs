@@ -48,10 +48,14 @@ namespace Terror
             }
 
             float proporcion = (float)nivelActual / nivelMaximoConocido;
-            float opacidad = proporcion * opacidadMaxima;
+            // Añadir palpitación (pulse) basada en el tiempo y el nivel actual de cercanía
+            float pulse = Mathf.Abs(Mathf.Sin(Time.time * (2f + proporcion * 5f))) * 0.3f;
+            float opacidad = (proporcion * opacidadMaxima) + pulse;
+            opacidad = Mathf.Clamp01(opacidad);
 
             GUI.color = new Color(0.6f, 0f, 0f, opacidad);
-            int grosor = 40;
+            // El grosor también aumenta un poco cuando está más cerca
+            int grosor = 40 + (int)(proporcion * 30);
 
             GUI.DrawTexture(new Rect(0, 0, Screen.width, grosor), texturaTinte);
             GUI.DrawTexture(new Rect(0, Screen.height - grosor, Screen.width, grosor), texturaTinte);

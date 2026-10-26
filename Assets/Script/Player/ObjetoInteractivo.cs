@@ -8,8 +8,10 @@ using Terror;
 /// fósforo encendido. Este script NO dibuja el panel de inspección (eso lo arma otro
 /// dev) — solo decide si el click es válido y avisa mediante un evento estático con
 /// los datos del objeto, para no acoplarse al script del panel.
+/// Se clickea de dos formas: con un Collider2D (OnMouseDown, objetos del mundo) o con
+/// un Button de UI que llame a InteractuarManual (la lata del armario). Por eso no
+/// lleva [RequireComponent(typeof(Collider2D))].
 /// </summary>
-[RequireComponent(typeof(Collider2D))]
 public class ObjetoInteractivo : MonoBehaviour
 {
     [Header("Datos para el panel de inspección")]
