@@ -33,6 +33,14 @@ public class NinoController : MonoBehaviour
     }
     private void Update()
     {
+        // Con una ventana de objeto abierta el fósforo está pausado por inspección:
+        // el niño no camina mientras el jugador lee, o tendría ventaja sobre la Presencia.
+        if (FosforoManager.Instance != null && FosforoManager.Instance.PausadoPorInspeccion)
+        {
+            Mover(0f); // también apaga la animación de caminar
+            return;
+        }
+
         float direccionX = LeerDireccionX();
         Mover(direccionX);
     }
