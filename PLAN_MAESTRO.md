@@ -1,4 +1,7 @@
 # Plan Maestro — Lumbre
+
+> **Cambio 2026-10-22 (cuarto 1):** ya **no hay barra de miedo**. Lo único que avanza son los fósforos (4): cada uno que se consume acerca a la Presencia (respiración, temblor, sonidos...) y el 4º hace perder. Al mirar algo de cerca, el tiempo pasa lento, la cámara hace zoom y el fósforo no se gasta. El cuarto se resuelve con una cadena de acertijos con llaves e inventario (tecla I): foto → marco → secretero → agenda → joyero (código) → lata → cajón del armario → llave de la puerta. Lo de abajo sobre el miedo queda superado. Detalle: `PIEZAS_ARTE_ACERTIJOS.md`.
+
 ## De dos prototipos separados a un juego terminado
 
 **Producto:** juego de terror 2D. Un niño en la casa de su abuela, de noche, con una caja de fósforos limitada. Cada fósforo da luz para explorar pero acerca a algo. Estudio: **LAGER**.

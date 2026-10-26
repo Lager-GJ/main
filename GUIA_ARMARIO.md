@@ -4,6 +4,8 @@
 > **Implementado:** 2026-09-23
 > **Estado:** funcionando con el arte actual (`ArmAbr.png`, una sola imagen). Para más dinamismo falta arte por capas (ver "Qué falta de arte").
 
+> **Cambio 2026-10-22:** la lata **ya no es la victoria**. Ahora está sobre la cornisa del armario (en el primer plano), cerrada con la *llave pequeña* del joyero, y al abrirse entrega la *llave del armario*. El cajón del armario está cerrado con esa llave (`Cerradura` en el hotspot `Cajon`) y adentro está la *llave de la puerta*, que es la salida. Al abrir el armario, la cámara hace zoom, el tiempo pasa lento y el fósforo no se gasta. Ya no hay miedo en los hotspots (se quitó el campo `miedo`).
+
 Cuando el jugador abre el armario se pasa a una vista a pantalla completa con solo el armario. Adentro hay zonas clicables (ropa, puertas, cajón) y la lata de galletas, que es el objetivo de victoria del cuarto 1, escondida en el cajón.
 
 ---
