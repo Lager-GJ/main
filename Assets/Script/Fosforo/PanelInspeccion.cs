@@ -24,6 +24,23 @@ namespace Terror
         // que cerrarla a mitad de camino dejaría la victoria sin dispararse.
         public bool CierreBloqueado { get; set; }
 
+        // Frame en que se cerró la última vista. PauseManager lo mira para que un
+        // mismo Escape no cierre la vista y abra la pausa a la vez.
+        public int FrameUltimoCierre { get; private set; } = -1;
+
+        // Una vista puede tener algo abierto encima (la tarjeta de un objeto del cajón).
+        // Escape cierra primero eso y recién con otro Escape la vista entera.
+        public Func<bool> SubvistaAbierta;
+        public Action CerrarSubvista;
+
+        private bool HaySubvista => EstaAbierto && SubvistaAbierta != null && SubvistaAbierta();
+
+        /// <summary>
+        /// True si un Escape ahora lo resolvería este panel (cerrando la vista o lo que
+        /// tenga encima). Si es false, Escape le corresponde a la pausa.
+        /// </summary>
+        public bool EscapeLoManejaElPanel => EstaAbierto && (HaySubvista || !CierreBloqueado);
+
         private GameObject vistaActual;
 
         private void Awake()
@@ -43,8 +60,21 @@ namespace Terror
                 return;
             }
 
+            // Con el menú de pausa abierto, Escape es de la pausa (la cierra) y no
+            // debe cerrar además la vista que quedó debajo.
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado)
+            {
+                return;
+            }
+
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
+                if (HaySubvista)
+                {
+                    CerrarSubvista?.Invoke();
+                    FrameUltimoCierre = Time.frameCount;
+                    return;
+                }
                 Cerrar();
             }
         }
@@ -80,6 +110,7 @@ namespace Terror
             {
                 var vista = vistaActual;
                 vistaActual = null;
+                FrameUltimoCierre = Time.frameCount;
 
                 var transicion = vista.GetComponent<Terror.UI.TransicionPanel>();
                 if (transicion != null)

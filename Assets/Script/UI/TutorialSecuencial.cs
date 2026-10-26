@@ -22,7 +22,9 @@ namespace Terror.UI
             ObjetoRecogido,         // el jugador recogió un ObjetoRecogible
             FosforoEncendido,       // el jugador encendió un fósforo
             FosforoApagado,         // se apagó un fósforo (se consumió o lo apagó el jugador con Q)
-            ObjetoInspeccionado     // el jugador abrió un ObjetoInteractivo
+            ObjetoInspeccionado,    // el jugador abrió un ObjetoInteractivo
+            PrimerPlanoCerrado      // se cerró una vista de primer plano (el cajón del inicio, el armario...).
+                                    // Va al final: los pasos se guardan en la escena por número.
         }
 
         // Los campos son public porque el tutorial (otra clase) los lee; es solo un
@@ -88,6 +90,7 @@ namespace Terror.UI
         private bool fosforoYaApagado;
         private bool objetoYaRecogido;
         private bool objetoYaInspeccionado;
+        private bool primerPlanoYaCerrado;
 
         private void OnEnable()
         {
@@ -95,6 +98,7 @@ namespace Terror.UI
             FosforoManager.OnFosforoApagado += MarcarFosforoApagado;
             ObjetoRecogible.OnRecogido += MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado += MarcarObjetoInspeccionado;
+            PanelInspeccion.OnCerrado += MarcarPrimerPlanoCerrado;
         }
 
         private void OnDisable()
@@ -103,6 +107,7 @@ namespace Terror.UI
             FosforoManager.OnFosforoApagado -= MarcarFosforoApagado;
             ObjetoRecogible.OnRecogido -= MarcarObjetoRecogido;
             ObjetoInteractivo.OnObjetoInspeccionado -= MarcarObjetoInspeccionado;
+            PanelInspeccion.OnCerrado -= MarcarPrimerPlanoCerrado;
 
             // timeScale es global y sobrevive al cambio de escena: nunca lo dejamos en 0.
             if (pausandoJuego)
@@ -142,6 +147,10 @@ namespace Terror.UI
         private void Update()
         {
             if (terminado) return;
+
+            // Con el menú de pausa abierto el tutorial espera: si no, pulsar A/D en la
+            // pausa cerraba el paso de movimiento y ponía timeScale en 1 debajo del menú.
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
 
             tiempoActivo += Time.deltaTime;
             Paso paso = pasos[indice];
@@ -204,6 +213,9 @@ namespace Terror.UI
 
                 case Disparador.ObjetoInspeccionado:
                     return objetoYaInspeccionado;
+
+                case Disparador.PrimerPlanoCerrado:
+                    return primerPlanoYaCerrado;
 
                 default:
                     return true;
@@ -306,5 +318,7 @@ namespace Terror.UI
         }
 
         private void MarcarObjetoInspeccionado(ObjetoInteractivo objeto) => objetoYaInspeccionado = true;
+
+        private void MarcarPrimerPlanoCerrado() => primerPlanoYaCerrado = true;
     }
 }
