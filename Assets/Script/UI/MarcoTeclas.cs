@@ -29,6 +29,17 @@ namespace Terror.UI
         [SerializeField] private bool latir = true;
         [SerializeField] private float velocidadLatido = 2.2f;
 
+        /// <summary>Color del marco (la tarjeta de papel lo pone en tinta oscura).</summary>
+        public Color ColorMarco
+        {
+            get => colorMarco;
+            set
+            {
+                colorMarco = value;
+                foreach (var m in marcos) if (m != null) m.color = value;
+            }
+        }
+
         private TMP_Text texto;
         private readonly List<Image> marcos = new List<Image>();
         private bool sucio = true;

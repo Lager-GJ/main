@@ -36,14 +36,32 @@ Hay dos cosas más:
 | Velador | — | Ya está: `Cajoncerr.png` → `CajonAbr.png`. Los objetos del cajón (rosario, estampas, caja de fósforos, nota, carrete, venda) hoy son los dibujos vistos desde arriba, achatados para que parezcan acostados. **Faltan versiones en la perspectiva del cajón abierto**, y más chicas. |
 | Armario | — | Ya está: `ArmCerr.png` → `ArmAbr.png`. La **lata** ahora va en el piso del armario, debajo de la ropa. Haría falta una lata cerrada con cerradura en esa perspectiva. |
 
-## 2. Tarjeta del tutorial "Pulsa E"
+## 2. Tarjeta del tutorial "Pulsa E" = hoja de instrucciones (2026-10-27)
 
-Está en `Assets/Recursos/Tutorial/`. Es una tarjeta con dos imágenes y una flecha entre ellas.
+Está en `Assets/Recursos/Tutorial/`. Es la hoja de instrucciones que sale de la caja de fósforos. Tiene papel viejo, el encabezado "INSTRUCCIONES", el texto, dos imágenes con una flecha entre ellas y el botón "Entendido". Los textos y los marcos los pone el juego en tinta oscura.
 
 | Archivo | Tamaño | Qué es |
 |---|---|---|
+| `Tutorial_Papel.png` | 1140 × 720 | **Hecho (provisorio bueno).** Papel amarillento con borde roto, bordes tostados, una mancha de café, un pliegue en cruz y un marco doble de tinta con rombitos en las esquinas. Se estira a 1080 × 700 en pantalla. |
 | `Tutorial_AOscuras.png` | 440 × 270 | El velador con el cajón abierto, **a oscuras** (casi negro). |
 | `Tutorial_ConFosforo.png` | 440 × 270 | La misma imagen **con la luz cálida de un fósforo**. |
+
+## 2b. Caja de fósforos «La Chispa» en primer plano (2026-10-27)
+
+Está en `Assets/Recursos/Inicio/`. Sale del dibujo de Anavi (`Assets/Recursos/Matchbox .png`): su cara de adelante, enderezada y recortada con su contorno. El resto copia sus colores y su trazo.. Si el equipo la redibuja, que mantenga los tamaños.
+
+| Archivo | Tamaño | Qué es |
+|---|---|---|
+| `Caja_Frente.png` | 607 × 870 | **Hecho, es arte del equipo.** Frente de la funda: «LA CHISPA», el demonio y la franja «Cada llama tiene un precio». El borde de arriba está roto, porque por ahí sale la bandeja. |
+| `Caja_Reverso.png` | 607 × 870 | **Hecho (provisorio bueno).** La misma silueta espejada: «ADVERTENCIA», el demonio grande y oscuro con ojos amarillos detrás de 4 fósforos (las llamas crecen y la última es roja), «LA ÚLTIMA LLAMA LO LLAMA» y la franja roja «LEA LAS INSTRUCCIONES ANTES DE USAR». |
+| `Caja_Bandeja.png` | 546 × 800 | **Provisorio.** La bandeja morada que sube al abrir: borde claro y fondo oscuro. |
+| `Caja_Fosforo.png` | 74 × 430 | **Provisorio.** Un fósforo parado: palito crema y cabeza roja con brillo. El juego pone uno por cada fósforo que queda. |
+| `Cajon_LaChispa.png` | 360 × 255 | **Hecho.** La caja acostada dentro del cajón, con sombra. Reemplaza a `CajaF` en el cajón del inicio. |
+
+Mejoras posibles para el equipo:
+- una bandeja dibujada a mano, con las paredes de adentro, como en `Matchbox .png`;
+- la lija en el costado;
+- un reverso dibujado a mano con el mismo texto.
 
 ## 3. Íconos del inventario
 

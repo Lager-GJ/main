@@ -16,9 +16,10 @@ namespace Terror.UI
     ///
     /// 1. Puerta abierta: entra un poco de luz de afuera (luzPuerta) y el cajón se ve en
     ///    primer plano. Todos sus objetos se pueden tocar y muestran su mensaje.
-    /// 2. Al tocar la caja de fósforos ("Fuego maldito") la puerta se cierra de golpe,
-    ///    se va la luz y el cajón queda casi a oscuras. Recién ahí se pueden prender
-    ///    fósforos (aparece el mensaje "Pulsa E" del tutorial de Diego).
+    /// 2. Al tocar la caja de fósforos ("La Chispa") se ve en primer plano: se puede
+    ///    voltear y, al abrirla, la puerta se cierra de golpe, se va la luz y todo queda
+    ///    casi a oscuras. Recién ahí se pueden prender fósforos (aparece la hoja de
+    ///    instrucciones "Pulsa E" del tutorial). Ver VistaCajaFosforos.
     /// 3. Con el primer fósforo encendido aparece la nota que estaba debajo de la caja.
     ///    Desde ese momento el cajón se puede cerrar, y se reabre desde el velador
     ///    (solo con fósforo encendido, como el resto del cuarto).
@@ -97,11 +98,16 @@ namespace Terror.UI
         [SerializeField] private Sprite brilloFosforo;
 
         [Header("Caja de fósforos")]
-        [SerializeField] private string nombreFosforos = "Fuego maldito";
+        [SerializeField] private string nombreFosforos = "Fósforos «La Chispa»";
         [SerializeField] private Sprite spriteFosforos;
         [SerializeField] private Vector2 posicionFosforos = new Vector2(40f, -10f);
         [SerializeField] private Vector2 tamanoFosforos = new Vector2(306f, 198f);
         [SerializeField] private float rotacionFosforos = -3f;
+
+        [Header("Caja en primer plano (se voltea y se abre)")]
+        [Tooltip("Desmarcado: como antes, tocar la caja en el cajón ya provoca el portazo.")]
+        [SerializeField] private bool cajaEnPrimerPlano = true;
+        [SerializeField] private VistaCajaFosforos.Config caja = new VistaCajaFosforos.Config();
 
         [Header("Nota (debajo de los fósforos)")]
         [SerializeField] private string nombreNota = "Una nota";
@@ -133,7 +139,7 @@ namespace Terror.UI
 
         [Header("Textos")]
         [TextArea(1, 3)] [SerializeField] private string textoAlAbrir = "Aquí guarda la abuelita sus cosas... y los fósforos.";
-        [TextArea(1, 3)] [SerializeField] private string textoTomarFosforos = "«Fuego maldito»... qué nombre tan raro para unos fósforos.";
+        [TextArea(1, 3)] [SerializeField] private string textoTomarFosforos = "«La Chispa»... «Cada llama tiene un precio». Qué raro.";
         [TextArea(1, 3)] [SerializeField] private string textoPortazo = "¡PUM! La puerta se cerró sola... y con llave.";
         [TextArea(1, 3)] [SerializeField] private string textoSinLuz = "Está muy oscuro. No veo nada.";
         [TextArea(1, 3)] [SerializeField] private string textoNotaAparece = "Debajo de los fósforos había una nota...";
@@ -206,6 +212,8 @@ namespace Terror.UI
         private string[] textosTarjeta;
         private int indiceTarjeta;
         private Image marcoCajon;
+        private VistaCajaFosforos vistaCaja;
+        private bool notaPendiente;
 
         public Color Tinte => tinteActual;
 
@@ -312,7 +320,9 @@ namespace Terror.UI
 
             if (zona == zonaFosforos)
             {
-                if (fase == Fase.PuertaAbierta) StartCoroutine(TomarFosforos());
+                if (fase != Fase.PuertaAbierta) return;
+                if (vistaCaja != null) AbrirVistaCaja();
+                else StartCoroutine(TomarFosforos());
                 return;
             }
 
@@ -417,18 +427,52 @@ namespace Terror.UI
             ActualizarEtiqueta();
         }
 
-        private IEnumerator TomarFosforos()
+        // ---------- Caja en primer plano ----------
+
+        private void AbrirVistaCaja()
+        {
+            if (vistaCaja.Visible) return;
+            zonaFosforos.gameObject.SetActive(false); // está en la mano
+            vistaCaja.Mostrar(tintePuerta, FosforoManager.Instance != null ? FosforoManager.Instance.FosforosRestantes : 4);
+            Sonar(sonidoObjeto);
+            Decir(textoTomarFosforos);
+            ActualizarEtiqueta();
+        }
+
+        // Se abrió la caja: recién ahí la puerta se cierra de golpe.
+        private void AlAbrirCaja()
+        {
+            if (fase != Fase.PuertaAbierta) return;
+            StartCoroutine(TomarFosforos(enLaMano: true));
+        }
+
+        private void AlCerrarVistaCaja(bool abierta)
+        {
+            // Sin abrir: la caja vuelve al cajón y todo sigue como antes.
+            if (!abierta && fase == Fase.PuertaAbierta)
+                zonaFosforos.gameObject.SetActive(true);
+
+            if (notaPendiente) MostrarNota();
+            ActualizarEtiqueta();
+        }
+
+        private IEnumerator TomarFosforos(bool enLaMano = false)
         {
             fase = Fase.Oscuro;
-            Sonar(sonidoTomarFosforos);
-            Decir(textoTomarFosforos);
-            StartCoroutine(Levantar(zonaFosforos));
+            if (!enLaMano)
+            {
+                Sonar(sonidoTomarFosforos);
+                Decir(textoTomarFosforos);
+                StartCoroutine(Levantar(zonaFosforos));
+            }
 
-            yield return EsperarSinPausa(esperaAntesDelPortazo);
+            yield return EsperarSinPausa(enLaMano ? 0.15f : esperaAntesDelPortazo);
 
             // El portazo: se va la luz de afuera y el cajón queda casi a oscuras.
             Sonar(sonidoPortazo);
             Sacudir(sacudidaPortazo);
+            vistaCaja?.Sacudir(sacudidaPortazo);
+            vistaCaja?.CambiarTinte(tinteOscuro, duracionApagarLuz);
             Decir(textoPortazo);
             StartCoroutine(Animar(duracionApagarLuz, p =>
             {
@@ -457,15 +501,20 @@ namespace Terror.UI
 
             CambiarTinte(tinteFosforo, 0.35f);
             StartCoroutine(Animar(0.35f, p => brillo.color = new Color(1f, 1f, 1f, 0.55f * p)));
+            if (vistaCaja != null && vistaCaja.Visible)
+            {
+                vistaCaja.CambiarTinte(tinteFosforo, 0.35f);
+                vistaCaja.Halo(true);
+                vistaCaja.SacarFosforo(FosforoManager.Instance != null ? FosforoManager.Instance.FosforosRestantes : 0);
+            }
 
             if (fase != Fase.Oscuro) return;
 
             // Primer fósforo: con luz se ve la nota que estaba debajo de la caja.
+            // Si todavía se está mirando la caja, aparece al volver al cajón.
             fase = Fase.Iluminado;
-            zonaNota.gameObject.SetActive(true);
-            StartCoroutine(Pop(zonaNota.transform));
-            Sonar(sonidoRevelarNota);
-            Decir(textoNotaAparece);
+            notaPendiente = true;
+            if (vistaCaja == null || !vistaCaja.Visible) MostrarNota();
             StartCoroutine(Animar(0.8f, AlfaHudOculto));
 
             if (PanelInspeccion.Instance != null)
@@ -473,9 +522,24 @@ namespace Terror.UI
             ActualizarEtiqueta();
         }
 
+        private void MostrarNota()
+        {
+            notaPendiente = false;
+            zonaNota.gameObject.SetActive(true);
+            StartCoroutine(Pop(zonaNota.transform));
+            Sonar(sonidoRevelarNota);
+            Decir(textoNotaAparece);
+        }
+
         private void AlApagarFosforo()
         {
             if (!construido) return;
+
+            if (vistaCaja != null)
+            {
+                vistaCaja.CambiarTinte(tinteOscuro, 0.3f);
+                vistaCaja.Halo(false);
+            }
 
             CambiarTinte(tinteOscuro, 0.3f);
             brillo.color = new Color(1f, 1f, 1f, 0f);
@@ -487,6 +551,9 @@ namespace Terror.UI
 
         private void AlCerrarseUnPrimerPlano()
         {
+            if (vistaCaja != null && vistaCaja.Visible && panel != null && !panel.activeSelf)
+                vistaCaja.CerrarSinAnimar();
+
             if (tarjeta != null && panel != null && !panel.activeSelf && tarjeta.activeSelf)
             {
                 tarjeta.SetActive(false);
@@ -612,6 +679,10 @@ namespace Terror.UI
             }
 
             ConstruirTarjeta();
+
+            if (cajaEnPrimerPlano && caja != null && caja.frente != null)
+                vistaCaja = VistaCajaFosforos.Crear(panel.transform, caja, fuente, audioFuente,
+                    AlAbrirCaja, AlCerrarVistaCaja, () => fase == Fase.PuertaAbierta);
 
             panel.SetActive(false);
         }
@@ -809,7 +880,7 @@ namespace Terror.UI
 
             if (zonaEncima != null && !string.IsNullOrEmpty(zonaEncima.Nombre))
                 textoEtiqueta.text = zonaEncima.Nombre;
-            else if (TarjetaAbierta)
+            else if (TarjetaAbierta || (vistaCaja != null && vistaCaja.Visible))
                 textoEtiqueta.text = "";
             else if (fase == Fase.Iluminado)
                 textoEtiqueta.text = textoAyudaCerrar;

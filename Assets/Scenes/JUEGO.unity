@@ -801,7 +801,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Pulsa <space=0.35em><link=tecla><b><color=#FFFFFF><size=115%>E</size></color></b></link><space=0.35em> para encender un <color=#FF5A3C>f\xF3sforo</color>. Solo tienes <space=0.35em><link=tecla><b><color=#FFFFFF><size=115%>4</size></color></b></link><space=0.35em>f\xF3sforos."
+  m_text: "Pulsa <space=0.5em><link=tecla><b><size=115%>E</size></b></link><space=0.5em> para encender un <color=#9B1B0E>f\xF3sforo</color>. Solo tienes <space=0.5em><link=tecla><b><size=115%>4</size></b></link><space=0.5em> f\xF3sforos."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   m_sharedMaterial: {fileID: 8858683890673008838, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
@@ -905,6 +905,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.TarjetaTutorial
   imagenAntes: {fileID: 21300000, guid: 91ca5223d8714a649f7cdb9c976952b5, type: 3}
   imagenDespues: {fileID: 21300000, guid: ebd5d648d3a84057b94f54980b695928, type: 3}
+  textoAntes: A oscuras
+  textoDespues: "Con un f\xF3sforo"
+  tamano: {x: 1080, y: 700}
+  posicion: {x: 260, y: 20}
+  papel: {fileID: 21300000, guid: 842d8da0c6304048b81b8975f74d07a2, type: 3}
+  tinta: {r: 0.2, g: 0.13, b: 0.09, a: 1}
+  encabezado: INSTRUCCIONES
 --- !u!222 &190511322
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13821,8 +13828,8 @@ MonoBehaviour:
   tamanoCajon: {x: 1260, y: 720}
   posicionCajon: {x: 0, y: -60}
   brilloFosforo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
-  nombreFosforos: "Fuego maldito"
-  spriteFosforos: {fileID: 1548913901372772283, guid: 44aff36dfd0a78941a569d2a0c92ec44, type: 3}
+  nombreFosforos: "F\xF3sforos \xABLa Chispa\xBB"
+  spriteFosforos: {fileID: 21300000, guid: 5838eb72d434453e976df235231e1e0f, type: 3}
   posicionFosforos: {x: 18, y: 0}
   tamanoFosforos: {x: 300, y: 300}
   rotacionFosforos: 0
@@ -13892,7 +13899,7 @@ MonoBehaviour:
     - "Atr\xE1s, con l\xE1piz: \xABQue nunca se te apague la luz, mijito\xBB."
     sonido: {fileID: 0}
   textoAlAbrir: "Aqu\xED guarda la abuelita sus cosas... y los f\xF3sforos."
-  textoTomarFosforos: "\xABFuego maldito\xBB... qu\xE9 nombre tan raro para unos f\xF3sforos."
+  textoTomarFosforos: "\xABLa Chispa\xBB... \xABCada llama tiene un precio\xBB. Qu\xE9 raro."
   textoPortazo: "\xA1PUM! La puerta se cerr\xF3 sola... y con llave."
   textoSinLuz: "Est\xE1 muy oscuro. No veo nada."
   textoNotaAparece: "Debajo de los f\xF3sforos hab\xEDa una nota..."
@@ -13920,6 +13927,24 @@ MonoBehaviour:
   tinteEnCuarto: {r: 0.85, g: 0.83, b: 0.8, a: 1}
   materialIluminado: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   luzVista: {fileID: 950000045}
+  cajaEnPrimerPlano: 1
+  caja:
+    frente: {fileID: 21300000, guid: cf69b59a7a744f63bd6e20147ecb8308, type: 3}
+    reverso: {fileID: 21300000, guid: f666f8387b3f41f2b87e5cbeedaaa853, type: 3}
+    bandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
+    fosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
+    brillo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
+    tamano: {x: 380, y: 545}
+    posicion: {x: 0, y: 0}
+    posicionAbierta: {x: -560, y: 0}
+    subidaBandeja: 0.38
+    fondo: 0.6
+    ayudaCerrada: "Clic en la caja para abrirla   \xB7   A / D para voltearla"
+    ayudaReverso: A / D para voltearla
+    ayudaAbierta: "A / D para voltearla\nEsc o clic afuera para guardarla"
+    textoVoltear: Voltear
+    sonidoVoltear: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
+    sonidoAbrir: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
