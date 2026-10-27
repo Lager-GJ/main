@@ -38,12 +38,6 @@ public class CamaraController : MonoBehaviour
     private float pesoObjetivo;
     private float duracionEnfoque = 0.45f;
 
-    /// <summary>Tamaño ortográfico normal (sin zoom).</summary>
-    public float TamanoBase => tamanoBase;
-
-    /// <summary>Ancho / alto de la pantalla.</summary>
-    public float Aspecto => cam != null ? cam.aspect : 16f / 9f;
-
     /// <summary>True mientras la cámara está acercándose, enfocada o volviendo.</summary>
     public bool Enfocando => pesoEnfoque > 0f || pesoObjetivo > 0f;
 
