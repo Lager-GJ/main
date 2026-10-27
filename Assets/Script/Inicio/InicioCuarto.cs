@@ -90,6 +90,14 @@ namespace Terror.UI
         [SerializeField] private Material materialIluminado;
         [Tooltip("Luz del fósforo sobre el velador mientras se mira el cajón (opcional).")]
         [SerializeField] private GameObject luzVista;
+        [Tooltip("Marcado: al acercarse, la cámara \"sube\" y el cajón se ve desde arriba (el dibujo Fondo Cajon, con su piso) en vez de achatado de costado.")]
+        [SerializeField] private bool vistaDesdeArriba = true;
+        [Tooltip("Alto del cajón visto desde arriba, como fracción de lo que muestra la cámara con el zoom.")]
+        [SerializeField, Range(0.3f, 1f)] private float altoVistaArriba = 0.75f;
+        [Tooltip("Cuánto se oscurece el cuarto detrás del cajón visto desde arriba.")]
+        [SerializeField, Range(0f, 1f)] private float fondoVistaArriba = 0.6f;
+        [Tooltip("Segundos del paso de la vista de costado a la de arriba.")]
+        [SerializeField] private float duracionInclinar = 0.45f;
 
         [Header("Cajón")]
         [SerializeField] private Sprite fondoCajon;
@@ -214,10 +222,18 @@ namespace Terror.UI
         private Image marcoCajon;
         private VistaCajaFosforos vistaCaja;
         private bool notaPendiente;
+        private Vector3 escalaDeCostado = Vector3.one;
+        private Image fondoArriba;
 
         public Color Tinte => tinteActual;
 
         private bool UsaCuarto => enElCuarto && contenedorMundo != null && veladorCerrado != null;
+
+        private bool DesdeArriba => UsaCuarto && vistaDesdeArriba && fondoCajon != null;
+
+        // Orden de dibujo en el cuarto: el velador abierto (4) queda debajo; desde arriba
+        // se suman el oscurecido (5), el piso del cajón (6) y los objetos (7).
+        private int OrdenObjetos => DesdeArriba ? 7 : 5;
 
         private bool PanelAbierto => panel != null && panel.activeSelf;
 
@@ -577,6 +593,12 @@ namespace Terror.UI
             if (nino != null) nino.enabled = false;
 
             grupoPanel.alpha = 0f;
+            if (DesdeArriba)
+            {
+                interior.localScale = escalaDeCostado;
+                imagenInterior.color = new Color(tinteEnCuarto.r, tinteEnCuarto.g, tinteEnCuarto.b, 0f);
+                if (fondoArriba != null) fondoArriba.color = new Color(0f, 0f, 0f, 0f);
+            }
             StartCoroutine(AparecerCuandoSeMuestre());
             ActualizarEtiqueta();
         }
@@ -586,6 +608,21 @@ namespace Terror.UI
         {
             for (float t = 0f; !panel.activeInHierarchy && t < 2f; t += Time.unscaledDeltaTime)
                 yield return null;
+
+            if (DesdeArriba)
+            {
+                // La cámara "sube": el cajón pasa de achatado (de costado) a visto desde
+                // arriba, con su piso, y el cuarto de atrás se oscurece.
+                grupoPanel.alpha = 1f;
+                yield return Animar(duracionInclinar, p =>
+                {
+                    float e = p * p * (3f - 2f * p);
+                    interior.localScale = Vector3.Lerp(escalaDeCostado, escalaInterior, e);
+                    imagenInterior.color = new Color(tinteEnCuarto.r, tinteEnCuarto.g, tinteEnCuarto.b, e);
+                    if (fondoArriba != null) fondoArriba.color = new Color(0f, 0f, 0f, fondoVistaArriba * e);
+                });
+                yield break;
+            }
 
             yield return Animar(0.3f, p =>
             {
@@ -634,8 +671,14 @@ namespace Terror.UI
             posicionBaseInterior = interior.anchoredPosition;
             escalaInterior = interior.localScale;
             imagenInterior = interior.gameObject.AddComponent<Image>();
-            imagenInterior.sprite = UsaCuarto ? null : fondoCajon;
-            if (UsaCuarto) imagenInterior.color = new Color(0f, 0f, 0f, 0f); // solo para que un clic en el cajón no cierre
+            imagenInterior.sprite = UsaCuarto && !DesdeArriba ? null : fondoCajon;
+            if (DesdeArriba)
+            {
+                // El piso del cajón visto desde arriba, iluminado como el resto del cuarto.
+                imagenInterior.color = new Color(tinteEnCuarto.r, tinteEnCuarto.g, tinteEnCuarto.b, 0f);
+                SpriteIluminado.Agregar(imagenInterior, 6, 1.5f, materialIluminado);
+            }
+            else if (UsaCuarto) imagenInterior.color = new Color(0f, 0f, 0f, 0f); // solo para que un clic en el cajón no cierre
             else if (fondoCajon == null) imagenInterior.color = new Color(0.25f, 0.23f, 0.21f, 1f);
             var botonInterior = interior.gameObject.AddComponent<Button>();
             botonInterior.transition = Selectable.Transition.None;
@@ -711,6 +754,7 @@ namespace Terror.UI
             var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
             abierto.color = veladorCerrado.color;
             BotonPlano(abierto.gameObject, null); // un clic en el mueble no cierra
+            if (DesdeArriba) abierto.raycastTarget = false; // queda detrás, oscurecido: un clic ahí vuelve al cuarto
             SpriteIluminado.Agregar(abierto, 4, 1f, materialIluminado);
 
             // Del dibujo (píxeles, y hacia abajo) al rectángulo del velador.
@@ -720,13 +764,40 @@ namespace Terror.UI
                 (0.5f - centroCajonEnDibujo.y / dibujo.y) * tam.y);
             Vector2 tamCajon = new Vector2(tamanoCajonEnDibujo.x / dibujo.x * tam.x, tamanoCajonEnDibujo.y / dibujo.y * tam.y);
 
+            if (DesdeArriba)
+            {
+                // Oscurece el cuarto (y a Luis) detrás del cajón visto desde arriba.
+                fondoArriba = NuevaImagen("OscuroDetras", enCuarto, Vector2.zero, new Vector2(20000f, 20000f), null);
+                fondoArriba.color = new Color(0f, 0f, 0f, 0f);
+                fondoArriba.raycastTarget = false;
+                SpriteIluminado.Agregar(fondoArriba, 5, 1.2f, materialIluminado);
+            }
+
             RectTransform cajon = NuevoRect("CajonInterior", enCuarto, centro, tamanoCajon);
-            cajon.localScale = new Vector3(tamCajon.x / tamanoCajon.x, tamCajon.y / tamanoCajon.y, 1f);
+            escalaDeCostado = new Vector3(tamCajon.x / tamanoCajon.x, tamCajon.y / tamanoCajon.y, 1f);
+            cajon.localScale = DesdeArriba ? EscalaDesdeArriba(enCuarto) : escalaDeCostado;
 
             var vista = panel.AddComponent<VistaEnCuarto>();
             vista.Configurar(enCuarto.gameObject, cajon, zoomCajon, veladorCerrado);
             vista.Luz = luzVista;
             return cajon;
+        }
+
+        // Escala (pareja) para que el cajón visto desde arriba ocupe 'altoVistaArriba' de
+        // lo que muestra la cámara con el zoom del cajón, sin pasarse de ancho.
+        private Vector3 EscalaDesdeArriba(RectTransform padre)
+        {
+            var camara = CamaraController.Instance;
+            float tamanoBase = camara != null && camara.TamanoBase > 0f ? camara.TamanoBase
+                : Camera.main != null ? Camera.main.orthographicSize : 891.83f;
+            float aspecto = camara != null ? camara.Aspecto : 16f / 9f;
+            float altoVisible = 2f * tamanoBase * zoomCajon;
+            float anchoVisible = altoVisible * aspecto;
+            Vector3 escalaPadre = padre.lossyScale;
+            float k = Mathf.Min(
+                altoVisible * altoVistaArriba / (tamanoCajon.y * escalaPadre.y),
+                anchoVisible * 0.9f / (tamanoCajon.x * escalaPadre.x));
+            return new Vector3(k, k, 1f);
         }
 
         private Sprite SpriteMarco() => marcoTarjeta != null ? marcoTarjeta : MarcoDibujado.Obtener(128, 7f, 6f, 1f);
@@ -796,8 +867,8 @@ namespace Terror.UI
 
             if (UsaCuarto)
             {
-                SpriteIluminado.Agregar(img, 5, 2f, materialIluminado);
-                if (borde != null) SpriteIluminado.Agregar(borde, 5, 2.5f, materialIluminado);
+                SpriteIluminado.Agregar(img, OrdenObjetos, 2f, materialIluminado);
+                if (borde != null) SpriteIluminado.Agregar(borde, OrdenObjetos, 2.5f, materialIluminado);
             }
 
             var zona = img.gameObject.AddComponent<ZonaCajon>();
