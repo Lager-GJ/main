@@ -41,6 +41,22 @@ namespace Terror
         [Tooltip("Centro de la placa del candado dentro del joyero (0,0 = centro).")]
         [SerializeField] private Vector2 posicionPlaca = new Vector2(0f, -110f);
 
+        [Header("En el cuarto (cambio de perspectiva)")]
+        [Tooltip("Canvas del mundo (Interactuables). Con esto asignado, la cámara se acerca al joyero de la cómoda y el candado aparece encima, sin ventana. Vacío = la vista vieja a pantalla completa.")]
+        [SerializeField] private RectTransform contenedorMundo;
+        [Tooltip("Tamaño de la cámara respecto del normal (0.25 = cuatro veces más cerca).")]
+        [SerializeField, Range(0.1f, 1f)] private float zoom = 0.25f;
+        [Tooltip("Imagen del joyero en el cuarto (el botón JoyeroB). Al abrirse el candado pasa a 'Joyero Abierto' y queda así.")]
+        [SerializeField] private Image joyeroDelCuarto;
+        [Tooltip("Tamaño del joyero en el cuarto, en unidades del Canvas del mundo. (0, 0) = el del botón del cuarto.")]
+        [SerializeField] private Vector2 tamanoEnCuarto = Vector2.zero;
+        [Tooltip("Corrimiento del joyero respecto del centro del botón del cuarto, en unidades del Canvas del mundo.")]
+        [SerializeField] private Vector2 corrimientoEnCuarto = new Vector2(0f, -20f);
+        [Tooltip("Vacío = el material con luz del fondo.")]
+        [SerializeField] private Material materialIluminado;
+        [Tooltip("Luz del fósforo sobre el joyero mientras se mira (opcional).")]
+        [SerializeField] private GameObject luzVista;
+
         [Header("Objeto que guarda")]
         [SerializeField] private string idLlave = "llave_pequena";
         [SerializeField] private string idPista = "agenda";
@@ -75,6 +91,7 @@ namespace Terror
         private ObjetoInventario objetoLlave;
 
         private bool Visible => panel != null && panel.activeSelf;
+        private bool EnCuarto => contenedorMundo != null;
 
         // En el Input System las teclas de números no van en orden (Digit0 está después de Digit9).
         private static readonly Key[] TeclasNumero =
@@ -174,6 +191,17 @@ namespace Terror
         private void ActualizarVista()
         {
             imagenJoyero.sprite = abierto && joyeroAbierto != null ? joyeroAbierto : joyeroCerrado;
+            // En el cuarto, cerrado se ve el joyero del dibujo del fondo; abierto, el dibujo nuevo encima.
+            // El joyero que se ve es el del cuarto (abierto o cerrado); el de la vista solo recibe clics.
+            if (EnCuarto)
+            {
+                imagenJoyero.color = new Color(1f, 1f, 1f, 0f);
+                if (joyeroDelCuarto != null)
+                {
+                    Sprite s = abierto ? joyeroAbierto : joyeroCerrado;
+                    if (s != null) joyeroDelCuarto.sprite = s;
+                }
+            }
             placa.SetActive(!abierto);
             placa.transform.localScale = Vector3.one;
             if (objetoLlave != null) objetoLlave.gameObject.SetActive(abierto && !llaveTomada);
@@ -208,10 +236,45 @@ namespace Terror
             Estirar((RectTransform)panel.transform);
             if (insertarDespuesDe != null && insertarDespuesDe.parent == padre)
                 panel.transform.SetSiblingIndex(insertarDespuesDe.GetSiblingIndex() + 1);
-            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.85f);
-            BotonPlano(panel, () => PanelInspeccion.Instance?.Cerrar()); // clic afuera: cierra
+            Transform padreJoyero = panel.transform;
+            Vector2 posicionJoyero = new Vector2(0f, 40f);
+            if (EnCuarto)
+            {
+                // Sin ventana: en la pantalla quedan solo los textos y el botón Probar. El
+                // joyero, el candado y la llave van en el cuarto, encima del joyero de la cómoda.
+                var fondoPanel = panel.GetComponent<Image>();
+                fondoPanel.color = new Color(0f, 0f, 0f, 0f);
+                fondoPanel.raycastTarget = false;
 
-            interior = NuevoRect("Joyero", panel.transform, new Vector2(0f, 40f), tamanoJoyero);
+                RectTransform molde = origenEnElCuarto as RectTransform;
+                RectTransform enCuarto = molde != null
+                    ? RectSobre("JoyeroEnCuarto", molde, contenedorMundo)
+                    : NuevoRect("JoyeroEnCuarto", contenedorMundo, Vector2.zero, Vector2.zero);
+                enCuarto.anchoredPosition += corrimientoEnCuarto;
+                if (tamanoEnCuarto != Vector2.zero) enCuarto.sizeDelta = tamanoEnCuarto;
+                enCuarto.SetAsLastSibling();
+                CapaEncimaEnCuarto(enCuarto.gameObject);
+
+                // Clic afuera del joyero: se vuelve al cuarto.
+                var afuera = NuevaImagen("TocarAfueraCierra", enCuarto, Vector2.zero, new Vector2(40000f, 40000f), null);
+                afuera.color = new Color(0f, 0f, 0f, 0f);
+                BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
+
+                padreJoyero = enCuarto;
+                posicionJoyero = Vector2.zero;
+
+                var vista = panel.AddComponent<VistaEnCuarto>();
+                vista.Configurar(enCuarto.gameObject, enCuarto, zoom);
+                vista.Luz = luzVista;
+            }
+            else
+            {
+                panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f); // se ve el cuarto (con zoom) detrás
+                BotonPlano(panel, () => PanelInspeccion.Instance?.Cerrar()); // clic afuera: cierra
+            }
+
+            interior = NuevoRect("Joyero", padreJoyero, posicionJoyero, tamanoJoyero);
+            if (EnCuarto) interior.localScale = Vector3.one * (((RectTransform)padreJoyero).sizeDelta.x / tamanoJoyero.x);
             imagenJoyero = interior.gameObject.AddComponent<Image>();
             imagenJoyero.sprite = joyeroCerrado;
             imagenJoyero.preserveAspect = true;
@@ -245,8 +308,10 @@ namespace Terror
             NuevoTexto("Texto", probar.transform, Vector2.zero, new Vector2(260f, 70f), 34f, FontStyles.Normal, fuente).text = "Probar";
 
             // La llave (aparece al abrir)
-            var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 20f), new Vector2(170f, 170f), llave);
-            imgLlave.preserveAspect = true;
+            // Acostada sobre el terciopelo del joyero abierto (visto un poco desde arriba).
+            var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 22f), new Vector2(440f, 170f), llave);
+            imgLlave.preserveAspect = false;
+            if (EnCuarto) SpriteIluminado.Agregar(imgLlave, 5, 2f, materialIluminado);
             objetoLlave = imgLlave.gameObject.AddComponent<ObjetoInventario>();
             objetoLlave.Configurar(idLlave, false, null);
             objetoLlave.AlGuardarse += () => llaveTomada = true;

@@ -24,7 +24,8 @@ namespace Terror.UI
             FosforoApagado,         // se apagó un fósforo (se consumió o lo apagó el jugador con Q)
             ObjetoInspeccionado,    // el jugador abrió un ObjetoInteractivo
             PrimerPlanoCerrado,     // se cerró una vista de primer plano (el cajón del inicio, el armario...).
-            ObjetoGuardado          // se guardó algo en el Inventario (la foto, una llave...).
+            ObjetoGuardado,         // se guardó algo en el Inventario (la foto, una llave...).
+            ConFosforoEncendido     // hay un fósforo encendido en este momento (no "alguna vez").
                                     // Los nuevos van al final: los pasos se guardan en la escena por número.
         }
 
@@ -59,6 +60,18 @@ namespace Terror.UI
 
             [Tooltip("Marcado: el mensaje no se oculta por tiempo, se queda hasta que arranca el paso siguiente. Úsalo para indicaciones que el jugador debe cumplir (\"Pulsa E\"). En el último paso se queda en pantalla para siempre: sirve para el objetivo fijo.")]
             public bool mantenerHastaSiguientePaso;
+
+            [Tooltip("Marcado: el mensaje se cierra al pulsar A o D (o las flechas), sin congelar el juego. Si no se pulsa, se cierra igual a los 'Segundos Visible'.")]
+            public bool cerrarAlMoverse;
+
+            [Tooltip("Marcado: el mensaje puede salir con una vista de cerca abierta (el cajón del inicio, el armario...). Desmarcado: espera a que se cierre, y si ya estaba a la vista se esconde mientras tanto.")]
+            public bool permitirEnPrimerPlano;
+
+            [Tooltip("Marcado: el mensaje queda en pantalla para siempre, aunque sigan otros pasos (el objetivo fijo de la esquina). Solo se esconde mientras hay una vista de cerca abierta.")]
+            public bool permanente;
+
+            [Tooltip("Marcado: este paso y los siguientes que también lo tengan pueden salir en cualquier orden, según qué pase primero (apagar un fósforo, guardar algo...).")]
+            public bool enCualquierOrden;
         }
 
         [Header("Referencias")]
@@ -83,6 +96,9 @@ namespace Terror.UI
         private float tiempoActivo;
         private float temporizadorMensaje;
         private GameObject panelPendiente;  // mensaje que sigue visible esperando al paso siguiente
+        private bool pendientePermitido;    // ese mensaje puede verse con una vista de cerca abierta
+        private GameObject panelPermanente; // objetivo fijo: queda para siempre
+        private readonly System.Collections.Generic.HashSet<GameObject> escondidos = new System.Collections.Generic.HashSet<GameObject>();
 
         // Banderas "ya pasó": si el jugador hace algo antes de que le toque ese paso
         // (por ejemplo recoge el objeto antes de llegar al marcador), el tutorial no
@@ -150,6 +166,12 @@ namespace Terror.UI
 
         private void Update()
         {
+            // Con una vista de cerca abierta (cajón, armario, inventario, tarjeta...) los
+            // mensajes no se ven: no tienen que ver con lo que se está mirando.
+            bool tapado = HayPrimerPlanoAbierto();
+            Esconder(panelPermanente, tapado);
+            Esconder(panelPendiente, tapado && !pendientePermitido);
+
             if (terminado) return;
 
             // Con el menú de pausa abierto el tutorial espera: si no, pulsar A/D en la
@@ -167,7 +189,25 @@ namespace Terror.UI
                     return;
                 }
 
-                if (DisparadorCumplido(paso)) MostrarPaso(paso);
+                if (paso.enCualquierOrden && !DisparadorCumplido(paso))
+                {
+                    TraerAdelanteElQueYaSeCumplio();
+                    paso = pasos[indice];
+                }
+
+                if ((!tapado || paso.permitirEnPrimerPlano) && DisparadorCumplido(paso)) MostrarPaso(paso);
+                return;
+            }
+
+            // El mensaje ya estaba a la vista y se abrió un primer plano: se esconde y su
+            // tiempo no corre hasta que se cierre.
+            bool oculto = tapado && !paso.permitirEnPrimerPlano;
+            Esconder(paso.panel, oculto);
+            if (oculto) return;
+
+            if (paso.cerrarAlMoverse && JugadorPulsoMovimiento())
+            {
+                CerrarPaso(paso);
                 return;
             }
 
@@ -189,6 +229,52 @@ namespace Terror.UI
 
         // Tiempo real, pero quieto con el juego congelado (timeScale 0): así la cámara
         // lenta de los primeros planos no estira los mensajes del tutorial.
+        private static bool HayPrimerPlanoAbierto()
+        {
+            var panel = PanelInspeccion.Instance;
+            return panel != null && (panel.EstaAbierto || panel.HayCapaAbierta);
+        }
+
+        // Solo vuelve a mostrar lo que escondió él: si el jugador cerró un mensaje (la X
+        // de la tarjeta "Pulsa E"), no reaparece al cerrar una vista de cerca.
+        private void Esconder(GameObject panel, bool esconder)
+        {
+            if (panel == null) return;
+            if (esconder)
+            {
+                if (panel.activeSelf)
+                {
+                    panel.SetActive(false);
+                    escondidos.Add(panel);
+                }
+            }
+            else if (escondidos.Remove(panel))
+            {
+                panel.SetActive(true);
+            }
+        }
+
+        private void Apagar(GameObject panel)
+        {
+            if (panel == null) return;
+            panel.SetActive(false);
+            escondidos.Remove(panel);
+        }
+
+        // Entre los pasos "en cualquier orden", el primero cuyo disparador ya se cumplió
+        // pasa a ser el actual (intercambia su lugar con el que estaba esperando).
+        private void TraerAdelanteElQueYaSeCumplio()
+        {
+            for (int j = indice + 1; j < pasos.Length; j++)
+            {
+                if (!pasos[j].enCualquierOrden) break;
+                if (!DisparadorCumplido(pasos[j])) continue;
+
+                (pasos[indice], pasos[j]) = (pasos[j], pasos[indice]);
+                return;
+            }
+        }
+
         private static float PasoDeTiempo() => Time.timeScale > 0f ? Time.unscaledDeltaTime : 0f;
 
         private bool DisparadorCumplido(Paso paso)
@@ -227,6 +313,9 @@ namespace Terror.UI
                 case Disparador.ObjetoGuardado:
                     return objetoYaGuardado;
 
+                case Disparador.ConFosforoEncendido:
+                    return FosforoManager.Instance != null && FosforoManager.Instance.Encendido;
+
                 default:
                     return true;
             }
@@ -241,12 +330,13 @@ namespace Terror.UI
             // Igual que el mensaje que se quedó esperando: se oculta cuando arranca el siguiente.
             if (panelPendiente != null)
             {
-                panelPendiente.SetActive(false);
+                Apagar(panelPendiente);
                 panelPendiente = null;
             }
 
             mensajeVisible = true;
             temporizadorMensaje = paso.segundosVisible;
+            if (paso.permanente) panelPermanente = paso.panel;
 
             if (paso.panel != null) paso.panel.SetActive(true);
             if (paso.resaltar != null) paso.resaltar.Activar();
@@ -262,10 +352,14 @@ namespace Terror.UI
 
         private void CerrarPaso(Paso paso)
         {
-            if (paso.panel != null)
+            if (paso.panel != null && !paso.permanente)
             {
-                if (paso.mantenerHastaSiguientePaso) panelPendiente = paso.panel;
-                else paso.panel.SetActive(false);
+                if (paso.mantenerHastaSiguientePaso)
+                {
+                    panelPendiente = paso.panel;
+                    pendientePermitido = paso.permitirEnPrimerPlano;
+                }
+                else Apagar(paso.panel);
             }
 
             if (pausandoJuego)
