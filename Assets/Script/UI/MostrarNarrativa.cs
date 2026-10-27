@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 namespace Terror.UI
@@ -7,7 +8,8 @@ namespace Terror.UI
     /// <summary>
     /// Escucha cuando el jugador interactúa con un ObjetoInteractivo y muestra 
     /// su texto narrativo (Descripción) en la pantalla.
-    /// También permite cerrar el texto haciendo clic o presionando Escape.
+    /// Se cierra con un botón de la UI conectado a Cerrar(): ya no con clic en cualquier
+    /// parte ni con Escape, porque ese clic podía cerrar el panel en el mismo frame que lo abría.
     /// </summary>
     public class MostrarNarrativa : MonoBehaviour
     {
@@ -18,17 +20,32 @@ namespace Terror.UI
         [Tooltip("El componente de texto donde se escribirá la historia.")]
         public TextMeshProUGUI textoNarrativa;
 
+        [Tooltip("Opcional: Image donde se ve el objeto ampliado (toma el sprite y el color del objeto pulsado).")]
+        public Image imagenObjeto;
+
+        [Tooltip("Opcional: título de la ventana (el Nombre Objeto del ObjetoInteractivo).")]
+        public TextMeshProUGUI textoTitulo;
+
         private ObjetoInteractivo objetoActual;
 
         private void OnEnable()
         {
             // Nos suscribimos al evento del ObjetoInteractivo
             ObjetoInteractivo.OnObjetoInspeccionado += AbrirNarrativa;
+            FosforoManager.OnFosforoApagado += AlApagarseElFosforo;
         }
 
         private void OnDisable()
         {
             ObjetoInteractivo.OnObjetoInspeccionado -= AbrirNarrativa;
+            FosforoManager.OnFosforoApagado -= AlApagarseElFosforo;
+        }
+
+        // Igual que el armario y el cajón: sin luz no se sigue leyendo (si se apaga con Q).
+        private void AlApagarseElFosforo()
+        {
+            if (panelNarrativa != null && panelNarrativa.activeSelf)
+                Cerrar();
         }
 
         private void Start()
@@ -40,31 +57,41 @@ namespace Terror.UI
 
         private void AbrirNarrativa(ObjetoInteractivo objeto)
         {
-            // Si el objeto no tiene descripción, no hacemos nada
-            if (string.IsNullOrEmpty(objeto.Descripcion)) return;
+            // Sin descripción no hay nada que mostrar, pero hay que reanudar el fósforo:
+            // ObjetoInteractivo ya lo pausó y solo CerrarInspeccion() lo reanuda.
+            if (string.IsNullOrEmpty(objeto.Descripcion))
+            {
+                objeto.CerrarInspeccion();
+                return;
+            }
 
             objetoActual = objeto;
 
             if (textoNarrativa != null)
                 textoNarrativa.text = objeto.Descripcion;
 
+            if (textoTitulo != null)
+                textoTitulo.text = objeto.NombreObjeto;
+
+            MostrarImagenAmpliada(objeto);
+
             if (panelNarrativa != null)
                 panelNarrativa.SetActive(true);
         }
 
-        private void Update()
+        private void MostrarImagenAmpliada(ObjetoInteractivo objeto)
         {
-            // Si el panel no está activo, no hay nada que cerrar
-            if (panelNarrativa == null || !panelNarrativa.activeSelf) return;
+            if (imagenObjeto == null) return;
 
-            // Detectar clic izquierdo o la tecla Escape para cerrar
-            bool clic = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
-            bool escape = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+            // Se toma el sprite del propio objeto: cuando llegue el arte final se verá
+            // ampliado sin configurar nada más. Los objetos de UI no tienen SpriteRenderer.
+            var sr = objeto.GetComponentInChildren<SpriteRenderer>();
+            imagenObjeto.enabled = sr != null && sr.sprite != null;
+            if (!imagenObjeto.enabled) return;
 
-            if (clic || escape)
-            {
-                Cerrar();
-            }
+            imagenObjeto.sprite = sr.sprite;
+            imagenObjeto.color = sr.color;
+            imagenObjeto.preserveAspect = true;
         }
 
         public void Cerrar()

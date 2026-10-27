@@ -50,12 +50,27 @@ namespace Terror
 
         public void IniciarJuego() => SetState(GameState.Juego);
 
-        public void Ganar() => SetState(GameState.Victoria);
+        // Solo se gana durante la partida: si ya se perdió (o se está reiniciando),
+        // una secuencia que termine tarde no puede convertir la derrota en victoria.
+        public void Ganar()
+        {
+            if (CurrentState != GameState.Juego) return;
+            SetState(GameState.Victoria);
+        }
 
-        public void Perder() => SetState(GameState.Derrota);
+        // Igual que Ganar: solo durante la partida, para que una derrota tardía
+        // (p. ej. el silencio de la Presencia) no pise una victoria.
+        public void Perder()
+        {
+            if (CurrentState != GameState.Juego) return;
+            SetState(GameState.Derrota);
+        }
 
         public void Reiniciar()
         {
+            // timeScale es global y sobrevive a la recarga: si el tutorial o la pausa
+            // lo dejaron en 0, la escena nueva arrancaría congelada.
+            Time.timeScale = 1f;
             SetState(GameState.Reinicio);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
