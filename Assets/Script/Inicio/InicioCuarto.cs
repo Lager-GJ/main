@@ -82,6 +82,18 @@ namespace Terror.UI
         [SerializeField] private Vector2 centroCajonEnDibujo = new Vector2(279f, 345f);
         [Tooltip("Ancho y fondo del interior del cajón en el dibujo, en píxeles.")]
         [SerializeField] private Vector2 tamanoCajonEnDibujo = new Vector2(180f, 50f);
+        [Tooltip("Marcado: los objetos se acuestan sobre el piso del cajón con perspectiva (cajón inclinado, visto un poco desde arriba). Usa las dos listas de esquinas de abajo en vez de Centro/Tamaño.")]
+        [SerializeField] private bool acostarObjetos = true;
+        [Tooltip("Borde de arriba del cajón en el dibujo del velador abierto, en píxeles (0,0 arriba a la izquierda): fondo izq., fondo der., frente der., frente izq.")]
+        [SerializeField] private Vector2[] bordeCajonEnDibujo =
+        {
+            new Vector2(198f, 318f), new Vector2(402f, 318f), new Vector2(350f, 436f), new Vector2(132f, 436f)
+        };
+        [Tooltip("Ese mismo borde en las coordenadas de diseño del cajón (las de la posición de cada objeto; el dibujo Fondo Cajon visto desde arriba).")]
+        [SerializeField] private Vector2[] bordeCajonEnDiseno =
+        {
+            new Vector2(-578.7f, 307.8f), new Vector2(576f, 307.8f), new Vector2(624.6f, -216f), new Vector2(-624.6f, -216f)
+        };
         [Tooltip("Tamaño de la cámara respecto del normal (0.25 = cuatro veces más cerca).")]
         [SerializeField, Range(0.1f, 1f)] private float zoomCajon = 0.25f;
         [Tooltip("Color de los objetos del cajón. La luz (puerta, fósforo) hace el resto.")]
@@ -218,6 +230,20 @@ namespace Terror.UI
         public Color Tinte => tinteActual;
 
         private bool UsaCuarto => enElCuarto && contenedorMundo != null && veladorCerrado != null;
+
+        private bool Acostando => UsaCuarto && acostarObjetos && bordeCajonEnDibujo != null && bordeCajonEnDibujo.Length == 4
+            && bordeCajonEnDiseno != null && bordeCajonEnDiseno.Length == 4;
+
+        // Del diseño del cajón (visto desde arriba) al rectángulo del velador en el cuarto.
+        private PlanoInclinado plano;
+        private Vector2 tamanoDibujo = new Vector2(626f, 626f);
+        private Vector2 tamanoEnCuarto;
+
+        private Vector2 DisenoACuarto(Vector2 d)
+        {
+            Vector2 px = plano.Aplicar(d);
+            return new Vector2((px.x / tamanoDibujo.x - 0.5f) * tamanoEnCuarto.x, (0.5f - px.y / tamanoDibujo.y) * tamanoEnCuarto.y);
+        }
 
         private bool PanelAbierto => panel != null && panel.activeSelf;
 
@@ -590,7 +616,7 @@ namespace Terror.UI
             yield return Animar(0.3f, p =>
             {
                 grupoPanel.alpha = p;
-                interior.localScale = escalaInterior * Mathf.Lerp(0.92f, 1f, p);
+                if (!Acostando) interior.localScale = escalaInterior * Mathf.Lerp(0.92f, 1f, p);
             });
         }
 
@@ -720,11 +746,34 @@ namespace Terror.UI
                 (0.5f - centroCajonEnDibujo.y / dibujo.y) * tam.y);
             Vector2 tamCajon = new Vector2(tamanoCajonEnDibujo.x / dibujo.x * tam.x, tamanoCajonEnDibujo.y / dibujo.y * tam.y);
 
-            RectTransform cajon = NuevoRect("CajonInterior", enCuarto, centro, tamanoCajon);
-            cajon.localScale = new Vector3(tamCajon.x / tamanoCajon.x, tamCajon.y / tamanoCajon.y, 1f);
+            RectTransform cajon;
+            RectTransform foco;
+            if (Acostando)
+            {
+                // Cajón inclinado: los objetos se acuestan sobre su piso (ver NuevaZona).
+                tamanoDibujo = dibujo;
+                tamanoEnCuarto = tam;
+                plano = PlanoInclinado.Desde(bordeCajonEnDiseno, bordeCajonEnDibujo);
+                cajon = NuevoRect("CajonInterior", enCuarto, Vector2.zero, tam);
+
+                // La cámara apunta al centro del piso del cajón.
+                Vector2 min = new Vector2(float.MaxValue, float.MaxValue), max = new Vector2(float.MinValue, float.MinValue);
+                foreach (var p in bordeCajonEnDiseno)
+                {
+                    Vector2 q = DisenoACuarto(p);
+                    min = Vector2.Min(min, q); max = Vector2.Max(max, q);
+                }
+                foco = NuevoRect("PisoCajon", enCuarto, (min + max) * 0.5f, max - min);
+            }
+            else
+            {
+                cajon = NuevoRect("CajonInterior", enCuarto, centro, tamanoCajon);
+                cajon.localScale = new Vector3(tamCajon.x / tamanoCajon.x, tamCajon.y / tamanoCajon.y, 1f);
+                foco = cajon;
+            }
 
             var vista = panel.AddComponent<VistaEnCuarto>();
-            vista.Configurar(enCuarto.gameObject, cajon, zoomCajon, veladorCerrado);
+            vista.Configurar(enCuarto.gameObject, foco, zoomCajon, veladorCerrado);
             vista.Luz = luzVista;
             return cajon;
         }
@@ -784,6 +833,8 @@ namespace Terror.UI
             Image img = NuevaImagen(string.IsNullOrEmpty(nombre) ? "Objeto" : nombre, interior, posicion, tamano, sprite);
             img.preserveAspect = true;
             img.rectTransform.localEulerAngles = new Vector3(0f, 0f, rotacion);
+            if (Acostando) Acostar(img.rectTransform, sprite, posicion, ref tamano);
+            if (Acostando) img.preserveAspect = false;
 
             // Sin dibujo todavía: un papel gris con borde blanco (sirve para la foto y la estampita).
             Image borde = null;
@@ -803,6 +854,27 @@ namespace Terror.UI
             var zona = img.gameObject.AddComponent<ZonaCajon>();
             zona.Iniciar(this, nombre, img, borde);
             return zona;
+        }
+
+        /// <summary>
+        /// Pone un objeto acostado sobre el piso del cajón inclinado: su posición de diseño
+        /// pasa al dibujo del velador con perspectiva y el tamaño se achica hacia el fondo
+        /// y se aplasta como el piso. 'tamano' vuelve con el tamaño final.
+        /// </summary>
+        private void Acostar(RectTransform rt, Sprite sprite, Vector2 posicion, ref Vector2 tamano)
+        {
+            Vector2 t = tamano;
+            if (sprite != null && sprite.rect.height > 0f)
+            {
+                float asp = sprite.rect.width / sprite.rect.height;
+                t = t.x / t.y > asp ? new Vector2(t.y * asp, t.y) : new Vector2(t.x, t.x / asp);
+            }
+            Vector2 mx = new Vector2(t.x * 0.5f, 0f), my = new Vector2(0f, t.y * 0.5f);
+            float ancho = (DisenoACuarto(posicion + mx) - DisenoACuarto(posicion - mx)).magnitude;
+            float alto = (DisenoACuarto(posicion + my) - DisenoACuarto(posicion - my)).magnitude;
+            rt.anchoredPosition = DisenoACuarto(posicion);
+            tamano = new Vector2(ancho, alto);
+            rt.sizeDelta = tamano;
         }
 
         private TextMeshProUGUI NuevoTexto(string nombre, Transform padre, Vector2 posicion, Vector2 tamano, float tamanoFuente, FontStyles estilo)
@@ -924,7 +996,7 @@ namespace Terror.UI
             zona.Bloquear();
             yield return Animar(0.35f, p =>
             {
-                rt.anchoredPosition = p0 + new Vector2(0f, 60f * p);
+                rt.anchoredPosition = p0 + new Vector2(0f, (Acostando ? rt.sizeDelta.y * 0.6f : 60f) * p);
                 rt.localScale = Vector3.one * Mathf.Lerp(1f, 1.15f, p);
                 zona.Imagen.color = new Color(zona.Imagen.color.r, zona.Imagen.color.g, zona.Imagen.color.b, 1f - p);
             });

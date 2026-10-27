@@ -308,8 +308,9 @@ namespace Terror
             NuevoTexto("Texto", probar.transform, Vector2.zero, new Vector2(260f, 70f), 34f, FontStyles.Normal, fuente).text = "Probar";
 
             // La llave (aparece al abrir)
-            var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 20f), new Vector2(170f, 170f), llave);
-            imgLlave.preserveAspect = true;
+            // Acostada sobre el terciopelo del joyero abierto (visto un poco desde arriba).
+            var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 22f), new Vector2(440f, 170f), llave);
+            imgLlave.preserveAspect = false;
             if (EnCuarto) SpriteIluminado.Agregar(imgLlave, 5, 2f, materialIluminado);
             objetoLlave = imgLlave.gameObject.AddComponent<ObjetoInventario>();
             objetoLlave.Configurar(idLlave, false, null);

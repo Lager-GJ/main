@@ -63,6 +63,25 @@ Mejoras posibles para el equipo:
 - la lija en el costado;
 - un reverso dibujado a mano con el mismo texto.
 
+## 2c. Cajones abiertos inclinados: ficha para el equipo (2026-10-27)
+
+David lo pidió así: al abrir un cajón **no** cambia de ventana ni aparece una vista desde arriba flotando. El mueble se abre **en el cuarto**, a su escala y con Luis al lado. El cajón sale **inclinado, visto un poco desde arriba (~45°)**, para que se vea su **piso** y los objetos acostados encima.
+
+Hoy hay un provisorio hecho deformando `Inicio/Cajon_Interior.png`. Para la versión final:
+- respeten **el mismo tamaño de archivo y el mismo marco**: los muebles abiertos se superponen al cerrado píxel a píxel;
+- **no dibujen los objetos** del cajón: el juego los pone y los acuesta con perspectiva;
+- el **piso** del cajón tiene que ser **más claro** que las paredes, para que los objetos se distingan;
+- usen trazo negro grueso y colores casi negros, como el resto del cuarto.
+
+| Archivo | Tamaño | Dónde va | Esquinas del borde de arriba del cajón (px; fondo izq., fondo der., frente der., frente izq.) |
+|---|---|---|---|
+| `Inicio/Velador_CajonInclinado.png` | 626 × 626 | Reemplaza a `CajonAbr` (mismo marco que `Cajoncerr`). | (198,318) (402,318) (350,436) (132,436) |
+| `Acertijos/Armario_CajonAbierto.png` | 300 × 130 | Encima de `ArmAbr`, con su esquina en (165,462) de `ArmAbr`. Tapa el cajón cerrado de abajo. | (38,15) (262,15) (282,78) (18,78). La llave de la puerta va acostada en (150,47). |
+| `Acertijos/Secretero_CajonSecretoAbierto.png` | 140 × 116 | El cajón secreto, que sale de los casilleros. | (18,6) (122,6) (136,66) (4,66). La agenda va acostada en (70,35). |
+| `Acertijos/Joyero_Abierto.png` | 220 × 170 | Joyero abierto: tapa levantada atrás y el terciopelo (piso) visto desde arriba, entre y 52 y 100. La placa del candado queda en el mismo lugar que en el cerrado (70..150, 104..140). | La llave pequeña va acostada en (110,78). |
+
+**Si cambian las esquinas del velador**, hay que actualizarlas en `InicioCuarto` → "Borde Cajon En Dibujo". En los otros muebles, avísenle a David para mover la llave o la agenda.
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).
