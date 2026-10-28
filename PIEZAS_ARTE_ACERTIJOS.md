@@ -106,6 +106,19 @@ Todos los de esta tabla son **provisorios**. Varios reversos son el frente espej
 
 La foto del campo ya tenía su reverso, con el año (`Foto_Campo_Reverso.png`). La caja de fósforos tiene el suyo en §2b.
 
+## 2e. Tele embrujada (2026-10-28)
+
+La tele está dibujada en `FondoDefi`. Al tocarla por primera vez se prende sola con estática y, por un instante, en el reflejo de la pantalla se ve a Luis con la Presencia detrás. Todo lo de esta tabla está en `Assets/Recursos/Tele/` y es **provisorio**.
+
+Los dibujos tienen la forma de la pantalla del fondo, que mide 238 × 186 px en `FondoDefi`, con las esquinas redondeadas. Están hechos al triple de tamaño.
+
+| Archivo | Tamaño | Qué es |
+|---|---|---|
+| `Tele_Estatica_1..4.png` | 714 × 558 | Cuatro cuadros de estática que se alternan: ruido gris azulado, líneas de barrido y una franja clara que rueda. |
+| `Tele_Reflejo.png` | 714 × 558 | El vidrio negro: Luis chico, con los ojos abiertos, y detrás, alta y borrosa, la Presencia con ojos amarillos (los mismos del reverso de la caja). **Es la pieza que más conviene que el equipo redibuje.** |
+| `sfx_tele_estatica.wav` | 1.6 s | Ruido con zumbido, generado en código. |
+| `sfx_tele_golpe.wav` | 1.1 s | Golpe grave para el reflejo, generado en código. |
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).

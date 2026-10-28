@@ -13075,6 +13075,7 @@ GameObject:
   - component: {fileID: 710000003}
   - component: {fileID: 710000004}
   - component: {fileID: 710000005}
+  - component: {fileID: 970000003}
   m_Layer: 5
   m_Name: Narrable_Television
   m_TagString: Untagged
@@ -13159,6 +13160,40 @@ MonoBehaviour:
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
+--- !u!114 &970000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 647b53a4766944f49b341b493ab4a505, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.TeleEmbrujada
+  posicionPantalla: {x: 18.5, y: -3.4}
+  tamanoPantalla: {x: 275.4, y: 215.2}
+  estatica:
+  - {fileID: 21300000, guid: 8abc25b6a5434de7a574bee3f95a6f4e, type: 3}
+  - {fileID: 21300000, guid: 5a1e62d4ee614f7690966b68b7aa6248, type: 3}
+  - {fileID: 21300000, guid: 2a8fe05e69de4628b7bef65eb742a8d5, type: 3}
+  - {fileID: 21300000, guid: 0bd2977370054f48b98599eb3d74a8b0, type: 3}
+  reflejo: {fileID: 21300000, guid: ec893ac08a6a43999467e1a43fe885fc, type: 3}
+  zoom: 0.35
+  duracionZoom: 0.6
+  duracionEstatica: 1.3
+  duracionReflejo: 0.4
+  sacudida: 18
+  conLuz: 1
+  colorLuz: {r: 0.6, g: 0.72, b: 1, a: 1}
+  intensidadLuz: 1.6
+  radioLuz: 900
+  sonidoEstatica: {fileID: 8300000, guid: 8dd04ac2a6e9439ba5f4f9fbb8dae8c1, type: 3}
+  sonidoGolpe: {fileID: 8300000, guid: f7577b23023a46e2bdb35e3732875c42, type: 3}
+  textoSusto: "...\xBFQui\xE9n est\xE1 ah\xED?"
+  textoDespues: No pienso volver a mirar esa tele.
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
 --- !u!1 &710000011
 GameObject:
   m_ObjectHideFlags: 0
