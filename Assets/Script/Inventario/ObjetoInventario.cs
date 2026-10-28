@@ -13,15 +13,15 @@ namespace Terror
     /// de un primer plano (el cajón del armario, el secretero).
     ///
     /// Igual que el resto del cuarto, solo se ve y se toca con un fósforo encendido.
-    /// Al hacer clic se guarda en el Inventario, se desvanece y, si se marca, abre su
-    /// tarjeta para leerlo en el momento.
+    /// Al hacer clic se guarda en el Inventario, se desvanece y se ve en primer plano
+    /// (PrimerPlanoObjeto): se le da la vuelta y se inspecciona (2026-10-28).
     /// </summary>
     [RequireComponent(typeof(Image))]
     public class ObjetoInventario : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         [Tooltip("Id del catálogo de Inventario (ej. foto_campo).")]
         [SerializeField] private string idObjeto;
-        [Tooltip("Abrir la tarjeta del objeto apenas se guarda (para pistas que hay que leer).")]
+        [Tooltip("Sin PrimerPlanoObjeto en la escena: abrir la tarjeta del objeto apenas se guarda (para pistas que hay que leer). Con primer plano, siempre se muestra.")]
         [SerializeField] private bool mostrarTarjetaAlGuardar;
         [Tooltip("Desmarcado: se ve y se toca aunque no haya fósforo encendido.")]
         [SerializeField] private bool requiereFosforo = true;
@@ -29,6 +29,8 @@ namespace Terror
         [Tooltip("Late un poco para que se note (objetos chicos en el piso).")]
         [SerializeField] private bool latir = true;
         [SerializeField] private UnityEvent alGuardar;
+        [Tooltip("Línea abajo del primer plano al guardarlo.")]
+        [SerializeField] private string textoGuardado = "Lo guardé en la bolsa  (I para ver lo que llevo)";
 
         private Image imagen;
         private Color colorBase;
@@ -118,7 +120,9 @@ namespace Terror
             alGuardar?.Invoke();
             AlGuardarse?.Invoke();
 
-            if (mostrarTarjetaAlGuardar && TarjetaLectura.Instance != null)
+            if (PrimerPlanoObjeto.Instance != null && inv.Definicion(idObjeto) != null)
+                PrimerPlanoObjeto.Instance.Mostrar(inv.Definicion(idObjeto), textoGuardado);
+            else if (mostrarTarjetaAlGuardar && TarjetaLectura.Instance != null)
                 TarjetaLectura.Instance.Mostrar(inv.Definicion(idObjeto));
 
             StartCoroutine(Desvanecer());

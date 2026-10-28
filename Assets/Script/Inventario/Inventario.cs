@@ -15,6 +15,8 @@ namespace Terror
         public Sprite icono;
         [Tooltip("Arte de la tarjeta (1905x970, como las de Historia). Vacío = el ícono en grande sobre gris.")]
         public Sprite ilustracion;
+        [Tooltip("El otro lado del objeto: se ve al darle la vuelta en el primer plano. Vacío = no se da vuelta.")]
+        public Sprite reverso;
         [Tooltip("Textos de su tarjeta, en orden (el botón > pasa al siguiente).")]
         [TextArea(1, 3)] public string[] textos;
         [Tooltip("Opcional: un dibujo distinto para cada texto (ej. el frente y el reverso de una foto). Vacío en un lugar = el dibujo de siempre.")]
