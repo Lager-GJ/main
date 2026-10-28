@@ -4,18 +4,18 @@ using UnityEngine.UI;
 namespace Terror
 {
     /// <summary>
-    /// Oscuridad que se cierra desde los bordes de la pantalla a medida que la
+    /// Borde rojo que se cierra desde los bordes de la pantalla a medida que la
     /// Presencia se acerca. Va sobre la Image de OSCURO (pantalla completa en
     /// ControladorGeneral): los primeros planos se insertan después de OSCURO, así que
     /// la viñeta nunca los tapa.
     ///
-    /// La textura radial se genera en código (transparente al centro, negra en los
+    /// La textura radial se genera en código (transparente al centro, roja en los
     /// bordes). EfectosPresencia le dice cuánto cerrarse y si late.
     /// </summary>
     [RequireComponent(typeof(Image))]
     public class VinetaPresencia : MonoBehaviour
     {
-        [SerializeField] private Color color = new Color(0.05f, 0f, 0f, 1f);
+        [SerializeField] private Color color = new Color(0.62f, 0.03f, 0.03f, 1f);
         [Tooltip("Segundos que tarda en llegar a la intensidad nueva.")]
         [SerializeField] private float segundosTransicion = 1.5f;
         [Tooltip("Latidos por segundo cuando late.")]
@@ -77,7 +77,7 @@ namespace Terror
                     float dx = (x + 0.5f) / lado * 2f - 1f;
                     float dy = (y + 0.5f) / lado * 2f - 1f;
                     float d = Mathf.Sqrt(dx * dx + dy * dy) / 1.2f; // 1 en las esquinas
-                    float a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 1f, d));
+                    float a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.55f, 1f, d));
                     px[y * lado + x] = new Color32(255, 255, 255, (byte)(a * 255f));
                 }
             }

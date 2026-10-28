@@ -23,7 +23,14 @@ namespace Terror
 
         [Header("Nivel de Presencia (1 por fósforo consumido) en que entra cada sonido")]
         [SerializeField] private int nivelAmbientePresencia = 2;
-        [SerializeField] private int nivelLatidos = 3;
+        [SerializeField] private int nivelLatidos = 1;
+
+        [Header("Latidos: se aceleran y suben con cada nivel")]
+        [SerializeField] private float velocidadLatidosNivelInicial = 0.8f;
+        [Tooltip("Cuánto se acelera el latido (pitch) por cada nivel extra de la Presencia.")]
+        [SerializeField] private float aceleracionLatidosPorNivel = 0.25f;
+        [SerializeField, Range(0f, 1f)] private float volumenLatidosInicial = 0.3f;
+        [SerializeField, Range(0f, 1f)] private float volumenLatidosPorNivel = 0.2f;
 
         [Header("Búho (solo suena con el ambiente tranquilo)")]
         [SerializeField] private float buhoIntervaloMinimo = 8f;
@@ -53,6 +60,13 @@ namespace Terror
             bool debeSonarLatidos = nivel >= nivelLatidos;
             if (fuenteLatidos == null || sonidoLatidos == null)
                 return;
+
+            if (debeSonarLatidos)
+            {
+                int pasos = Mathf.Max(0, nivel - nivelLatidos);
+                fuenteLatidos.pitch = velocidadLatidosNivelInicial + aceleracionLatidosPorNivel * pasos;
+                fuenteLatidos.volume = Mathf.Clamp01(volumenLatidosInicial + volumenLatidosPorNivel * pasos);
+            }
 
             if (debeSonarLatidos && !fuenteLatidos.isPlaying)
             {

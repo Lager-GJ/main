@@ -8,7 +8,7 @@ using UnityEngine;
 /// consume (se apaga solo o con Q).
 ///   1er fósforo consumido → respiración más profunda (loop).
 ///   2do fósforo consumido → se empiezan a escuchar pasos y ruidos (al azar).
-///   3er fósforo consumido → la luz del fósforo alcanza menos.
+///   3er fósforo consumido → los ruidos suenan más cerca (la luz de cada fósforo es igual de grande).
 ///   Último fósforo (el 4to) consumido → silencio breve y derrota automática.
 /// Cada nivel suma: la respiración se oye más fuerte y agitada, y los ruidos se
 /// vuelven más frecuentes y se acercan. Los efectos visuales de cada nivel (temblor
@@ -38,10 +38,6 @@ public class PresenciaManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float volumenRuidos = 0.8f;
     [Tooltip("Cuánto se acortan los intervalos entre ruidos por cada nivel extra (0.7 = 30% más seguido).")]
     [SerializeField, Range(0.3f, 1f)] private float aceleracionRuidosPorNivel = 0.7f;
-
-    [Header("Nivel 3: alcance de la luz")]
-    [Tooltip("Fracción del radio original de la luz del fósforo desde el tercer fósforo consumido.")]
-    [SerializeField, Range(0.1f, 1f)] private float factorAlcanceLuz = 0.6f;
 
     [Header("Último fósforo")]
     [Tooltip("Segundos de silencio total entre que se apaga el último fósforo y la derrota. 0 = inmediata.")]
@@ -131,8 +127,6 @@ public class PresenciaManager : MonoBehaviour
         IntensificarRespiracion();
         if (nivel == 2)
             coroutineRuidos = StartCoroutine(ReproducirRuidos());
-        else if (nivel == 3)
-            FosforoManager.Instance?.SetFactorAlcanceLuz(factorAlcanceLuz);
     }
 
     // Arranca la respiración en el nivel 1 y la vuelve más fuerte y agitada en cada nivel siguiente.
