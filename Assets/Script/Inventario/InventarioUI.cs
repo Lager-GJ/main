@@ -18,7 +18,7 @@ namespace Terror
     /// - Una bolsa abajo a la izquierda que aparece con el primer objeto guardado.
     /// - Aviso "Guardaste: ..." al recoger algo.
     /// - Tecla I o Tab (o clic en la bolsa): abre/cierra la lista. Clic en un objeto
-    ///   abre su tarjeta (TarjetaLectura) para releer pistas.
+    ///   lo muestra en primer plano (PrimerPlanoObjeto): se da vuelta y se inspecciona.
     /// Mientras está abierto, el fósforo no se gasta, Luis no camina y el tiempo del
     /// cuarto pasa lento (TiempoLento).
     ///
@@ -63,6 +63,7 @@ namespace Terror
         private TextMeshProUGUI etiquetaNombre;
         private TextMeshProUGUI textoSinObjetos;
         private TarjetaLectura tarjeta;
+        private PrimerPlanoObjeto primerPlano;
         private AudioSource audioFuente;
         private Coroutine rutinaAviso;
         private bool bolsaVisible;
@@ -121,6 +122,8 @@ namespace Terror
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego) return false;
             // El inicio del cajón y la secuencia de la lata bloquean el resto del juego.
             if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.CierreBloqueado) return false;
+            // Con un objeto en la mano, la I no abre la bolsa por encima.
+            if (PrimerPlanoObjeto.Instance != null && PrimerPlanoObjeto.Instance.Visible) return false;
             return true;
         }
 
@@ -150,6 +153,7 @@ namespace Terror
         {
             if (!Abierto) return;
             if (tarjeta != null) tarjeta.Cerrar();
+            if (primerPlano != null) primerPlano.Cerrar();
             panel.SetActive(false);
             etiquetaNombre.text = "";
             PanelInspeccion.Instance?.QuitarCapa(this);
@@ -162,6 +166,7 @@ namespace Terror
             if (estado == GameState.Juego) return;
             Cerrar();
             if (tarjeta != null) tarjeta.Cerrar();
+            if (primerPlano != null) primerPlano.Cerrar();
             if (grupoBolsa != null) grupoBolsa.alpha = 0f;
         }
 
@@ -275,6 +280,7 @@ namespace Terror
             panel.SetActive(false);
 
             tarjeta = TarjetaLectura.Crear(raiz, fuente, spriteSiguiente, sonidoPagina);
+            primerPlano = PrimerPlanoObjeto.Crear(raiz, fuente, sonidoAbrir, sonidoPagina);
         }
 
         private void Rearmar()
@@ -314,7 +320,13 @@ namespace Terror
 
         internal void Mirar(DefinicionObjeto def)
         {
-            if (tarjeta == null || def == null) return;
+            if (def == null) return;
+            if (primerPlano != null)
+            {
+                primerPlano.Mostrar(def);
+                return;
+            }
+            if (tarjeta == null) return;
             tarjeta.transform.SetAsLastSibling();
             tarjeta.Mostrar(def);
         }
@@ -325,7 +337,7 @@ namespace Terror
         }
     }
 
-    /// <summary>Un casillero del inventario: se agranda con el mouse y al clic abre la tarjeta.</summary>
+    /// <summary>Un casillero del inventario: se agranda con el mouse y al clic lo muestra en primer plano.</summary>
     public class RanuraInventario : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         private InventarioUI dueno;

@@ -82,6 +82,60 @@ Hoy hay un provisorio hecho deformando `Inicio/Cajon_Interior.png`. Para la vers
 
 **Si cambian las esquinas del velador**, hay que actualizarlas en `InicioCuarto` → "Borde Cajon En Dibujo". En los otros muebles, avísenle a David para mover la llave o la agenda.
 
+## 2d. Objetos en primer plano: frente y reverso (2026-10-28)
+
+Cada objeto que se toca pasa a primer plano, en la mano de Luis. Un clic lo da vuelta y el botón **Inspeccionar** lee su descripción o hace su acción: abrir la caja, probar la llave en la lata o abrir el candado del joyero. Por eso cada objeto necesita su **reverso**.
+
+Todos los de esta tabla son **provisorios**. Varios reversos son el frente espejado y un poco más oscuro, y el equipo puede reemplazarlos por nombre. Conviene mantener el tamaño del frente; si cambia, que mantenga la proporción. En pantalla, el objeto entra en 640 × 500 y se agranda como mucho ×3.
+
+| Archivo | Tamaño | Qué es |
+|---|---|---|
+| `Inicio/Cajon_FotoVieja.png` | 340 × 250 | Frente: la abuelita joven, en sepia. A la derecha se ve el hombro de alguien más; la foto está cortada con tijera, con el borde dentado. |
+| `Inicio/Cajon_FotoVieja_Reverso.png` | 340 × 250 | Papel de atrás con el corte del otro lado, «Rosita y …» junto al corte, el sello «FOTO ESTUDIO» y manchas de pegamento del álbum. |
+| `Inicio/Cajon_Estampita.png` | 240 × 350 | Estampita de un santo con aureola y borde dorado gastado: «Ruega por nosotros». |
+| `Inicio/Cajon_Estampita_Reverso.png` | 240 × 350 | La oración impresa, borrosa, y con lápiz: «Que nunca se te apague la luz, mijito». |
+| `Inicio/Cajon_Nota_Reverso.png` | 300 × 220 | La nota de atrás: el papel, con la letra que se transparenta al revés. |
+| `Inicio/Cajon_Rosario_Reverso.png` | 420 × 340 | Espejado. |
+| `Inicio/Cajon_HiloAguja_Reverso.png` | 260 × 240 | Espejado, con la etiqueta «N°40» del carrete. |
+| `Inicio/Cajon_CaboVela_Reverso.png` | 280 × 170 | Espejado. |
+| `Acertijos/Agenda_Reverso.png` | 260 × 320 | Contratapa: «Pedidos y medidas» y las iniciales «R. M.». **No tiene que mostrar el año**, porque la clave del joyero sale de la foto del campo. |
+| `Acertijos/Llave_Pequena_Reverso.png`, `Llave_Armario_Reverso.png`, `Llave_Puerta_Reverso.png` | 256 × 256 | Espejadas. |
+| `Acertijos/Joyero_Reverso.png` | 660 × 510 | Atrás del joyero: las bisagras y el grabado «Para mi Rosa». |
+| `Acertijos/Lata_Frente.png` | 1000 × 603 | Recorte del dibujo de la lata del equipo (`borde textura-Galletas oscuridad.png`). |
+| `Acertijos/Lata_Reverso.png` | 1000 × 603 | La otra cara, con una etiqueta de papel: «Hilos y botones (no tocar)». |
+
+La foto del campo ya tenía su reverso, con el año (`Foto_Campo_Reverso.png`). La caja de fósforos tiene el suyo en §2b.
+
+## 2e. Tele embrujada (2026-10-28)
+
+La tele está dibujada en `FondoDefi`. Al tocarla por primera vez se prende sola con estática y, por un instante, en el reflejo de la pantalla se ve a Luis con la Presencia detrás. Todo lo de esta tabla está en `Assets/Recursos/Tele/` y es **provisorio**.
+
+Los dibujos tienen la forma de la pantalla del fondo, que mide 238 × 186 px en `FondoDefi`, con las esquinas redondeadas. Están hechos al triple de tamaño.
+
+| Archivo | Tamaño | Qué es |
+|---|---|---|
+| `Tele_Estatica_1..4.png` | 714 × 558 | Cuatro cuadros de estática que se alternan: ruido gris azulado, líneas de barrido y una franja clara que rueda. |
+| `Tele_Reflejo.png` | 714 × 558 | El vidrio negro: Luis chico, con los ojos abiertos, y detrás, alta y borrosa, la Presencia con ojos amarillos (los mismos del reverso de la caja). **Es la pieza que más conviene que el equipo redibuje.** |
+| `sfx_tele_estatica.wav` | 1.6 s | Ruido con zumbido, generado en código. |
+| `sfx_tele_golpe.wav` | 1.1 s | Golpe grave para el reflejo, generado en código. |
+
+## 2f. Objetos del cuarto en primer plano: fotos, cuadros, cruz y máquina de coser (2026-10-28)
+
+Son los objetos que ya estaban pintados en `FondoDefi`: al tocarlos se ven en la mano. Están en `Assets/Recursos/Objetos/` y son **provisorios**.
+- Los frentes son recortes del fondo, al triple de tamaño y aclarados como si los alumbrara el fósforo. La foto del estante la dibujé de nuevo.
+- Los reversos son de cartón, con lo que escribió la abuelita.
+
+| Archivo | Qué es |
+|---|---|
+| `Objeto_FotoEstante.png` / `_Reverso` | Portarretrato con el vidrio rayado sobre la cara. Atrás tiene la patita y dice «¿quién te rayó?». |
+| `Objeto_Retrato.png` / `_Reverso` | El retrato del niño. Atrás: «Luis, siete años (para que no se olvide)». |
+| `Objeto_FotoFamilia.png` / `_Reverso` | Atrás: «Navidad en la casa», los nombres y uno tachado. |
+| `Objeto_CuadroVirgen.png` / `_Reverso` | Atrás: «Ella te cuida cuando no hay luz». |
+| `Objeto_Crucifijo.png` / `_Reverso` | Atrás: la madera, el clavo y una «R» tallada. |
+| `Objeto_MaquinaCoser.png` | Sin reverso (en la mano solo se mece). |
+
+**La abuelita se llama Rosa.** Aparece así en la foto vieja («Rosita y…»), el joyero («Para mi Rosa»), la agenda («R. M.»), la cruz y la foto de la familia. La clienta de la agenda pasó a ser «Doña Teresa».
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).

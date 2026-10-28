@@ -5631,9 +5631,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 920000010}
-        m_TargetAssemblyTypeName: Terror.Cerradura, Assembly-CSharp
-        m_MethodName: Intentar
+      - m_Target: {fileID: 970000002}
+        m_TargetAssemblyTypeName: Terror.UI.ObjetoEnPrimerPlano, Assembly-CSharp
+        m_MethodName: Mostrar
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5703,6 +5703,39 @@ MonoBehaviour:
   ordenEnCapa: 5
   tinte: {r: 1, g: 1, b: 1, a: 1}
   adelante: 2
+--- !u!114 &970000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772151877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53c08b521e364ecbb3ab2d8f439b55b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoEnPrimerPlano
+  nombre: "Lata de galletas"
+  frente: {fileID: 21300000, guid: 187f79365d3347d5b8bba917f4ef59dd, type: 3}
+  reverso: {fileID: 21300000, guid: 55294faff1b046239d5fc028e0e5a2cc, type: 3}
+  textos: []
+  textoBoton: 
+  requiereFosforo: 1
+  alInspeccionar:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 920000010}
+        m_TargetAssemblyTypeName: Terror.Cerradura, Assembly-CSharp
+        m_MethodName: Intentar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!82 &900000060
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11275,6 +11308,7 @@ GameObject:
   - component: {fileID: 900000054}
   - component: {fileID: 900000055}
   - component: {fileID: 900000056}
+  - component: {fileID: 970000002}
   - component: {fileID: 920000010}
   - component: {fileID: 950000013}
   m_Layer: 5
@@ -13041,6 +13075,7 @@ GameObject:
   - component: {fileID: 710000003}
   - component: {fileID: 710000004}
   - component: {fileID: 710000005}
+  - component: {fileID: 970000003}
   m_Layer: 5
   m_Name: Narrable_Television
   m_TagString: Untagged
@@ -13118,13 +13153,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La tele est\u00E1 desenchufada... pero la pantalla todav\u00EDa est\u00E1 tibia."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 0
+  nombre: 
+  frente: {fileID: 0}
+  reverso: {fileID: 0}
+  textosExtra: []
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
+--- !u!114 &970000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 647b53a4766944f49b341b493ab4a505, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.TeleEmbrujada
+  posicionPantalla: {x: 18.5, y: -3.4}
+  tamanoPantalla: {x: 275.4, y: 215.2}
+  estatica:
+  - {fileID: 21300000, guid: 8abc25b6a5434de7a574bee3f95a6f4e, type: 3}
+  - {fileID: 21300000, guid: 5a1e62d4ee614f7690966b68b7aa6248, type: 3}
+  - {fileID: 21300000, guid: 2a8fe05e69de4628b7bef65eb742a8d5, type: 3}
+  - {fileID: 21300000, guid: 0bd2977370054f48b98599eb3d74a8b0, type: 3}
+  reflejo: {fileID: 21300000, guid: ec893ac08a6a43999467e1a43fe885fc, type: 3}
+  zoom: 0.35
+  duracionZoom: 0.6
+  duracionEstatica: 1.3
+  duracionReflejo: 0.4
+  sacudida: 18
+  conLuz: 1
+  colorLuz: {r: 0.6, g: 0.72, b: 1, a: 1}
+  intensidadLuz: 1.6
+  radioLuz: 900
+  sonidoEstatica: {fileID: 8300000, guid: 8dd04ac2a6e9439ba5f4f9fbb8dae8c1, type: 3}
+  sonidoGolpe: {fileID: 8300000, guid: f7577b23023a46e2bdb35e3732875c42, type: 3}
+  textoSusto: "...\xBFQui\xE9n est\xE1 ah\xED?"
+  textoDespues: No pienso volver a mirar esa tele.
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
 --- !u!1 &710000011
 GameObject:
   m_ObjectHideFlags: 0
@@ -13214,10 +13289,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "Una foto vieja. El vidrio est\u00E1 rayado justo sobre la cara."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Foto del estante"
+  frente: {fileID: 21300000, guid: d1b938c8f997406a897615152dc13fd6, type: 3}
+  reverso: {fileID: 21300000, guid: 2bf548af87c54586b6eee3b563bef97c, type: 3}
+  textosExtra:
+  - "Las rayas son finitas y derechas... como hechas con una aguja."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13310,10 +13392,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "El retrato de un ni\u00F1o. Se parece a m\u00ED... pero yo nunca me tom\u00E9 esa foto."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Retrato"
+  frente: {fileID: 21300000, guid: 782b784ee0ab4c3dbe349a70c4af9e79, type: 3}
+  reverso: {fileID: 21300000, guid: 2b1a2e10f2c24506ba6378bdd0bcccd2, type: 3}
+  textosExtra:
+  - "Atr\u00E1s tiene mi nombre, con la letra de la abuelita."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13406,10 +13495,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "Una foto de la familia. Hay alguien al fondo que no reconozco."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Foto de la familia"
+  frente: {fileID: 21300000, guid: 2a93b4faa1084e73a1a8e198722e663c, type: 3}
+  reverso: {fileID: 21300000, guid: 1e480e654f104b288f2d7579b306b275, type: 3}
+  textosExtra:
+  - "Atr\u00E1s est\u00E1n los nombres de todos... menos uno, que alguien tach\u00F3."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13502,10 +13598,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La Virgen tiene los ojos cerrados. Jurar\u00EDa que hace un momento los ten\u00EDa abiertos."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Cuadro de la Virgen"
+  frente: {fileID: 21300000, guid: e9c55a35d30e4a0aaec4171091e5e993, type: 3}
+  reverso: {fileID: 21300000, guid: c44a9efaf27d4198983a85223a0738f9, type: 3}
+  textosExtra:
+  - "Atr\u00E1s, la abuelita escribi\u00F3: \u00ABElla te cuida cuando no hay luz\u00BB."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13598,10 +13701,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La cruz est\u00E1 torcida. La abuela siempre la enderezaba."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Crucifijo"
+  frente: {fileID: 21300000, guid: 69fd240752864b2d8191569e603ed2dc, type: 3}
+  reverso: {fileID: 21300000, guid: 97d01993324b497ebd4161dba676eb5c, type: 3}
+  textosExtra:
+  - "Atr\u00E1s tiene una \u00ABR\u00BB tallada. R de Rosa, como la abuelita."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13694,10 +13804,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La m\u00E1quina de coser de la abuela. Todav\u00EDa tiene el hilo puesto."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "M\u00E1quina de coser"
+  frente: {fileID: 21300000, guid: c36dd07274d74719bc7d35ea9ab8f56d, type: 3}
+  reverso: {fileID: 0}
+  textosExtra:
+  - "La aguja est\u00E1 h\u00FAmeda... como si alguien hubiera estado cosiendo hace un rato."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13851,6 +13968,7 @@ MonoBehaviour:
   posicionNota: {x: 18, y: -9}
   tamanoNota: {x: 270, y: 198}
   rotacionNota: 0
+  reversoNota: {fileID: 21300000, guid: fb73ca68871548eeb9afa325568e5d33, type: 3}
   textosNota:
   - "Es la letra de la abuelita..."
   - "\xABMijito: la llave del cuarto la guardo donde nadie la busca. Todo empieza por la foto del campo que se cay\xF3 del marco.\xBB"
@@ -13869,6 +13987,7 @@ MonoBehaviour:
     posicion: {x: -261, y: 54}
     tamano: {x: 378, y: 306}
     rotacion: 0
+    reverso: {fileID: 21300000, guid: a3238f244c1f43218a5d7207efb3b31d, type: 3}
     textos:
     - "El rosario de la abuelita. Lo reza todas las noches..."
     - "\xBFPor qu\xE9 no se lo llev\xF3? Nunca sale sin \xE9l."
@@ -13878,6 +13997,7 @@ MonoBehaviour:
     posicion: {x: 351, y: 117}
     tamano: {x: 234, y: 216}
     rotacion: 0
+    reverso: {fileID: 21300000, guid: 5c991496c09547968b248d8e6cda8c54, type: 3}
     textos:
     - "Hilo negro y una aguja. Con esto me remienda los pantalones."
     - "Mejor no lo toco... me voy a pinchar."
@@ -13887,25 +14007,28 @@ MonoBehaviour:
     posicion: {x: 288, y: -68}
     tamano: {x: 252, y: 153}
     rotacion: 0
+    reverso: {fileID: 21300000, guid: d7b7d487d868420fa405711cd8b22dad, type: 3}
     textos:
     - "Una vela... toda consumida. No sirve ni para un ratito."
     - "Con raz\xF3n la abuelita tuvo que salir a comprar velitas."
     sonido: {fileID: 0}
   - nombre: "Foto vieja"
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: f7937bdbf4f949acbbd0cc162d7be72c, type: 3}
     posicion: {x: -390, y: -80}
     tamano: {x: 170, y: 125}
     rotacion: -7
+    reverso: {fileID: 21300000, guid: 70bd736500054c5a93db6231bc1747fa, type: 3}
     ilustracion: {fileID: 0}
     textos:
     - "Una foto vieja de la abuelita, cuando era joven."
     - "A su lado hab\xEDa alguien m\xE1s... pero lo recortaron con tijera."
     sonido: {fileID: 0}
   - nombre: "Estampita"
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 2d4ebff19ddb476d9acc02f3dcb3169c, type: 3}
     posicion: {x: -185, y: -95}
     tamano: {x: 90, y: 130}
     rotacion: 8
+    reverso: {fileID: 21300000, guid: ee79f4a7559b45639b1fb2bce52c720b, type: 3}
     ilustracion: {fileID: 0}
     textos:
     - "Una estampita de un santo, gastada de tanto rezarle."
@@ -13952,10 +14075,10 @@ MonoBehaviour:
     posicionAbierta: {x: -560, y: 0}
     subidaBandeja: 0.38
     fondo: 0.6
-    ayudaCerrada: "Clic en la caja para abrirla   \xB7   A / D para voltearla"
-    ayudaReverso: A / D para voltearla
-    ayudaAbierta: "A / D para voltearla\nEsc o clic afuera para guardarla"
-    textoVoltear: Voltear
+    ayudaCerrada: "Clic en la caja para darle la vuelta   \xB7   Inspeccionar para abrirla"
+    ayudaReverso: "Clic en la caja para darle la vuelta   \xB7   Inspeccionar para abrirla"
+    ayudaAbierta: "Clic en la caja para darle la vuelta\nEsc o clic afuera para guardarla"
+    textoInspeccionar: Inspeccionar
     sonidoVoltear: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
     sonidoAbrir: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
 --- !u!1 &960000001
@@ -14091,6 +14214,7 @@ GameObject:
   - component: {fileID: 920000002}
   - component: {fileID: 920000003}
   - component: {fileID: 920000004}
+  - component: {fileID: 970000004}
   m_Layer: 0
   m_Name: Inventario
   m_TagString: Untagged
@@ -14130,6 +14254,7 @@ MonoBehaviour:
     nombre: "Foto de la casa del campo"
     icono: {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
     ilustracion: {fileID: 0}
+    reverso: {fileID: 21300000, guid: 4695537b9772417284dcd48e88a789a1, type: 3}
     textos:
     - "Una foto vieja de una casa en el campo."
     - "Atr\xE1s, con la letra de la abuelita: \xABVolvimos al campo, 1987\xBB."
@@ -14142,15 +14267,17 @@ MonoBehaviour:
     nombre: "Agenda de la abuelita"
     icono: {fileID: 21300000, guid: dbeb2dbd1a5d4eda9aa2048454c79d1c, type: 3}
     ilustracion: {fileID: 0}
+    reverso: {fileID: 21300000, guid: 53bcad337316408c9c42390f15c2e791, type: 3}
     textos:
     - "La agenda de costura de la abuelita: pedidos, medidas, nombres de las vecinas..."
-    - "\xABDo\xF1a Rosa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta del pantal\xF3n.\xBB"
+    - "\xABDo\xF1a Teresa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta del pantal\xF3n.\xBB"
     - "En la \xFAltima hoja, subrayado: \xABClave del joyero: el a\xF1o en que volvimos al campo\xBB."
     dibujoPorTexto: []
   - id: llave_pequena
     nombre: "Llave peque\xF1a"
     icono: {fileID: 21300000, guid: f32e683ecda7481694fe1c45a873635e, type: 3}
     ilustracion: {fileID: 0}
+    reverso: {fileID: 21300000, guid: 6b66609aafd14acaaecfc4109e9b6a6a, type: 3}
     textos:
     - "Una llavecita dorada. Estaba en el joyero de la abuelita."
     - "\xBFQu\xE9 se abrir\xE1 con algo tan chiquito?"
@@ -14159,6 +14286,7 @@ MonoBehaviour:
     nombre: "Llave del armario"
     icono: {fileID: 21300000, guid: 3776fd09c24e4050af1fef5feec7d6e8, type: 3}
     ilustracion: {fileID: 0}
+    reverso: {fileID: 21300000, guid: 83bc14dbdb824a3aaadd55b1cb49f2d8, type: 3}
     textos:
     - "Estaba en la lata de galletas, entre hilos y agujas."
     - "Tiene una cinta que dice \xABarmario\xBB."
@@ -14167,6 +14295,7 @@ MonoBehaviour:
     nombre: "Llave de la puerta"
     icono: {fileID: 21300000, guid: e3f2fd540fa2460bb895cb007707d04e, type: 3}
     ilustracion: {fileID: 0}
+    reverso: {fileID: 21300000, guid: 4ed4213463f44c149def2614f6c8dd28, type: 3}
     textos:
     - "\xA1La llave del cuarto! Con esto puedo salir."
     dibujoPorTexto: []
@@ -14191,6 +14320,22 @@ MonoBehaviour:
   sonidoAbrir: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
   sonidoGuardar: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
   sonidoPagina: {fileID: 8300000, guid: 30775c42267099140a77ba3293055ea7, type: 3}
+--- !u!114 &970000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2db555be7241d1826cc6e38918c7d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ResaltadorInteractuables
+  color: {r: 1, g: 0.83, b: 0.52, a: 1}
+  margen: 8
+  grosor: 16
+  velocidadLatido: 4
 --- !u!1 &920000005
 GameObject:
   m_ObjectHideFlags: 0
@@ -16487,6 +16632,7 @@ GameObject:
   - component: {fileID: 940000004}
   - component: {fileID: 940000005}
   - component: {fileID: 940000006}
+  - component: {fileID: 970000001}
   - component: {fileID: 950000040}
   m_Layer: 5
   m_Name: JoyeroB
@@ -16628,8 +16774,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 940000005}
-        m_TargetAssemblyTypeName: Terror.CandadoNumerico, Assembly-CSharp
+      - m_Target: {fileID: 970000001}
+        m_TargetAssemblyTypeName: Terror.UI.ObjetoEnPrimerPlano, Assembly-CSharp
         m_MethodName: Mostrar
         m_Mode: 1
         m_Arguments:
@@ -16656,6 +16802,39 @@ MonoBehaviour:
   ordenEnCapa: 0
   tinte: {r: 1, g: 1, b: 1, a: 1}
   adelante: 1
+--- !u!114 &970000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 940000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53c08b521e364ecbb3ab2d8f439b55b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoEnPrimerPlano
+  nombre: "Joyero de la abuelita"
+  frente: {fileID: 21300000, guid: f64c766238bd454ea9f4db9682b506b2, type: 3}
+  reverso: {fileID: 21300000, guid: a22164cf500643849472c9d178e0146f, type: 3}
+  textos: []
+  textoBoton: 
+  requiereFosforo: 1
+  alInspeccionar:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 940000005}
+        m_TargetAssemblyTypeName: Terror.CandadoNumerico, Assembly-CSharp
+        m_MethodName: Mostrar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &950000002
 GameObject:
   m_ObjectHideFlags: 0

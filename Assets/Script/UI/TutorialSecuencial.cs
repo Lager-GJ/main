@@ -418,6 +418,9 @@ namespace Terror.UI
         private void MarcarObjetoRecogido(ObjetoRecogible objeto)
         {
             objetoYaRecogido = true;
+            // El cajón del inicio se puede cerrar antes de tomar los fósforos: ese cierre
+            // no cuenta para el paso que espera "volver al cuarto" después de prender uno.
+            primerPlanoYaCerrado = false;
             DesbloquearFosforos();
         }
 
