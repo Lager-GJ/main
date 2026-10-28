@@ -4,21 +4,18 @@ using UnityEngine.UI;
 using Terror;
 
 /// <summary>
-/// Reemplaza la victoria instantánea de ObjetoInteractivo para la lata de galletas:
-/// antes de ganar, la tapa tiembla y se revela que por dentro son hilos y agujas
-/// (el chiste local: las abuelas reutilizaban las latas de galletas vacías para
-/// guardar su costura) — recién ahí se llama a Ganar(). El sonido de apertura ya
-/// suena solo vía SonidoAlInteractuar/SonidoPropioObjeto (se dispara con
-/// OnObjetoInspeccionado, que ObjetoInteractivo ya invoca antes que esto);
-/// no hace falta repetirlo acá.
+/// Apertura de la lata de galletas: la tapa tiembla y se revela que por dentro son
+/// hilos y agujas (el chiste local: las abuelas reutilizaban las latas de galletas
+/// vacías para guardar su costura).
 ///
-/// Nada de esto pausa el fósforo ni el miedo aparte de lo que ObjetoInteractivo ya
-/// hace siempre (PausarQuemado() al inspeccionar) — decisión de diseño 2026-09-15,
-/// misma que la del armario: la tensión sigue corriendo. Si el miedo llega a 100
-/// durante la secuencia, GameStateManager pasa a Derrota y la secuencia se corta
-/// sin llamar a Ganar().
+/// Desde 2026-10-22 la lata ya no es la victoria: está cerrada con llave (Cerradura
+/// con llave_pequena) y su alAbrir llama a IniciarApertura(). Al terminar entrega
+/// 'entregarAlTerminar' (la llave del armario) y dispara alTerminar. Con
+/// ganarAlTerminar marcado vuelve a ser la victoria de antes (vía ObjetoInteractivo).
+///
+/// Corre con tiempo real (la vista del armario está en cámara lenta) pero se detiene
+/// con la pausa. Si el juego sale de Juego a mitad de camino, se corta.
 /// </summary>
-[RequireComponent(typeof(ObjetoInteractivo))]
 public class SecuenciaAperturaLata : MonoBehaviour
 {
     [Header("Sprite al abrirse (hilos y agujas — el chiste)")]
@@ -33,6 +30,15 @@ public class SecuenciaAperturaLata : MonoBehaviour
     [Tooltip("En unidades locales: ~0.05 si la lata es un SpriteRenderer en mundo, ~10 si es un Image de UI.")]
     [SerializeField] private float amplitudTemblor = 0.05f;
     [SerializeField] private float esperaAntesDeGanar = 2.5f;
+
+    [Header("Al terminar")]
+    [Tooltip("Marcado: la lata es la victoria (regla vieja). Desmarcado: queda abierta y entrega lo de abajo.")]
+    [SerializeField] private bool ganarAlTerminar = false;
+    [Tooltip("Objeto que se guarda en el inventario al terminar (ej. llave_armario).")]
+    [SerializeField] private string entregarAlTerminar;
+    [SerializeField] private UnityEngine.Events.UnityEvent alTerminar;
+
+    private bool enCurso;
 
     private ObjetoInteractivo objetoInteractivo;
     private SpriteRenderer spriteRenderer;
@@ -57,9 +63,20 @@ public class SecuenciaAperturaLata : MonoBehaviour
 
     private void ManejarEncontrado(ObjetoInteractivo objeto)
     {
-        if (objeto != objetoInteractivo) return; // no es esta lata
+        if (objetoInteractivo == null || objeto != objetoInteractivo) return; // no es esta lata
+        IniciarApertura();
+    }
+
+    /// <summary>Conectar al alAbrir de la Cerradura de la lata.</summary>
+    public void IniciarApertura()
+    {
+        if (enCurso) return;
+        enCurso = true;
         StartCoroutine(SecuenciaApertura());
     }
+
+    // Tiempo real que avanza solo sin pausa (la vista del armario está en cámara lenta).
+    private static float Paso() => Time.timeScale > 0f ? Time.unscaledDeltaTime : 0f;
 
     private IEnumerator SecuenciaApertura()
     {
@@ -76,12 +93,13 @@ public class SecuenciaAperturaLata : MonoBehaviour
             {
                 transform.localPosition = posicionOriginal;
                 LiberarCierre();
+                enCurso = false;
                 yield break;
             }
 
             float offset = Mathf.Sin(t * temblorPorSegundo * Mathf.PI * 2f) * amplitudTemblor;
             transform.localPosition = posicionOriginal + new Vector3(offset, 0f, 0f);
-            t += Time.deltaTime;
+            t += Paso();
             yield return null;
         }
         transform.localPosition = posicionOriginal;
@@ -89,6 +107,7 @@ public class SecuenciaAperturaLata : MonoBehaviour
         if (SeInterrumpio())
         {
             LiberarCierre();
+            enCurso = false;
             yield break;
         }
 
@@ -109,9 +128,10 @@ public class SecuenciaAperturaLata : MonoBehaviour
             {
                 if (textoChiste != null) textoChiste.SetActive(false);
                 LiberarCierre();
+                enCurso = false;
                 yield break;
             }
-            espera += Time.deltaTime;
+            espera += Paso();
             yield return null;
         }
 
@@ -119,8 +139,18 @@ public class SecuenciaAperturaLata : MonoBehaviour
             textoChiste.SetActive(false);
 
         LiberarCierre();
-        gameObject.SetActive(false);
-        GameStateManager.Instance.Ganar();
+
+        if (ganarAlTerminar)
+        {
+            gameObject.SetActive(false);
+            GameStateManager.Instance.Ganar();
+            yield break;
+        }
+
+        // Queda abierta, con la costura a la vista, y entrega lo que tenía adentro.
+        if (!string.IsNullOrEmpty(entregarAlTerminar) && Inventario.Instance != null)
+            Inventario.Instance.Agregar(entregarAlTerminar);
+        alTerminar?.Invoke();
     }
 
     private static void LiberarCierre()
@@ -129,8 +159,8 @@ public class SecuenciaAperturaLata : MonoBehaviour
             PanelInspeccion.Instance.CierreBloqueado = false;
     }
 
-    // Si el miedo llegó a 100 (u otra cosa sacó al juego de GameState.Juego)
-    // mientras la secuencia corría, la cortamos sin ganar.
+    // Si algo sacó al juego de GameState.Juego (la Presencia, por ejemplo)
+    // mientras la secuencia corría, la cortamos.
     private bool SeInterrumpio()
     {
         return GameStateManager.Instance == null ||

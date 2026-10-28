@@ -3,10 +3,10 @@ using UnityEngine;
 namespace Terror
 {
     // Hooks de audio para los eventos reales del equipo: fosforo encendido,
-    // acercamiento de la Presencia, miedo alto, victoria, derrota. Los clips
-    // se asignan en el Inspector cuando lleguen los assets finales (Diseñador C).
+    // acercamiento de la Presencia, victoria, derrota. Los clips se asignan en el
+    // Inspector cuando lleguen los assets finales. Hoy no está puesto en ninguna escena.
     // Nota: se suscribe en Start() (no OnEnable) para dar tiempo a que
-    // GameStateManager/FearManager ya hayan corrido su Awake().
+    // GameStateManager ya haya corrido su Awake().
     [RequireComponent(typeof(AudioSource))]
     public class AudioJuegoL1 : MonoBehaviour
     {
@@ -15,17 +15,14 @@ namespace Terror
         [Header("Clips (asignar cuando lleguen los assets finales)")]
         public AudioClip sfxFosforoEncendido;
         public AudioClip sfxPresenciaCerca;
-        public AudioClip sfxMiedoAlto;
         public AudioClip sfxVictoria;
         public AudioClip sfxDerrota;
 
         [Header("Umbrales")]
-        [Range(0f, 100f)] public float umbralMiedoAlto = 80f;
         [Tooltip("Nivel de Presencia (GameEvents.OnCercaniaPresenciaCambiada) a partir del cual se considera 'cerca'.")]
         public int umbralNivelPresenciaCerca = 3;
 
         private AudioSource audioSource;
-        private bool miedoAltoDisparado;
         private bool presenciaCercaDisparada;
 
         private void Awake()
@@ -43,7 +40,6 @@ namespace Terror
         {
             GameEvents.OnFosforoEncendido += HandleFosforoEncendido;
             GameEvents.OnCercaniaPresenciaCambiada += HandlePresencia;
-            if (FearManager.Instance != null) FearManager.Instance.OnMiedoCambiado += HandleMiedo;
             if (GameStateManager.Instance != null) GameStateManager.Instance.OnStateChanged += HandleEstado;
         }
 
@@ -51,7 +47,6 @@ namespace Terror
         {
             GameEvents.OnFosforoEncendido -= HandleFosforoEncendido;
             GameEvents.OnCercaniaPresenciaCambiada -= HandlePresencia;
-            if (FearManager.Instance != null) FearManager.Instance.OnMiedoCambiado -= HandleMiedo;
             if (GameStateManager.Instance != null) GameStateManager.Instance.OnStateChanged -= HandleEstado;
         }
 
@@ -67,19 +62,6 @@ namespace Terror
             else if (nivel < umbralNivelPresenciaCerca)
             {
                 presenciaCercaDisparada = false;
-            }
-        }
-
-        private void HandleMiedo(float miedo)
-        {
-            if (miedo >= umbralMiedoAlto && !miedoAltoDisparado)
-            {
-                miedoAltoDisparado = true;
-                Reproducir(sfxMiedoAlto);
-            }
-            else if (miedo < umbralMiedoAlto)
-            {
-                miedoAltoDisparado = false;
             }
         }
 

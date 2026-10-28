@@ -3,25 +3,30 @@ using UnityEngine;
 
 namespace Terror
 {
-    // Contrato de eventos compartido entre los 3 sistemas (Dev A, B, C).
-    // Cada dev trabaja en su propia escena de prueba y se conecta solo a traves
-    // de estos eventos estaticos, para evitar dependencias directas entre escenas.
+    // Contrato de eventos compartido entre los sistemas (fósforos, Presencia, audio, UI).
+    // Cada sistema se conecta solo a través de estos eventos estáticos, para evitar
+    // dependencias directas entre escenas.
     public static class GameEvents
     {
-        // Dev A -> Dev C: se dispara cada vez que el jugador enciende un fosforo.
+        // Se dispara cada vez que el jugador enciende un fósforo.
         public static event Action OnFosforoEncendido;
 
-        // Dev A -> quien lo necesite: se dispara cuando el fosforo se apaga (fin del temporizador).
+        // Se dispara cuando el fósforo se apaga (se consumió o el jugador lo apagó con Q).
         public static event Action OnFosforoApagado;
 
-        // Dev C -> Dev B: nivel de cercania actual y el multiplicador que debe aplicar
-        // Dev B a la velocidad de subida de la barra de miedo.
+        // Compatibilidad con scripts viejos de Presencia (PresenciaAudio, PresenciaHUD,
+        // AudioJuegoL1). Desde 2026-10-22 ya no hay barra de miedo: el segundo valor
+        // siempre es 1 y no significa nada. Lo nuevo debe usar OnNivelPresenciaCambiado.
         public static event Action<int, float> OnCercaniaPresenciaCambiada;
 
-        // UI -> Dev B: Se disparan cuando inicia o termina una secuencia de texto
-        // para que la barra de miedo se pause durante la lectura.
-        public static event Action OnDialogoIniciado;
-        public static event Action OnDialogoTerminado;
+        // La Presencia subió de nivel: uno por cada fósforo consumido (1, 2, 3...).
+        // Es lo único que avanza en el cuarto; cada nivel trae sus propios efectos
+        // (ver PresenciaManager y EfectosPresencia).
+        public static event Action<int> OnNivelPresenciaCambiado;
+
+        // Sonó un ruido de la Presencia (pasos, golpes). cercania va de 0 a 1:
+        // sirve para efectos chicos que acompañan al sonido (una micro-sacudida).
+        public static event Action<float> OnRuidoPresencia;
 
         public static void RaiseFosforoEncendido()
         {
@@ -33,19 +38,19 @@ namespace Terror
             OnFosforoApagado?.Invoke();
         }
 
-        public static void RaiseCercaniaPresenciaCambiada(int nivel, float multiplicadorMiedo)
+        public static void RaiseCercaniaPresenciaCambiada(int nivel, float multiplicador)
         {
-            OnCercaniaPresenciaCambiada?.Invoke(nivel, multiplicadorMiedo);
+            OnCercaniaPresenciaCambiada?.Invoke(nivel, multiplicador);
         }
 
-        public static void RaiseDialogoIniciado()
+        public static void RaiseNivelPresenciaCambiado(int nivel)
         {
-            OnDialogoIniciado?.Invoke();
+            OnNivelPresenciaCambiado?.Invoke(nivel);
         }
 
-        public static void RaiseDialogoTerminado()
+        public static void RaiseRuidoPresencia(float cercania)
         {
-            OnDialogoTerminado?.Invoke();
+            OnRuidoPresencia?.Invoke(Mathf.Clamp01(cercania));
         }
     }
 }
