@@ -119,6 +119,23 @@ Los dibujos tienen la forma de la pantalla del fondo, que mide 238 × 186 px en 
 | `sfx_tele_estatica.wav` | 1.6 s | Ruido con zumbido, generado en código. |
 | `sfx_tele_golpe.wav` | 1.1 s | Golpe grave para el reflejo, generado en código. |
 
+## 2f. Objetos del cuarto en primer plano: fotos, cuadros, cruz y máquina de coser (2026-10-28)
+
+Son los objetos que ya estaban pintados en `FondoDefi`: al tocarlos se ven en la mano. Están en `Assets/Recursos/Objetos/` y son **provisorios**.
+- Los frentes son recortes del fondo, al triple de tamaño y aclarados como si los alumbrara el fósforo. La foto del estante la dibujé de nuevo.
+- Los reversos son de cartón, con lo que escribió la abuelita.
+
+| Archivo | Qué es |
+|---|---|
+| `Objeto_FotoEstante.png` / `_Reverso` | Portarretrato con el vidrio rayado sobre la cara. Atrás tiene la patita y dice «¿quién te rayó?». |
+| `Objeto_Retrato.png` / `_Reverso` | El retrato del niño. Atrás: «Luis, siete años (para que no se olvide)». |
+| `Objeto_FotoFamilia.png` / `_Reverso` | Atrás: «Navidad en la casa», los nombres y uno tachado. |
+| `Objeto_CuadroVirgen.png` / `_Reverso` | Atrás: «Ella te cuida cuando no hay luz». |
+| `Objeto_Crucifijo.png` / `_Reverso` | Atrás: la madera, el clavo y una «R» tallada. |
+| `Objeto_MaquinaCoser.png` | Sin reverso (en la mano solo se mece). |
+
+**La abuelita se llama Rosa.** Aparece así en la foto vieja («Rosita y…»), el joyero («Para mi Rosa»), la agenda («R. M.»), la cruz y la foto de la familia. La clienta de la agenda pasó a ser «Doña Teresa».
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).

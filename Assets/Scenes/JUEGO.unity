@@ -13153,10 +13153,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La tele est\u00E1 desenchufada... pero la pantalla todav\u00EDa est\u00E1 tibia."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 0
+  nombre: 
+  frente: {fileID: 0}
+  reverso: {fileID: 0}
+  textosExtra: []
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13283,10 +13289,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "Una foto vieja. El vidrio est\u00E1 rayado justo sobre la cara."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Foto del estante"
+  frente: {fileID: 21300000, guid: d1b938c8f997406a897615152dc13fd6, type: 3}
+  reverso: {fileID: 21300000, guid: 2bf548af87c54586b6eee3b563bef97c, type: 3}
+  textosExtra:
+  - "Las rayas son finitas y derechas... como hechas con una aguja."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13379,10 +13392,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "El retrato de un ni\u00F1o. Se parece a m\u00ED... pero yo nunca me tom\u00E9 esa foto."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Retrato"
+  frente: {fileID: 21300000, guid: 782b784ee0ab4c3dbe349a70c4af9e79, type: 3}
+  reverso: {fileID: 21300000, guid: 2b1a2e10f2c24506ba6378bdd0bcccd2, type: 3}
+  textosExtra:
+  - "Atr\u00E1s tiene mi nombre, con la letra de la abuelita."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13475,10 +13495,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "Una foto de la familia. Hay alguien al fondo que no reconozco."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Foto de la familia"
+  frente: {fileID: 21300000, guid: 2a93b4faa1084e73a1a8e198722e663c, type: 3}
+  reverso: {fileID: 21300000, guid: 1e480e654f104b288f2d7579b306b275, type: 3}
+  textosExtra:
+  - "Atr\u00E1s est\u00E1n los nombres de todos... menos uno, que alguien tach\u00F3."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13571,10 +13598,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La Virgen tiene los ojos cerrados. Jurar\u00EDa que hace un momento los ten\u00EDa abiertos."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Cuadro de la Virgen"
+  frente: {fileID: 21300000, guid: e9c55a35d30e4a0aaec4171091e5e993, type: 3}
+  reverso: {fileID: 21300000, guid: c44a9efaf27d4198983a85223a0738f9, type: 3}
+  textosExtra:
+  - "Atr\u00E1s, la abuelita escribi\u00F3: \u00ABElla te cuida cuando no hay luz\u00BB."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13667,10 +13701,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La cruz est\u00E1 torcida. La abuela siempre la enderezaba."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "Crucifijo"
+  frente: {fileID: 21300000, guid: 69fd240752864b2d8191569e603ed2dc, type: 3}
+  reverso: {fileID: 21300000, guid: 97d01993324b497ebd4161dba676eb5c, type: 3}
+  textosExtra:
+  - "Atr\u00E1s tiene una \u00ABR\u00BB tallada. R de Rosa, como la abuelita."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -13763,10 +13804,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
   mensaje: "La m\u00E1quina de coser de la abuela. Todav\u00EDa tiene el hilo puesto."
-  narracion: {fileID: 8300000, guid: e7a50784d16f6ac4da3421607c28065d, type: 3}
+  narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  primerPlano: 1
+  nombre: "M\u00E1quina de coser"
+  frente: {fileID: 21300000, guid: c36dd07274d74719bc7d35ea9ab8f56d, type: 3}
+  reverso: {fileID: 0}
+  textosExtra:
+  - "La aguja est\u00E1 h\u00FAmeda... como si alguien hubiera estado cosiendo hace un rato."
+  contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
   margenContorno: 4
@@ -14166,6 +14214,7 @@ GameObject:
   - component: {fileID: 920000002}
   - component: {fileID: 920000003}
   - component: {fileID: 920000004}
+  - component: {fileID: 970000004}
   m_Layer: 0
   m_Name: Inventario
   m_TagString: Untagged
@@ -14221,7 +14270,7 @@ MonoBehaviour:
     reverso: {fileID: 21300000, guid: 53bcad337316408c9c42390f15c2e791, type: 3}
     textos:
     - "La agenda de costura de la abuelita: pedidos, medidas, nombres de las vecinas..."
-    - "\xABDo\xF1a Rosa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta del pantal\xF3n.\xBB"
+    - "\xABDo\xF1a Teresa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta del pantal\xF3n.\xBB"
     - "En la \xFAltima hoja, subrayado: \xABClave del joyero: el a\xF1o en que volvimos al campo\xBB."
     dibujoPorTexto: []
   - id: llave_pequena
@@ -14271,6 +14320,22 @@ MonoBehaviour:
   sonidoAbrir: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
   sonidoGuardar: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
   sonidoPagina: {fileID: 8300000, guid: 30775c42267099140a77ba3293055ea7, type: 3}
+--- !u!114 &970000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2db555be7241d1826cc6e38918c7d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ResaltadorInteractuables
+  color: {r: 1, g: 0.83, b: 0.52, a: 1}
+  margen: 8
+  grosor: 16
+  velocidadLatido: 4
 --- !u!1 &920000005
 GameObject:
   m_ObjectHideFlags: 0

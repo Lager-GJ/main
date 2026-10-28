@@ -9,10 +9,12 @@ namespace Terror.UI
     /// <summary>
     /// Objeto del cuarto que Luis "comenta" (una foto, la tele, un cuadro...). Es una
     /// zona invisible (Image transparente) sobre el dibujo del fondo:
-    ///   - Al pasar el mouse se dibuja un contorno alrededor y aparece el mensaje en la
-    ///     parte de abajo de la pantalla.
-    ///   - Al hacer click se escucha la narración del mensaje, SOLO la primera vez; los
-    ///     clicks siguientes vuelven a mostrar el texto, pero ya sin audio.
+    ///   - Al pasar el mouse se ilumina su borde (ResaltadorInteractuables, el mismo para
+    ///     todo lo que se puede tocar) y aparece el mensaje en la parte de abajo.
+    ///   - Al hacer click (2026-10-28) se ve en primer plano (PrimerPlanoObjeto): clic para
+    ///     darle la vuelta e Inspeccionar para leer el mensaje y sus textos. Sin música.
+    ///   - Sin dibujo de frente (la tele): como antes, el mensaje en el cartel, y la
+    ///     narración solo si tiene una asignada.
     /// Misma regla que el resto del juego: sin fósforo encendido no se ve ni se oye nada.
     /// El cartel de abajo y la fuente de audio son compartidos por todos los objetos
     /// (se arman solos en runtime), así nunca suenan dos narraciones a la vez.
@@ -30,7 +32,20 @@ namespace Terror.UI
         [Tooltip("Segundos que el mensaje sigue en pantalla tras el click aunque el mouse se vaya (si la narración dura más, espera a que termine).")]
         [SerializeField] private float segundosMensajeTrasClick = 3f;
 
-        [Header("Contorno")]
+        [Header("Primer plano")]
+        [Tooltip("Desmarcado: el click solo muestra el mensaje (la tele, que tiene su susto).")]
+        [SerializeField] private bool primerPlano = true;
+        [SerializeField] private string nombre;
+        [Tooltip("El objeto en la mano (recorte aclarado del fondo). Vacío = sin primer plano.")]
+        [SerializeField] private Sprite frente;
+        [Tooltip("El otro lado. Vacío = no se da vuelta.")]
+        [SerializeField] private Sprite reverso;
+        [Tooltip("Lo que lee Inspeccionar después del mensaje.")]
+        [SerializeField, TextArea(1, 3)] private string[] textosExtra;
+
+        [Header("Contorno (en desuso: ahora lo dibuja ResaltadorInteractuables)")]
+        [Tooltip("Marcado: además dibuja su contorno propio de 4 barras.")]
+        [SerializeField] private bool contornoPropio;
         [SerializeField] private Color colorContorno = new Color(1f, 0.78f, 0.45f, 0.9f);
         [SerializeField] private float grosorContorno = 3f;
         [Tooltip("Separación entre el borde de la zona y el contorno.")]
@@ -45,7 +60,7 @@ namespace Terror.UI
         {
             Image zona = GetComponent<Image>();
             zona.color = new Color(1f, 1f, 1f, 0f);   // invisible, pero sigue recibiendo el mouse
-            contorno = CrearContorno();
+            if (contornoPropio) contorno = CrearContorno();
         }
 
         private void OnDisable()
@@ -80,6 +95,24 @@ namespace Terror.UI
         {
             if (!PuedeInteractuar()) return;
 
+            var pp = PrimerPlanoObjeto.Instance;
+            if (primerPlano && frente != null && pp != null)
+            {
+                if (pp.Visible) return;
+                Salir();
+                var textos = new System.Collections.Generic.List<string>();
+                if (!string.IsNullOrEmpty(mensaje)) textos.Add(mensaje);
+                if (textosExtra != null) textos.AddRange(textosExtra);
+                pp.Mostrar(new PrimerPlanoObjeto.Datos
+                {
+                    nombre = nombre,
+                    frente = frente,
+                    reverso = reverso,
+                    textos = textos.ToArray(),
+                });
+                return;
+            }
+
             AudioClip clip = narrado ? null : narracion;
             narrado = true;
 
@@ -104,7 +137,7 @@ namespace Terror.UI
         {
             if (Time.timeScale == 0f) return false;
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego) return false;
-            if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.EstaAbierto) return false;
+            if (PanelInspeccion.Instance != null && (PanelInspeccion.Instance.EstaAbierto || PanelInspeccion.Instance.HayCapaAbierta)) return false;
             return FosforoManager.Instance == null || FosforoManager.Instance.PuedeInteractuar();
         }
 

@@ -253,6 +253,9 @@ namespace Terror.UI
 
         private bool PanelAbierto => panel != null && panel.activeSelf;
 
+        /// <summary>Con la puerta abierta el cajón se reabre sin fósforo (para el resaltado del velador).</summary>
+        public bool SeAbreSinFosforo => construido && fase == Fase.PuertaAbierta;
+
         private bool TarjetaAbierta => tarjeta != null && tarjeta.activeSelf;
 
         // La tarjeta de un objeto es una "capa": Escape la cierra antes que el cajón.
