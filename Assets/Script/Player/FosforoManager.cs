@@ -152,6 +152,8 @@ public class FosforoManager : MonoBehaviour
         {
             luzFosforo.gameObject.SetActive(true);
             luzFosforo.intensity = intensidadBaseLuz; // arranca a full brillo, el fade lo maneja QuemarFosforo()
+            luzFosforo.pointLightInnerRadius = radioInteriorBase; // y a radio completo, igual en todos los fósforos
+            luzFosforo.pointLightOuterRadius = radioExteriorBase;
         }
 
         // TEMPORAL: mientras no haya arte ni panel de inspección, este log confirma
@@ -203,7 +205,7 @@ public class FosforoManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Baja la intensidad de la luz a medida que se acaba el tiempo del fósforo,
+    /// Baja la intensidad y el alcance de la luz a medida que se acaba el tiempo del fósforo,
     /// para que se sienta que se está "apagando" en vez de cortarse de golpe.
     /// No tocamos esto mientras está pausado por inspección: el fósforo no debe
     /// seguir "muriendo" visualmente si tampoco está perdiendo tiempo.
@@ -224,6 +226,11 @@ public class FosforoManager : MonoBehaviour
             parpadeo = 1f - fuerzaParpadeo * Mathf.PerlinNoise(Time.time * 12f, 0.37f);
 
         luzFosforo.intensity = intensidadBaseLuz * progreso * parpadeo;
+
+        // El alcance se encoge al mismo ritmo que la intensidad: todos los fósforos
+        // arrancan con el radio completo y se van cerrando hasta quedar a oscuras.
+        luzFosforo.pointLightInnerRadius = radioInteriorBase * progreso;
+        luzFosforo.pointLightOuterRadius = radioExteriorBase * progreso;
     }
 
     /// <summary>
@@ -265,19 +272,6 @@ public class FosforoManager : MonoBehaviour
         }
 
         ApagarFosforo();
-    }
-
-    /// <summary>
-    /// Achica (o restaura) el alcance de la luz del fósforo. 1 = radio original del
-    /// Inspector, 0.5 = la mitad. Lo usa PresenciaManager al consumirse el tercer fósforo.
-    /// </summary>
-    public void SetFactorAlcanceLuz(float factor)
-    {
-        if (luzFosforo == null)
-            return;
-
-        luzFosforo.pointLightInnerRadius = radioInteriorBase * factor;
-        luzFosforo.pointLightOuterRadius = radioExteriorBase * factor;
     }
 
     /// <summary>
