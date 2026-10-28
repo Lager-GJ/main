@@ -82,6 +82,30 @@ Hoy hay un provisorio hecho deformando `Inicio/Cajon_Interior.png`. Para la vers
 
 **Si cambian las esquinas del velador**, hay que actualizarlas en `InicioCuarto` → "Borde Cajon En Dibujo". En los otros muebles, avísenle a David para mover la llave o la agenda.
 
+## 2d. Objetos en primer plano: frente y reverso (2026-10-28)
+
+Cada objeto que se toca pasa a primer plano, en la mano de Luis. Un clic lo da vuelta y el botón **Inspeccionar** lee su descripción o hace su acción: abrir la caja, probar la llave en la lata o abrir el candado del joyero. Por eso cada objeto necesita su **reverso**.
+
+Todos los de esta tabla son **provisorios**. Varios reversos son el frente espejado y un poco más oscuro, y el equipo puede reemplazarlos por nombre. Conviene mantener el tamaño del frente; si cambia, que mantenga la proporción. En pantalla, el objeto entra en 640 × 500 y se agranda como mucho ×3.
+
+| Archivo | Tamaño | Qué es |
+|---|---|---|
+| `Inicio/Cajon_FotoVieja.png` | 340 × 250 | Frente: la abuelita joven, en sepia. A la derecha se ve el hombro de alguien más; la foto está cortada con tijera, con el borde dentado. |
+| `Inicio/Cajon_FotoVieja_Reverso.png` | 340 × 250 | Papel de atrás con el corte del otro lado, «Rosita y …» junto al corte, el sello «FOTO ESTUDIO» y manchas de pegamento del álbum. |
+| `Inicio/Cajon_Estampita.png` | 240 × 350 | Estampita de un santo con aureola y borde dorado gastado: «Ruega por nosotros». |
+| `Inicio/Cajon_Estampita_Reverso.png` | 240 × 350 | La oración impresa, borrosa, y con lápiz: «Que nunca se te apague la luz, mijito». |
+| `Inicio/Cajon_Nota_Reverso.png` | 300 × 220 | La nota de atrás: el papel, con la letra que se transparenta al revés. |
+| `Inicio/Cajon_Rosario_Reverso.png` | 420 × 340 | Espejado. |
+| `Inicio/Cajon_HiloAguja_Reverso.png` | 260 × 240 | Espejado, con la etiqueta «N°40» del carrete. |
+| `Inicio/Cajon_CaboVela_Reverso.png` | 280 × 170 | Espejado. |
+| `Acertijos/Agenda_Reverso.png` | 260 × 320 | Contratapa: «Pedidos y medidas» y las iniciales «R. M.». **No tiene que mostrar el año**, porque la clave del joyero sale de la foto del campo. |
+| `Acertijos/Llave_Pequena_Reverso.png`, `Llave_Armario_Reverso.png`, `Llave_Puerta_Reverso.png` | 256 × 256 | Espejadas. |
+| `Acertijos/Joyero_Reverso.png` | 660 × 510 | Atrás del joyero: las bisagras y el grabado «Para mi Rosa». |
+| `Acertijos/Lata_Frente.png` | 1000 × 603 | Recorte del dibujo de la lata del equipo (`borde textura-Galletas oscuridad.png`). |
+| `Acertijos/Lata_Reverso.png` | 1000 × 603 | La otra cara, con una etiqueta de papel: «Hilos y botones (no tocar)». |
+
+La foto del campo ya tenía su reverso, con el año (`Foto_Campo_Reverso.png`). La caja de fósforos tiene el suyo en §2b.
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).

@@ -11,11 +11,12 @@ namespace Terror.UI
     /// <summary>
     /// La caja de fósforos "La Chispa" en primer plano (pedido de David, 2026-10-27).
     /// Al tocarla en el cajón del inicio, la caja se ve en grande:
-    ///  - se puede voltear (A/D, flechas o el botón) para leer el reverso: la advertencia
-    ///    y "Lea las instrucciones antes de usar";
-    ///  - en el frente, un clic la abre: sale la bandeja con los fósforos. Ese es el
-    ///    momento del portazo (lo hace InicioCuarto) y del tutorial "Pulsa E", que es la
-    ///    hoja de instrucciones de la caja;
+    ///  - un clic en la caja (o A/D, flechas) la da vuelta para leer el reverso: la
+    ///    advertencia y "Lea las instrucciones antes de usar";
+    ///  - el botón "Inspeccionar" de abajo la abre (2026-10-28, igual que el resto de los
+    ///    objetos en primer plano): sale la bandeja con los fósforos. Ese es el momento
+    ///    del portazo (lo hace InicioCuarto) y del tutorial "Pulsa E", que es la hoja de
+    ///    instrucciones de la caja. Ya abierta, Inspeccionar lee su descripción;
     ///  - la bandeja muestra los fósforos que quedan: al prender uno, sale de la caja.
     ///
     /// Se arma en runtime dentro del panel del cajón (Canvas de la UI). Es una "capa" de
@@ -45,10 +46,18 @@ namespace Terror.UI
             [Range(0f, 0.6f)] public float subidaBandeja = 0.38f;
             [Tooltip("Oscurece el cuarto detrás de la caja.")]
             [Range(0f, 1f)] public float fondo = 0.6f;
-            [TextArea(1, 2)] public string ayudaCerrada = "Clic en la caja para abrirla   ·   A / D para voltearla";
-            [TextArea(1, 2)] public string ayudaReverso = "A / D para voltearla";
-            [TextArea(1, 2)] public string ayudaAbierta = "A / D para voltearla\nEsc o clic afuera para guardarla";
-            public string textoVoltear = "Voltear";
+            [TextArea(1, 2)] public string ayudaCerrada = "Clic en la caja para darle la vuelta   ·   Inspeccionar para abrirla";
+            [TextArea(1, 2)] public string ayudaReverso = "Clic en la caja para darle la vuelta   ·   Inspeccionar para abrirla";
+            [TextArea(1, 2)] public string ayudaAbierta = "Clic en la caja para darle la vuelta\nEsc o clic afuera para guardarla";
+            public string textoInspeccionar = "Inspeccionar";
+            [Tooltip("Lo que lee Inspeccionar con la caja ya abierta, una página por clic.")]
+            [TextArea(1, 3)] public string[] descripcion =
+            {
+                "«La Chispa». Fósforos de cocina, de los de antes.",
+                "Abajo, en letras chiquitas: «Cada llama tiene un precio».",
+            };
+            [Tooltip("Última página de la descripción. {0} = fósforos que quedan.")]
+            [TextArea(1, 2)] public string descripcionQuedan = "Me quedan {0}. Tengo que cuidarlos.";
             public AudioClip sonidoVoltear;
             public AudioClip sonidoAbrir;
         }
@@ -69,7 +78,8 @@ namespace Terror.UI
         private Image halo;
         private Image[] fosforos;
         private TextMeshProUGUI ayuda;
-        private GameObject botonVoltear;
+        private GameObject botonInspeccionar;
+        private int pagina = -1;
 
         private float yCerrada;
         private float yAbierta;
@@ -116,6 +126,7 @@ namespace Terror.UI
             gameObject.SetActive(true);
             reverso = false;
             girando = false;
+            pagina = -1;
             girador.localScale = Vector3.one;
             funda.sprite = cfg.frente;
             caja.anchoredPosition = Abierta ? cfg.posicionAbierta : cfg.posicion;
@@ -223,15 +234,45 @@ namespace Terror.UI
             if (k.aKey.wasPressedThisFrame || k.dKey.wasPressedThisFrame ||
                 k.leftArrowKey.wasPressedThisFrame || k.rightArrowKey.wasPressedThisFrame)
                 Voltear();
+            else if (k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame)
+                Inspeccionar();
         }
 
         private static bool Pausado() => PauseManager.Instance != null && PauseManager.Instance.EstaPausado;
 
+        // Clic en la caja: se da vuelta (abrirla es con Inspeccionar).
         private void ClicEnCaja()
         {
-            if (Pausado() || girando || abriendo) return;
-            if (reverso) { Voltear(); return; }
-            if (!Abierta && (puedeAbrir == null || puedeAbrir())) StartCoroutine(Abrir());
+            if (Pausado()) return;
+            Voltear();
+        }
+
+        /// <summary>Botón Inspeccionar: la abre; ya abierta, lee su descripción.</summary>
+        public void Inspeccionar()
+        {
+            if (!Visible || Pausado() || girando || abriendo) return;
+
+            if (!Abierta && (puedeAbrir == null || puedeAbrir()))
+            {
+                StartCoroutine(reverso ? VoltearYAbrir() : Abrir());
+                return;
+            }
+
+            int quedan = 0;
+            foreach (var f in fosforos) if (f.gameObject.activeSelf) quedan++;
+            int total = (cfg.descripcion != null ? cfg.descripcion.Length : 0) + (string.IsNullOrEmpty(cfg.descripcionQuedan) ? 0 : 1);
+            if (total == 0) return;
+            pagina = (pagina + 1) % total;
+            ayuda.text = pagina < cfg.descripcion.Length ? cfg.descripcion[pagina] : string.Format(cfg.descripcionQuedan, quedan);
+            ayuda.fontStyle = FontStyles.Normal;
+            ayuda.color = new Color(0.96f, 0.9f, 0.78f, 1f);
+        }
+
+        // Inspeccionar con el reverso a la vista: primero vuelve al frente y después la abre.
+        private IEnumerator VoltearYAbrir()
+        {
+            yield return Girar();
+            yield return Abrir();
         }
 
         public void Voltear()
@@ -279,7 +320,10 @@ namespace Terror.UI
         private void ActualizarAyuda()
         {
             if (ayuda == null) return;
+            pagina = -1;
             ayuda.text = reverso ? cfg.ayudaReverso : Abierta ? cfg.ayudaAbierta : cfg.ayudaCerrada;
+            ayuda.fontStyle = FontStyles.Italic;
+            ayuda.color = new Color(0.85f, 0.85f, 0.85f, 0.9f);
         }
 
         private void Sonar(AudioClip clip)
@@ -327,18 +371,23 @@ namespace Terror.UI
 
             funda = NuevaImagen("Funda", girador, Vector2.zero, tam, cfg.frente);
             BotonPlano(funda.gameObject, ClicEnCaja);
+            funda.gameObject.AddComponent<ResaltarAlPasar>();
 
             float yAbajo = cfg.posicion.y - tam.y * 0.5f;
             ayuda = NuevoTexto("Ayuda", transform, new Vector2(cfg.posicion.x, yAbajo - 50f), new Vector2(1400f, 80f), 28f, FontStyles.Italic, fuente);
             ayuda.color = new Color(0.85f, 0.85f, 0.85f, 0.9f);
 
-            // Botón Voltear, con el mismo borde a mano que el resto.
-            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(cfg.posicion.x, yAbajo - 125f), new Vector2(220f, 64f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
+            ayuda.textWrappingMode = TextWrappingModes.Normal;
+
+            // Botón Inspeccionar, con el mismo borde a mano que el resto.
+            var marco = NuevaImagen("BotonInspeccionar", transform, new Vector2(cfg.posicion.x, yAbajo - 125f), new Vector2(300f, 68f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
             marco.type = Image.Type.Sliced;
             marco.color = new Color(1f, 1f, 1f, 0.85f);
-            BotonPlano(marco.gameObject, Voltear);
-            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(220f, 64f), 32f, FontStyles.Normal, fuente).text = cfg.textoVoltear;
-            botonVoltear = marco.gameObject;
+            BotonPlano(marco.gameObject, Inspeccionar);
+            marco.gameObject.AddComponent<ResaltarAlPasar>();
+            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, 68f), 32f, FontStyles.Normal, fuente).text =
+                string.IsNullOrEmpty(cfg.textoInspeccionar) ? "Inspeccionar" : cfg.textoInspeccionar;
+            botonInspeccionar = marco.gameObject;
         }
 
         private void LateUpdate()
@@ -349,7 +398,7 @@ namespace Terror.UI
             float yAbajo = caja.anchoredPosition.y - cfg.tamano.y * 0.5f;
             ayuda.rectTransform.anchoredPosition = new Vector2(Abierta ? x : cfg.posicion.x, yAbajo - 50f);
             ayuda.rectTransform.sizeDelta = new Vector2(Abierta ? 700f : 1400f, 80f);
-            ((RectTransform)botonVoltear.transform).anchoredPosition = new Vector2(x, yAbajo - 125f);
+            ((RectTransform)botonInspeccionar.transform).anchoredPosition = new Vector2(x, yAbajo - 125f);
         }
     }
 }

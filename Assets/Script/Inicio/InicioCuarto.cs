@@ -42,6 +42,8 @@ namespace Terror.UI
             public Vector2 posicion;
             public Vector2 tamano = new Vector2(200f, 200f);
             public float rotacion;
+            [Tooltip("El otro lado del objeto: se ve al darle la vuelta en el primer plano. Vacío = no se da vuelta.")]
+            public Sprite reverso;
             [Tooltip("Arte de la tarjeta que se abre al tocarlo (como las de Historia). Vacío = el dibujo del objeto en grande sobre una tarjeta gris provisoria.")]
             public Sprite ilustracion;
             [Tooltip("Textos de su tarjeta, en orden: el botón > pasa al siguiente y el último cierra la tarjeta.")]
@@ -129,6 +131,8 @@ namespace Terror.UI
         [SerializeField] private float rotacionNota = 4f;
         [Tooltip("Arte de la tarjeta de la nota. Vacío = el dibujo de la nota en grande.")]
         [SerializeField] private Sprite ilustracionNota;
+        [Tooltip("El otro lado de la nota (primer plano).")]
+        [SerializeField] private Sprite reversoNota;
         [TextArea(1, 3)] [SerializeField] private string[] textosNota =
         {
             "Es la letra de la abuelita... (próximamente)"
@@ -156,6 +160,8 @@ namespace Terror.UI
         [TextArea(1, 3)] [SerializeField] private string textoSinLuz = "Está muy oscuro. No veo nada.";
         [TextArea(1, 3)] [SerializeField] private string textoNotaAparece = "Debajo de los fósforos había una nota...";
         [SerializeField] private string textoAyudaCerrar = "Esc o clic afuera para volver al cuarto";
+        [Tooltip("Lo que piensa Luis si cierra el cajón sin llevarse los fósforos.")]
+        [TextArea(1, 2)] [SerializeField] private string textoCerrarSinFosforos = "Mejor me llevo los fósforos del cajón... por si se corta la luz.";
 
         [Header("Sonidos")]
         [SerializeField] private AudioClip sonidoAbrirCajon;
@@ -305,9 +311,9 @@ namespace Terror.UI
             luzPuertaOverlay.color = Color.white;
             brillo.color = new Color(1f, 1f, 1f, 0f);
 
+            // El cajón se puede cerrar desde el principio (pedido de David, 2026-10-28):
+            // Luis queda en el cuarto con la luz de la puerta y vuelve tocando el velador.
             Mostrar();
-            if (PanelInspeccion.Instance != null)
-                PanelInspeccion.Instance.CierreBloqueado = true; // hasta prender el primer fósforo
 
             Sonar(sonidoAbrirCajon);
             Decir(textoAlAbrir);
@@ -316,15 +322,29 @@ namespace Terror.UI
         // ---------- API pública ----------
 
         /// <summary>
-        /// Reabre el cajón. Conectado al botón VeladorB. Solo con un fósforo encendido,
-        /// igual que el resto de los objetos del cuarto.
+        /// Reabre el cajón. Conectado al botón VeladorB. Con la puerta abierta alcanza su
+        /// luz; después, solo con un fósforo encendido, igual que el resto del cuarto.
         /// </summary>
         public void AbrirCajon()
         {
-            if (fase != Fase.Iluminado) return; // el inicio todavía no terminó
             if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState != GameState.Juego) return;
+            if (PanelInspeccion.Instance != null && (PanelInspeccion.Instance.CierreBloqueado || PanelInspeccion.Instance.EstaAbierto)) return;
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+
+            if (fase == Fase.PuertaAbierta && construido)
+            {
+                PonerTinte(tintePuerta);
+                FondoAlfa(fondoConPuertaAbierta);
+                luzPuertaOverlay.color = Color.white;
+                brillo.color = new Color(1f, 1f, 1f, 0f);
+                Mostrar();
+                Sonar(sonidoAbrirCajon);
+                Decir(textoAlAbrir);
+                return;
+            }
+
+            if (fase != Fase.Iluminado) return; // a oscuras, sin fósforo, no se ve nada
             if (FosforoManager.Instance != null && !FosforoManager.Instance.PuedeInteractuar()) return;
-            if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.CierreBloqueado) return;
 
             Construir();
             PonerTinte(tinteFosforo);
@@ -363,7 +383,7 @@ namespace Terror.UI
 
             if (zona == zonaNota)
             {
-                AbrirTarjeta(nombreNota, spriteNota, ilustracionNota, textosNota, sonidoObjeto);
+                MirarObjeto(nombreNota, spriteNota, reversoNota, ilustracionNota, textosNota, sonidoObjeto);
                 alLeerNota?.Invoke();
                 OnNotaLeida?.Invoke();
                 return;
@@ -374,7 +394,31 @@ namespace Terror.UI
 
             ElementoCajon e = elementos[i];
             clicksElementos[i]++;
-            AbrirTarjeta(e.nombre, e.sprite, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto);
+            MirarObjeto(e.nombre, e.sprite, e.reverso, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto);
+        }
+
+        // El objeto en primer plano (clic para darle la vuelta, Inspeccionar para leerlo).
+        // Sin PrimerPlanoObjeto en la escena: la tarjeta de antes.
+        private void MirarObjeto(string nombre, Sprite dibujo, Sprite reverso, Sprite ilustracion, string[] textos, AudioClip sonido)
+        {
+            var pp = PrimerPlanoObjeto.Instance;
+            Sprite frente = dibujo != null ? dibujo : ilustracion;
+            if (pp == null || frente == null)
+            {
+                AbrirTarjeta(nombre, dibujo, ilustracion, textos, sonido);
+                return;
+            }
+            if (pp.Visible) return;
+            pp.Mostrar(new PrimerPlanoObjeto.Datos
+            {
+                nombre = nombre,
+                frente = frente,
+                reverso = reverso,
+                textos = textos,
+                alCerrar = ActualizarEtiqueta,
+            });
+            Sonar(sonido);
+            ActualizarEtiqueta();
         }
 
         // ---------- Tarjeta de un objeto ----------
@@ -588,6 +632,16 @@ namespace Terror.UI
 
             if (panel != null && !panel.activeSelf && nino != null)
                 nino.enabled = true;
+
+            if (panel != null && !panel.activeSelf && fase == Fase.PuertaAbierta && !string.IsNullOrEmpty(textoCerrarSinFosforos))
+            {
+                var cartel = CartelNarrativa.Instancia;
+                if (cartel != null)
+                {
+                    cartel.Mostrar(this, textoCerrarSinFosforos, fuente, 3f);
+                    cartel.SoltarHover(this);
+                }
+            }
         }
 
         // ---------- Mostrar ----------
@@ -952,12 +1006,11 @@ namespace Terror.UI
 
             if (zonaEncima != null && !string.IsNullOrEmpty(zonaEncima.Nombre))
                 textoEtiqueta.text = zonaEncima.Nombre;
-            else if (TarjetaAbierta || (vistaCaja != null && vistaCaja.Visible))
+            else if (TarjetaAbierta || (vistaCaja != null && vistaCaja.Visible) ||
+                     (PrimerPlanoObjeto.Instance != null && PrimerPlanoObjeto.Instance.Visible))
                 textoEtiqueta.text = "";
-            else if (fase == Fase.Iluminado)
-                textoEtiqueta.text = textoAyudaCerrar;
             else
-                textoEtiqueta.text = "";
+                textoEtiqueta.text = textoAyudaCerrar;
         }
 
         // ---------- Efectos ----------
