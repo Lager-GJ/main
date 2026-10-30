@@ -101,15 +101,19 @@ namespace Terror
             // Se prende sola.
             pantalla.gameObject.SetActive(true);
             Sonar(sonidoEstatica, 0.7f);
+            // Con "Reducir destellos" (Opciones → Accesibilidad) la estática cambia 4 veces
+            // más lento y la luz no titila: el parpadeo rápido es el más peligroso.
+            bool suave = Preferencias.ReducirDestellos;
+            float cadaCuadro = suave ? 0.2f : 0.05f;
             float t = 0f;
             int cuadro = 0;
             while (t < duracionEstatica)
             {
                 if (estatica != null && estatica.Length > 0) pantalla.sprite = estatica[cuadro++ % estatica.Length];
                 pantalla.color = Color.white;
-                Luz(Random.Range(0.6f, 1f));
-                yield return EsperarSinPausa(0.05f);
-                t += 0.05f;
+                Luz(suave ? 0.6f : Random.Range(0.6f, 1f));
+                yield return EsperarSinPausa(cadaCuadro);
+                t += cadaCuadro;
             }
 
             // El reflejo: Luis... y lo que tiene detrás.
@@ -122,7 +126,7 @@ namespace Terror
 
             // Un último golpe de estática y se apaga de golpe.
             if (estatica != null && estatica.Length > 0) pantalla.sprite = estatica[0];
-            Luz(1f);
+            Luz(suave ? 0.4f : 1f);
             yield return EsperarSinPausa(0.08f);
             pantalla.gameObject.SetActive(false);
             Luz(0f);

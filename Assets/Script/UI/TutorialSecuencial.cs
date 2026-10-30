@@ -398,8 +398,7 @@ namespace Terror.UI
             var teclado = Keyboard.current;
             if (teclado == null) return false;
 
-            return teclado.aKey.wasPressedThisFrame || teclado.dKey.wasPressedThisFrame
-                || teclado.leftArrowKey.wasPressedThisFrame || teclado.rightArrowKey.wasPressedThisFrame;
+            return Terror.Controles.Pulsada(Terror.Accion.Izquierda) || Terror.Controles.Pulsada(Terror.Accion.Derecha);
         }
 
         private void DesbloquearFosforos()

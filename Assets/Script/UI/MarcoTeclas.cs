@@ -12,6 +12,10 @@ namespace Terror.UI
     /// texto y marcar las palabras en el propio texto.
     /// Sin sprite asignado, el marco se genera en código (borde blanco con esquinas
     /// redondeadas); para un marco dibujado a mano, asignar un sprite con bordes 9-slice.
+    ///
+    /// Si el jugador cambió una tecla en Opciones → Controles, el texto del enlace se
+    /// reemplaza solo: "Pulsa &lt;link=tecla&gt;E&lt;/link&gt;" pasa a mostrar la tecla elegida
+    /// para encender. Se escribe la tecla de fábrica (E, Q, I, A, D, P) en la escena.
     /// </summary>
     [RequireComponent(typeof(TMP_Text))]
     public class MarcoTeclas : MonoBehaviour
@@ -43,6 +47,8 @@ namespace Terror.UI
         private TMP_Text texto;
         private readonly List<Image> marcos = new List<Image>();
         private bool sucio = true;
+        private string original;        // el texto tal como lo escribió la escena o un script
+        private string ultimoTraducido; // lo último que puso este componente
 
         private void Awake()
         {
@@ -52,12 +58,29 @@ namespace Terror.UI
         private void OnEnable()
         {
             TMPro_EventManager.TEXT_CHANGED_EVENT.Add(AlCambiarTexto);
+            Preferencias.OnCambio += AlCambiarControles;
+            TraducirTeclas(); // ya, para que no se vea ni un frame la tecla vieja
             sucio = true;
         }
 
         private void OnDisable()
         {
             TMPro_EventManager.TEXT_CHANGED_EVENT.Remove(AlCambiarTexto);
+            Preferencias.OnCambio -= AlCambiarControles;
+        }
+
+        private void AlCambiarControles() => sucio = true;
+
+        // Siempre se traduce desde el original: si E y Q se intercambiaran, traducir
+        // dos veces el mismo texto devolvería la tecla equivocada.
+        private void TraducirTeclas()
+        {
+            if (texto == null) return;
+            string actual = texto.text;
+            if (actual != ultimoTraducido) original = actual; // otro script cambió el texto
+            string nuevo = Controles.TraducirTexto(original);
+            ultimoTraducido = nuevo;
+            if (nuevo != actual) texto.text = nuevo;
         }
 
         private void AlCambiarTexto(Object obj)
@@ -70,6 +93,7 @@ namespace Terror.UI
             if (sucio)
             {
                 sucio = false;
+                TraducirTeclas();
                 Reconstruir();
             }
 

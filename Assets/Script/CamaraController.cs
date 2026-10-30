@@ -79,6 +79,7 @@ public class CamaraController : MonoBehaviour
     /// </summary>
     public void Sacudir(float amplitud, float duracion)
     {
+        amplitud *= Terror.Preferencias.FactorSacudidas; // Opciones → Accesibilidad → Sacudidas (0 = ninguna).
         if (amplitud <= 0f || duracion <= 0f) return;
 
         float restante = tiempoSacudida < duracionSacudida

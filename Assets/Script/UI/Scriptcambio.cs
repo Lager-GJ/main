@@ -23,6 +23,12 @@ public class Scriptcambio : MonoBehaviour
     {
         SceneManager.LoadScene("Intro");
     }
+    /// <summary>Botón "Opciones" del menú principal: audio, imagen, controles y accesibilidad.</summary>
+    public void Opciones()
+    {
+        Terror.UI.PanelOpciones.Abrir();
+    }
+
     public void SALIR()
     {
         Application.Quit();

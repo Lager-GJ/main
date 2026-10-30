@@ -104,7 +104,8 @@ namespace Terror
         private void Update()
         {
             if (Keyboard.current == null) return;
-            bool tecla = Keyboard.current.iKey.wasPressedThisFrame || Keyboard.current.tabKey.wasPressedThisFrame;
+            if (Terror.UI.PanelOpciones.EstaAbierto) return; // las teclas son de las opciones
+            bool tecla = Controles.Pulsada(Accion.Inventario); // I (cambiable) o Tab
             if (!tecla) return;
 
             if (Abierto)

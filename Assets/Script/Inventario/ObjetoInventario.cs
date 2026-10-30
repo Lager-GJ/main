@@ -116,7 +116,7 @@ namespace Terror
             guardado = true;
             imagen.raycastTarget = false;
             inv.Agregar(idObjeto);
-            if (sonido != null) AudioSource.PlayClipAtPoint(sonido, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+            if (sonido != null) AudioManager.ReproducirEfecto(sonido);
             alGuardar?.Invoke();
             AlGuardarse?.Invoke();
 

@@ -35,7 +35,9 @@ namespace Terror.UI
 
         private void LateUpdate()
         {
-            RectTransform nuevo = Buscar();
+            // Opciones → Accesibilidad → Resaltar objetos: 0 apagado, 1 normal, 2 alto contraste.
+            int modo = Preferencias.ResaltadoObjetos;
+            RectTransform nuevo = modo == 0 ? null : Buscar();
             if (nuevo != objetivo)
             {
                 objetivo = nuevo;
@@ -43,9 +45,12 @@ namespace Terror.UI
             }
             if (objetivo == null) return;
 
-            Ubicar(objetivo);
-            float a = Mathf.Lerp(0.55f, 1f, 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * velocidadLatido));
-            imagenBrillo.color = new Color(color.r, color.g, color.b, color.a * a);
+            bool alto = modo == 2;
+            Ubicar(objetivo, alto ? grosor * 1.7f : grosor);
+            // Alto contraste: más grueso, casi blanco y sin bajar tanto al latir.
+            Color c = alto ? new Color(1f, 0.97f, 0.75f, 1f) : color;
+            float a = Mathf.Lerp(alto ? 0.85f : 0.55f, 1f, 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * velocidadLatido));
+            imagenBrillo.color = new Color(c.r, c.g, c.b, c.a * a);
         }
 
         private void OnDisable()
@@ -110,7 +115,7 @@ namespace Terror.UI
 
         // ---------- El borde ----------
 
-        private void Ubicar(RectTransform t)
+        private void Ubicar(RectTransform t, float grosor)
         {
             var raiz = t.GetComponentInParent<Canvas>()?.rootCanvas;
             if (raiz == null) return;

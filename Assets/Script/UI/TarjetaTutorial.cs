@@ -70,7 +70,9 @@ namespace Terror.UI
         {
             var k = Keyboard.current;
             if (k == null || teclaQueCierra == Key.None) return;
-            if (k[teclaQueCierra].wasPressedThisFrame) Cerrar();
+            if (PanelOpciones.EstaAbierto) return; // las teclas son de las opciones
+            // Si el jugador cambió esa tecla en Opciones (la E de encender), vale la nueva.
+            if (k[Controles.Equivalente(teclaQueCierra)].wasPressedThisFrame) Cerrar();
         }
 
         public void Cerrar() => gameObject.SetActive(false);

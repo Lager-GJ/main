@@ -121,7 +121,8 @@ namespace Terror.UI
         /// <summary>Sacude un RectTransform alrededor de su posición actual (para "no, así no").</summary>
         public static IEnumerator Sacudir(RectTransform rt, float amplitud, float duracion = 0.3f)
         {
-            if (rt == null) yield break;
+            amplitud *= Preferencias.FactorSacudidas; // Opciones → Accesibilidad → Sacudidas (0 = ninguna).
+            if (rt == null || amplitud <= 0f) yield break;
             Vector2 p0 = rt.anchoredPosition;
             for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
             {
