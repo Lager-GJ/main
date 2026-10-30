@@ -21,6 +21,31 @@ public class NinoController : MonoBehaviour
     [Tooltip("Opcional: Animator del niño. Puede quedar vacío mientras no haya animaciones listas.")]
     [SerializeField] private Animator animator;
 
+    /// <summary>
+    /// Se dispara cuando Luis camina contra un límite: -1 = izquierdo, 1 = derecho.
+    /// Lo usa ParedesCuarto para pasar a la pared siguiente.
+    /// </summary>
+    public event System.Action<int> OnEmpujaBorde;
+
+    /// <summary>Mientras es true Luis no camina (por ejemplo, durante el fundido entre paredes).</summary>
+    public bool Bloqueado { get; set; }
+
+    /// <summary>Cambia los límites del cuarto (cada pared tiene los suyos).</summary>
+    public void SetLimites(float izquierdo, float derecho)
+    {
+        limiteIzquierdo = izquierdo;
+        limiteDerecho = derecho;
+    }
+
+    /// <summary>Lleva a Luis a otra X al instante, sin caminar (también mueve su Rigidbody2D).</summary>
+    public void Teletransportar(float x)
+    {
+        Vector3 p = new Vector3(x, transform.position.y, transform.position.z);
+        transform.position = p;
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.position = p;
+    }
+
     private void Awake()
     {
         // Auto-asignamos el Animator si se nos olvidó arrastrarlo en el inspector
@@ -35,7 +60,7 @@ public class NinoController : MonoBehaviour
     {
         // Con una ventana de objeto abierta el fósforo está pausado por inspección:
         // el niño no camina mientras el jugador lee, o tendría ventaja sobre la Presencia.
-        if (FosforoManager.Instance != null && FosforoManager.Instance.PausadoPorInspeccion)
+        if (Bloqueado || (FosforoManager.Instance != null && FosforoManager.Instance.PausadoPorInspeccion))
         {
             Mover(0f); // también apaga la animación de caminar
             return;
@@ -70,6 +95,10 @@ public class NinoController : MonoBehaviour
 
             // Clamp: no dejamos que el niño camine más allá de los bordes del cuarto.
             nuevaX = Mathf.Clamp(nuevaX, limiteIzquierdo, limiteDerecho);
+
+            // Llegó al borde y sigue empujando hacia afuera: avisamos (cambio de pared).
+            if ((direccionX < 0f && nuevaX <= limiteIzquierdo) || (direccionX > 0f && nuevaX >= limiteDerecho))
+                OnEmpujaBorde?.Invoke(direccionX < 0f ? -1 : 1);
 
             transform.position = new Vector3(nuevaX, transform.position.y, transform.position.z);
 

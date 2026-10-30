@@ -67,6 +67,22 @@ public class CamaraController : MonoBehaviour
         pesoObjetivo = 0f;
     }
 
+    /// <summary>
+    /// Deja la cámara quieta en 'punto' (los dos límites iguales), como en las paredes
+    /// del cuarto. saltar = llega ya, sin el suavizado (para cambiar de pared a oscuras).
+    /// </summary>
+    public void FijarEn(Vector2 punto, bool saltar)
+    {
+        minBounds = punto;
+        maxBounds = punto;
+        if (!saltar) return;
+
+        float z = posicionIniciada ? posicionSuave.z : transform.position.z;
+        posicionSuave = new Vector3(punto.x, punto.y, z);
+        posicionIniciada = true;
+        transform.position = posicionSuave;
+    }
+
     private void OnDestroy()
     {
         if (Instance == this) Instance = null;
