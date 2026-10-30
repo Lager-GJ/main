@@ -792,7 +792,10 @@ namespace Terror.UI
             BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
 
             var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
-            abierto.color = veladorCerrado.color;
+            // El velador cerrado puede ser transparente (el mueble ya está dibujado en la
+            // pared); el abierto se ve siempre.
+            Color c = veladorCerrado.color;
+            abierto.color = new Color(c.r, c.g, c.b, 1f);
             BotonPlano(abierto.gameObject, null); // un clic en el mueble no cierra
             SpriteIluminado.Agregar(abierto, 4, 1f, materialIluminado);
 

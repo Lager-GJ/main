@@ -21,6 +21,27 @@ Hay dos cosas más:
 - El juego oscurece todo con la luz real: el fósforo, la puerta y una luz suave sobre el mueble que se mira. Se dibuja sin sombras de luz propias.
 - Al acercarse, la cámara amplía 4 veces en el velador y el joyero, y ~2 veces en el secretero. Cuanto más resolución tengan esas piezas, mejor se van a ver de cerca.
 
+## 0b. El cuarto en 4 paredes (2026-10-29)
+
+El cuarto ya no es un panorama ancho (`FondoDefi`): son **4 paredes de una pantalla cada una**. Cuando Luis llega al borde, la pantalla funde a negro y aparece la pared siguiente. Es circular: a la derecha de la pared 4 vuelve la 1. Bocetos originales: `Fondos bocetos.pdf`.
+
+Hoy se usan los bocetos oscurecidos como fondo provisorio: `Assets/Recursos/Paredes/Pared{1..4}_Boceto.png`.
+
+| Pared | Qué tiene | Acertijos que viven ahí |
+|---|---|---|
+| 1 | Puerta, repisa con altar, retratos, cruz, cama, velador, mesita con la Virgen | Cajón del inicio (velador), joyero (sobre la mesita), puerta de salida |
+| 2 | Ventana con juguetes, tocador con espejo, móvil de hierbas | **Tocador = el antiguo secretero** (cajón secreto con la agenda); el marco vacío es el cuadrito ovalado junto al espejo |
+| 3 | Máquina de coser, silla, tele | Tele embrujada, foto del campo (en el piso), canasta |
+| 4 | Dos repisas vacías, armario | Armario con la lata y la llave de la puerta |
+
+**Arte que hace falta:**
+- **Las 4 paredes finales**, en **1920 × 1080**, con el mismo encuadre que los bocetos. El suelo tiene que estar a la misma altura en las 4: el borde entre pared y piso a **~71 % del alto** (y ≈ 768 px) y los pies de Luis a ~84 % (y ≈ 912 px), porque Luis camina a la misma altura en todas. En las paredes 2 y 4 cambia la dirección de las tablas del piso (nota del boceto).
+- **Los muebles NO van aparte:** quedan pintados en la pared. Los muebles cerrados del juego son zonas invisibles encima del dibujo.
+- **Tocador abierto** (reemplaza `SecreteroInterior`): hoy, al abrir el tocador, aparece el dibujo viejo del secretero encima. Hace falta el tocador con sus cajones abiertos y un **cajón secreto** que aparece al poner la foto en el marco.
+- **Armario abierto de 3 puertas:** el abierto de hoy es el viejo de 2 puertas y es un poco más angosto que el del boceto.
+- **Velador con el cajón afuera** dibujado igual que el velador del boceto (`Velador_CajonInclinado.png` sigue siendo el del panorama viejo).
+- Los objetos sueltos (joyero, marco vacío, canasta, foto del campo, caramelos) siguen siendo piezas aparte.
+
 ## 1. En el cuarto
 
 | Archivo | Tamaño | Qué es / dónde va |
