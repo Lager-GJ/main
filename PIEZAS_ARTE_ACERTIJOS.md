@@ -157,6 +157,25 @@ Son los objetos que ya estaban pintados en `FondoDefi`: al tocarlos se ven en la
 
 **La abuelita se llama Rosa.** Aparece así en la foto vieja («Rosita y…»), el joyero («Para mi Rosa»), la agenda («R. M.»), la cruz y la foto de la familia. La clienta de la agenda pasó a ser «Doña Teresa».
 
+## 2g. La llama del fósforo y la caja de la pantalla (2026-10-30)
+
+**La llama, aparte de Luis (para Anavi).** Hoy la llama está pintada dentro de los dibujos de Luis con fósforo (`Niño/Estatico-LUZ.png`, `paso-DEr-LUZ.png`, `paso-IZ-LUZ.png`), así que no se puede mover sola. Para que se incline al caminar, tiemble con la Presencia y se ponga roja al morir hace falta:
+
+- **Los mismos 3 dibujos de Luis con el fósforo en la mano, pero sin la llama**: el palito y la cabeza del fósforo sí, el fuego no.
+- **La llama sola**, en un PNG aparte:
+  - con fondo transparente, la llama derecha (apuntando hacia arriba) y en tonos claros, amarillo y blanco. El código la tiñe de rojo cuando se está muriendo, así que **no hay que dibujarla roja**;
+  - el **pivote abajo al centro**, en la base de la llama, que es donde toca la cabeza del fósforo;
+  - si se quiere que la llama "baile", puede ser una tira de 3 o 4 cuadros.
+- **Cuando llegue el arte**, en Unity:
+  1. se cambian los dibujos de Luis por los que no tienen llama;
+  2. se crea un hijo de `Personaje` en la cabeza del fósforo, con un `SpriteRenderer` que tenga la llama y el material `Sprite-Lit-Default`;
+  3. a ese hijo se le agrega el componente **`LlamaFosforo`**, que ya está hecho. Todo se ajusta en el Inspector: inclinación, color al morir, tamaño al morir y agitación por nivel.
+
+**La caja de la pantalla (arriba a la izquierda).** Por ahora usa los mismos dibujos provisorios de la caja en primer plano (`Caja_Frente`, `Caja_Bandeja`, `Caja_Fosforo`). La chispa y la llama de la animación son brillos hechos en código. Si el equipo quiere hacer su versión:
+
+- un ícono chico de la caja que se lea bien a unos 70 × 96 px;
+- opcional: una chispa y una llama dibujadas para la animación de encender.
+
 ## 3. Íconos del inventario
 
 PNG transparentes de 256 × 256 que se leen bien en chico (≈ 110 px).

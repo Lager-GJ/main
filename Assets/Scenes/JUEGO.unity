@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 14855983}
   - component: {fileID: 14855986}
   - component: {fileID: 14855985}
-  - component: {fileID: 910000001}
   m_Layer: 5
   m_Name: OSCURO
   m_TagString: Untagged
@@ -7515,21 +7514,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &910000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 14855982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54f8c77d01254cc7b07bd86abc106f03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Terror.VinetaPresencia
-  color: {r: 0.62, g: 0.03, b: 0.03, a: 1}
-  segundosTransicion: 1.5
-  frecuenciaPulso: 1.1
 --- !u!114 &910000011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7545,38 +7529,29 @@ MonoBehaviour:
   niveles:
   - sacudida: 12
     duracionSacudida: 0.4
-    vineta: 0.25
-    pulsoVineta: 0
     parpadeoLuz: 0
     golpe: {fileID: 8300000, guid: b970e762142e5a448992411da8d7a471, type: 3}
     volumenGolpe: 0.35
     pensamiento: "\xBFAbuelita...? \xBFEres t\xFA?"
   - sacudida: 22
     duracionSacudida: 0.6
-    vineta: 0.45
-    pulsoVineta: 0.25
     parpadeoLuz: 0.15
     golpe: {fileID: 8300000, guid: 11a28b712c5eb034aa0fb25a7ddb82dc, type: 3}
     volumenGolpe: 0.6
     pensamiento: Algo camina en el cuarto...
   - sacudida: 35
     duracionSacudida: 0.8
-    vineta: 0.65
-    pulsoVineta: 0.4
     parpadeoLuz: 0.35
     golpe: {fileID: 8300000, guid: b46bb49432b55144db35a36e883a6960, type: 3}
     volumenGolpe: 0.8
     pensamiento: "Est\xE1 aqu\xED. Me est\xE1 mirando."
   - sacudida: 50
     duracionSacudida: 1.2
-    vineta: 0.9
-    pulsoVineta: 0
     parpadeoLuz: 0
     golpe: {fileID: 0}
     volumenGolpe: 0
     pensamiento: 
   sacudidaPorRuido: 6
-  vineta: {fileID: 910000001}
   fuentePensamientos: {fileID: 11400000, guid: 1f4445a0fd60e3841bbdf4e1a6a67ecf, type: 2}
   segundosPensamiento: 3.5
 --- !u!1 &920000001
@@ -16867,6 +16842,10 @@ MonoBehaviour:
   - {fileID: 1149999353}
   spriteFosforoNuevo: {fileID: 8339267962354346179, guid: ad942156062c887418f5351aea1bb563, type: 3}
   spriteFosforoQuemado: {fileID: 4104167850733375378, guid: f4d097d3b06e20d4d9066b986afe0178, type: 3}
+  spriteCaja: {fileID: 21300000, guid: cf69b59a7a744f63bd6e20147ecb8308, type: 3}
+  spriteBandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
+  spriteFosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
+  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
 --- !u!1 &2108168581
 GameObject:
   m_ObjectHideFlags: 0

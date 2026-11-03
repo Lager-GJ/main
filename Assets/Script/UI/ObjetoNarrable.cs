@@ -11,8 +11,9 @@ namespace Terror.UI
     /// zona invisible (Image transparente) sobre el dibujo del fondo:
     ///   - Al pasar el mouse se ilumina su borde (ResaltadorInteractuables, el mismo para
     ///     todo lo que se puede tocar) y aparece el mensaje en la parte de abajo.
-    ///   - Al hacer click (2026-10-28) se ve en primer plano (PrimerPlanoObjeto): clic para
-    ///     darle la vuelta e Inspeccionar para leer el mensaje y sus textos. Sin música.
+    ///   - Al hacer click la cámara se acerca al objeto en su lugar (AcercamientoObjeto,
+    ///     2026-10-30, la misma transición que el joyero): clic para darle la vuelta e
+    ///     Inspeccionar para leer el mensaje y sus textos. Sin música.
     ///   - Sin dibujo de frente (la tele): como antes, el mensaje en el cartel, y la
     ///     narración solo si tiene una asignada.
     /// Misma regla que el resto del juego: sin fósforo encendido no se ve ni se oye nada.
@@ -103,13 +104,18 @@ namespace Terror.UI
                 var textos = new System.Collections.Generic.List<string>();
                 if (!string.IsNullOrEmpty(mensaje)) textos.Add(mensaje);
                 if (textosExtra != null) textos.AddRange(textosExtra);
-                pp.Mostrar(new PrimerPlanoObjeto.Datos
+                var datos = new PrimerPlanoObjeto.Datos
                 {
                     nombre = nombre,
                     frente = frente,
                     reverso = reverso,
                     textos = textos.ToArray(),
-                });
+                };
+                // Como el joyero: la cámara se acerca al objeto en su lugar (2026-10-30).
+                // Si no se puede (sin cámara, o no está en el cuarto), la ventana de siempre.
+                var acercamiento = AcercamientoObjeto.Instance;
+                if (acercamiento != null && acercamiento.Mostrar(datos, transform as RectTransform)) return;
+                pp.Mostrar(datos);
                 return;
             }
 

@@ -13,8 +13,8 @@ namespace Terror
     /// de un primer plano (el cajón del armario, el secretero).
     ///
     /// Igual que el resto del cuarto, solo se ve y se toca con un fósforo encendido.
-    /// Al hacer clic se guarda en el Inventario, se desvanece y se ve en primer plano
-    /// (PrimerPlanoObjeto): se le da la vuelta y se inspecciona (2026-10-28).
+    /// Al hacer clic se guarda directo en el Inventario y se desvanece: son cosas chicas
+    /// que Luis se mete en el bolsillo (2026-10-30). Se miran después desde la bolsa.
     /// </summary>
     [RequireComponent(typeof(Image))]
     public class ObjetoInventario : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
@@ -29,7 +29,7 @@ namespace Terror
         [Tooltip("Late un poco para que se note (objetos chicos en el piso).")]
         [SerializeField] private bool latir = true;
         [SerializeField] private UnityEvent alGuardar;
-        [Tooltip("Línea abajo del primer plano al guardarlo.")]
+        [Tooltip("Lo que piensa Luis al guardarlo (abajo, en la franja de los pensamientos).")]
         [SerializeField] private string textoGuardado = "Lo guardé en la bolsa  (I para ver lo que llevo)";
 
         private Image imagen;
@@ -120,8 +120,19 @@ namespace Terror
             alGuardar?.Invoke();
             AlGuardarse?.Invoke();
 
-            if (PrimerPlanoObjeto.Instance != null && inv.Definicion(idObjeto) != null)
-                PrimerPlanoObjeto.Instance.Mostrar(inv.Definicion(idObjeto), textoGuardado);
+            // Son cosas chicas: Luis se las guarda en el bolsillo sin más (2026-10-30). El
+            // aviso "Guardaste: ..." lo pone InventarioUI; se miran después en la bolsa.
+            // Solo en escenas sin primer plano queda la tarjeta de antes.
+            if (PrimerPlanoObjeto.Instance != null)
+            {
+                // Abajo, en la franja de los pensamientos: dónde quedó y cómo verlo.
+                if (!string.IsNullOrEmpty(textoGuardado))
+                {
+                    var cartel = CartelNarrativa.Instancia;
+                    cartel.Mostrar(this, textoGuardado, null, 3f);
+                    cartel.SoltarHover(this);
+                }
+            }
             else if (mostrarTarjetaAlGuardar && TarjetaLectura.Instance != null)
                 TarjetaLectura.Instance.Mostrar(inv.Definicion(idObjeto));
 
