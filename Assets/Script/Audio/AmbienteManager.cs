@@ -42,6 +42,10 @@ namespace Terror
         {
             GameEvents.OnNivelPresenciaCambiado += ActualizarAmbiente;
 
+            // Grillos, ambiente y latidos responden a "Música y ambiente" en Opciones.
+            AudioManager.MarcarMusica(fuenteAmbiente);
+            AudioManager.MarcarMusica(fuenteLatidos);
+
             CambiarAmbiente(sonidoGrillos);
             IniciarBuhoSiCorresponde();
         }

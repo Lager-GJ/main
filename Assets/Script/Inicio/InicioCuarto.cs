@@ -1033,6 +1033,7 @@ namespace Terror.UI
 
         private void Sacudir(float amplitud)
         {
+            amplitud *= Preferencias.FactorSacudidas; // Opciones → Accesibilidad → Sacudidas (0 = ninguna).
             if (interior == null || amplitud <= 0f) return;
             if (rutinaSacudida != null) StopCoroutine(rutinaSacudida);
             rutinaSacudida = StartCoroutine(HacerSacudida(amplitud));

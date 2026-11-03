@@ -52,7 +52,7 @@ namespace Terror
             CamaraController.Instance?.Enfocar(centro, zoom, 0.8f);
 
             if (sonidoAbrir != null)
-                AudioSource.PlayClipAtPoint(sonidoAbrir, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+                AudioManager.ReproducirEfecto(sonidoAbrir);
 
             if (luzPuerta != null)
             {

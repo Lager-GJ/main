@@ -231,8 +231,7 @@ namespace Terror.UI
             if (Pausado()) return;
             var k = Keyboard.current;
             if (k == null) return;
-            if (k.aKey.wasPressedThisFrame || k.dKey.wasPressedThisFrame ||
-                k.leftArrowKey.wasPressedThisFrame || k.rightArrowKey.wasPressedThisFrame)
+            if (Controles.Pulsada(Accion.Izquierda) || Controles.Pulsada(Accion.Derecha))
                 Voltear();
             else if (k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame)
                 Inspeccionar();

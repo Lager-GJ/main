@@ -1,4 +1,5 @@
 using TMPro;
+using Terror.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,9 @@ namespace Terror
     /// vez al inicio de forma forzada. Usa Time.timeScale = 0, el mismo patrón que ya
     /// usan esos dos scripts, así que es consistente con el resto del proyecto.
     /// Botones del panel: Continuar, Reiniciar, Configuración y Menú principal.
+    /// "Configuración" abre PanelOpciones (audio, imagen, controles, accesibilidad); el
+    /// viejo panelConfiguracion de la escena (solo volumen −/+) queda sin usar.
+    /// La tecla de pausa se puede cambiar en Opciones → Controles; Escape siempre pausa.
     /// </summary>
     public class PauseManager : MonoBehaviour
     {
@@ -21,7 +25,7 @@ namespace Terror
         [Tooltip("Panel de UI con las opciones de pausa (Continuar / Reiniciar / Configuración / Menú principal). Puede quedar vacío mientras no exista el diseño final.")]
         [SerializeField] private GameObject panelPausa;
 
-        [Tooltip("Panel de configuración que se abre desde la pausa. Escape vuelve de él al panel de pausa.")]
+        [Tooltip("Panel viejo de configuración (solo volumen). Ya no se muestra: \"Configuración\" abre PanelOpciones, armado en código.")]
         [SerializeField] private GameObject panelConfiguracion;
 
         [Tooltip("Texto donde se muestra el volumen actual (\"VOLUMEN 80%\").")]
@@ -48,9 +52,7 @@ namespace Terror
             if (panelConfiguracion != null)
                 panelConfiguracion.SetActive(false);
 
-            // El volumen elegido queda guardado en el perfil; se aplica al entrar a
-            // la partida para que no vuelva al 100% cada vez que se abre el juego.
-            AplicarVolumen(SaveSystem.Cargar().volMaster);
+            // Los volúmenes guardados los aplica AudioManager al arrancar el juego.
         }
 
         private void OnDestroy()
@@ -64,19 +66,16 @@ namespace Terror
             if (Keyboard.current == null)
                 return;
 
-            bool teclaP = Keyboard.current.pKey.wasPressedThisFrame;
+            bool teclaP = Controles.PulsadaPrincipal(Accion.Pausa);
             bool teclaEscape = Keyboard.current.escapeKey.wasPressedThisFrame;
 
             if (!teclaP && !teclaEscape)
                 return;
 
-            // Desde la configuración, Escape/P regresa al panel de pausa en vez de
-            // reanudar directamente.
-            if (EstaPausado && panelConfiguracion != null && panelConfiguracion.activeSelf)
-            {
-                CerrarConfiguracion();
+            // Las opciones manejan su propio Escape (vuelven a la pausa) y, mientras
+            // esperan una tecla nueva, cualquier tecla es para ellas.
+            if (PanelOpciones.EstaAbierto || PanelOpciones.FrameCierre == Time.frameCount)
                 return;
-            }
 
             // Con un primer plano abierto, Escape lo cierra a él (su propio Update lo
             // maneja) y no pausa encima. Si se cerró en este mismo frame tampoco: según
@@ -132,6 +131,7 @@ namespace Terror
                 panelPausa.SetActive(false);
             if (panelConfiguracion != null)
                 panelConfiguracion.SetActive(false);
+            PanelOpciones.CerrarSiEstaAbierto();
         }
 
         /// <summary>Botón "Reiniciar": vuelve a cargar la escena actual desde cero.</summary>
@@ -156,23 +156,28 @@ namespace Terror
             SceneManager.LoadScene(escenaMenuPrincipal);
         }
 
-        /// <summary>Botón "Configuración": cambia el panel de pausa por el de configuración.</summary>
+        /// <summary>Botón "Configuración": cambia el panel de pausa por las opciones.</summary>
         public void AbrirConfiguracion()
         {
-            if (panelConfiguracion == null)
-                return;
-
             if (panelPausa != null)
                 panelPausa.SetActive(false);
-            panelConfiguracion.SetActive(true);
-            ActualizarTextoVolumen();
+            if (panelConfiguracion != null)
+                panelConfiguracion.SetActive(false);
+
+            // Al volver de las opciones reaparece la pausa (si se sigue en pausa).
+            PanelOpciones.Abrir(() =>
+            {
+                if (EstaPausado && panelPausa != null)
+                    panelPausa.SetActive(true);
+            });
         }
 
-        /// <summary>Botón "Volver" de la configuración.</summary>
+        /// <summary>Botón "Volver" del panel viejo de configuración.</summary>
         public void CerrarConfiguracion()
         {
             if (panelConfiguracion != null)
                 panelConfiguracion.SetActive(false);
+            PanelOpciones.CerrarSiEstaAbierto();
             if (panelPausa != null)
                 panelPausa.SetActive(true);
         }
@@ -181,33 +186,14 @@ namespace Terror
 
         public void BajarVolumen() => CambiarVolumen(-PasoVolumen);
 
+        // Los botones −/+ del panel viejo siguen funcionando, ahora sobre Preferencias.
         private void CambiarVolumen(float delta)
         {
             // Redondeo a décimas para que 10 pulsaciones den exactamente 0% o 100%.
-            float nuevo = Mathf.Round((AudioListener.volume + delta) * 10f) / 10f;
-            AplicarVolumen(nuevo);
-
-            PerfilJugador perfil = SaveSystem.Cargar();
-            perfil.volMaster = AudioListener.volume;
-            SaveSystem.Guardar(perfil);
-        }
-
-        private void AplicarVolumen(float valor)
-        {
-            valor = Mathf.Clamp01(valor);
-
-            if (AudioManager.Instance != null)
-                AudioManager.Instance.SetVolMaster(valor);
-            else
-                AudioListener.volume = valor;
-
-            ActualizarTextoVolumen();
-        }
-
-        private void ActualizarTextoVolumen()
-        {
+            Preferencias.VolMaster = Mathf.Round((Preferencias.VolMaster + delta) * 10f) / 10f;
+            Preferencias.Guardar();
             if (textoVolumen != null)
-                textoVolumen.text = $"VOLUMEN {Mathf.RoundToInt(AudioListener.volume * 100f)}%";
+                textoVolumen.text = $"VOLUMEN {Mathf.RoundToInt(Preferencias.VolMaster * 100f)}%";
         }
     }
 }

@@ -20,6 +20,10 @@ public class PersistentAudio : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject); // Hace que el objeto sobreviva al cambio de escena
+
+        // Musica del menu: responde al volumen "Musica y ambiente" de Opciones.
+        foreach (var fuente in GetComponents<AudioSource>())
+            Terror.AudioManager.MarcarMusica(fuente);
     }
 
     void OnEnable()

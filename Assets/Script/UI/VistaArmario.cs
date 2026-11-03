@@ -59,6 +59,7 @@ namespace Terror.UI
 
         public void Sacudir(float amplitud)
         {
+            amplitud *= Preferencias.FactorSacudidas; // Opciones → Accesibilidad → Sacudidas (0 = ninguna).
             if (amplitud <= 0f) return;
 
             if (rutinaSacudida != null)

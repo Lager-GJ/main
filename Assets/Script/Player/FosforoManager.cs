@@ -149,8 +149,9 @@ public class FosforoManager : MonoBehaviour
         // Encendido con la tecla E (y no con click) porque el click izquierdo ahora
         // lo usa el movimiento del niño (point & click) — si usáramos el mismo botón
         // para las dos cosas, cada vez que el jugador camina se gastaría un fósforo.
-        bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
-        bool teclaQ = Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
+        // E y Q por defecto; se cambian en Opciones → Controles.
+        bool teclaE = Terror.Controles.Pulsada(Terror.Accion.Encender);
+        bool teclaQ = Terror.Controles.Pulsada(Terror.Accion.Apagar);
 
         // Con el juego pausado (menú de pausa o un paso del tutorial, timeScale 0), o ya
         // ganado/perdido, E y Q no hacen nada: antes gastaban fósforos y subían la Presencia.
@@ -290,7 +291,8 @@ public class FosforoManager : MonoBehaviour
     /// </summary>
     public void SetParpadeo(float fuerza)
     {
-        fuerzaParpadeo = Mathf.Clamp01(fuerza);
+        // Con "Reducir destellos" la llama tiembla mucho menos.
+        fuerzaParpadeo = Mathf.Clamp01(fuerza) * (Terror.Preferencias.ReducirDestellos ? 0.25f : 1f);
     }
 
     private void ApagarFosforo()

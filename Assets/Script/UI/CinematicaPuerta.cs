@@ -155,7 +155,7 @@ namespace Terror
         {
             yield return Animar(duracionSacudida, p =>
             {
-                float fuerza = fuerzaSacudida * (1f - p);
+                float fuerza = fuerzaSacudida * Preferencias.FactorSacudidas * (1f - p);
                 escenario.anchoredPosition = new Vector2(Random.Range(-fuerza, fuerza), Random.Range(-fuerza, fuerza));
             });
             escenario.anchoredPosition = Vector2.zero;

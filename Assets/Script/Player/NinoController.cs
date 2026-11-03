@@ -77,9 +77,10 @@ public class NinoController : MonoBehaviour
 
         float x = 0f;
 
-        if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.aKey.isPressed)
+        // Teclas elegidas en Opciones → Controles (A/D por defecto) o las flechas.
+        if (Terror.Controles.Mantenida(Terror.Accion.Izquierda))
             x -= 1f;
-        if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.dKey.isPressed)
+        if (Terror.Controles.Mantenida(Terror.Accion.Derecha))
             x += 1f;
 
         return x;

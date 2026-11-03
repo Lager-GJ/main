@@ -141,7 +141,7 @@ namespace Terror
         {
             if (clip == null) return;
             if (vista != null) vista.Sonar(clip);
-            else AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+            else AudioManager.ReproducirEfecto(clip);
         }
     }
 }
