@@ -386,7 +386,7 @@ namespace Terror.UI
 
             if (zona == zonaNota)
             {
-                MirarObjeto(nombreNota, spriteNota, reversoNota, ilustracionNota, textosNota, sonidoObjeto);
+                MirarObjeto(nombreNota, spriteNota, reversoNota, ilustracionNota, textosNota, sonidoObjeto, zona);
                 alLeerNota?.Invoke();
                 OnNotaLeida?.Invoke();
                 return;
@@ -397,12 +397,14 @@ namespace Terror.UI
 
             ElementoCajon e = elementos[i];
             clicksElementos[i]++;
-            MirarObjeto(e.nombre, e.sprite, e.reverso, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto);
+            MirarObjeto(e.nombre, e.sprite, e.reverso, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto, zona);
         }
 
-        // El objeto en primer plano (clic para darle la vuelta, Inspeccionar para leerlo).
-        // Sin PrimerPlanoObjeto en la escena: la tarjeta de antes.
-        private void MirarObjeto(string nombre, Sprite dibujo, Sprite reverso, Sprite ilustracion, string[] textos, AudioClip sonido)
+        // Mirar un objeto del cajón (clic para darle la vuelta, Inspeccionar para leerlo).
+        // Con el cajón abierto en el cuarto, la cámara se acerca al objeto ahí mismo
+        // (AcercamientoObjeto, 2026-10-30); si no, la ventana de primer plano, y sin
+        // PrimerPlanoObjeto en la escena, la tarjeta de antes.
+        private void MirarObjeto(string nombre, Sprite dibujo, Sprite reverso, Sprite ilustracion, string[] textos, AudioClip sonido, ZonaCajon zona = null)
         {
             var pp = PrimerPlanoObjeto.Instance;
             Sprite frente = dibujo != null ? dibujo : ilustracion;
@@ -412,14 +414,17 @@ namespace Terror.UI
                 return;
             }
             if (pp.Visible) return;
-            pp.Mostrar(new PrimerPlanoObjeto.Datos
+            var datos = new PrimerPlanoObjeto.Datos
             {
                 nombre = nombre,
                 frente = frente,
                 reverso = reverso,
                 textos = textos,
                 alCerrar = ActualizarEtiqueta,
-            });
+            };
+            var acercamiento = AcercamientoObjeto.Instance;
+            bool enCuarto = acercamiento != null && zona != null && acercamiento.Mostrar(datos, zona.transform as RectTransform);
+            if (!enCuarto) pp.Mostrar(datos);
             Sonar(sonido);
             ActualizarEtiqueta();
         }
@@ -792,7 +797,10 @@ namespace Terror.UI
             BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
 
             var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
-            abierto.color = veladorCerrado.color;
+            // El velador cerrado puede ser transparente (el mueble ya está dibujado en la
+            // pared); el abierto se ve siempre.
+            Color c = veladorCerrado.color;
+            abierto.color = new Color(c.r, c.g, c.b, 1f);
             BotonPlano(abierto.gameObject, null); // un clic en el mueble no cierra
             SpriteIluminado.Agregar(abierto, 4, 1f, materialIluminado);
 

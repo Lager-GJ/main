@@ -5,12 +5,13 @@ using UnityEngine.UI;
 namespace Terror.UI
 {
     /// <summary>
-    /// Un objeto del cuarto que al tocarlo se ve en primer plano (PrimerPlanoObjeto):
-    /// clic para darle la vuelta e "Inspeccionar" para leerlo o usarlo.
-    ///
-    /// Se conecta al clic del objeto (Button → Mostrar). Si 'alInspeccionar' tiene algo
-    /// (la cerradura de la lata, el candado del joyero), el botón hace eso; si no, lee
-    /// los textos de a uno.
+    /// Un objeto del cuarto que se mira al tocarlo. Se conecta al clic del objeto
+    /// (Button → Mostrar).
+    ///  - Si 'alInspeccionar' tiene algo (el candado del joyero, la cerradura de la lata),
+    ///    el clic lo hace directo: el joyero acerca la cámara y se abre en su lugar.
+    ///  - Si no, la cámara se acerca al objeto en el cuarto (AcercamientoObjeto): clic
+    ///    para darle la vuelta e "Inspeccionar" para leer los textos de a uno. Si no se
+    ///    puede, la ventana de primer plano (PrimerPlanoObjeto).
     /// </summary>
     public class ObjetoEnPrimerPlano : MonoBehaviour
     {
@@ -25,13 +26,23 @@ namespace Terror.UI
         [SerializeField] private string textoBoton;
         [Tooltip("Solo se puede tocar con un fósforo encendido (como todo el cuarto).")]
         [SerializeField] private bool requiereFosforo = true;
-        [Tooltip("Lo que hace Inspeccionar (vacío = leer los textos). El primer plano se cierra antes.")]
+        [Tooltip("Lo que hace el clic (vacío = acercarse y leer los textos).")]
         [SerializeField] private UnityEvent alInspeccionar;
 
         /// <summary>Conectar al clic del objeto.</summary>
         public void Mostrar()
         {
             if (!PuedeTocar()) return;
+
+            // Con acción (el candado del joyero, la cerradura de la lata) el clic la hace
+            // directo: es la transición del joyero que pidió David (2026-10-30), sin pasar
+            // antes por la ventana.
+            if (TieneAccion)
+            {
+                alInspeccionar.Invoke();
+                return;
+            }
+
             var pp = PrimerPlanoObjeto.Instance;
             if (pp == null)
             {
@@ -47,16 +58,18 @@ namespace Terror.UI
                 if (img != null) f = img.sprite;
             }
 
-            pp.Mostrar(new PrimerPlanoObjeto.Datos
+            var datos = new PrimerPlanoObjeto.Datos
             {
                 nombre = nombre,
                 frente = f,
                 reverso = reverso,
                 textos = textos,
                 textoBoton = textoBoton,
-                accion = TieneAccion ? () => alInspeccionar.Invoke() : null,
-                cerrarAntesDeAccion = true,
-            });
+            };
+            // La cámara se acerca al objeto en su lugar; si no se puede, la ventana.
+            var acercamiento = AcercamientoObjeto.Instance;
+            if (acercamiento != null && acercamiento.Mostrar(datos, transform as RectTransform)) return;
+            pp.Mostrar(datos);
         }
 
         private bool TieneAccion => alInspeccionar != null && alInspeccionar.GetPersistentEventCount() > 0;

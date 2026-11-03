@@ -26,6 +26,18 @@ public class FosforoManager : MonoBehaviour
     [Tooltip("Segundos que dura encendido un fósforo antes de apagarse solo.")]
     [SerializeField] private float duracionFosforo = 15f;
 
+    [Header("Cómo se consume la llama")]
+    [Tooltip("Parte de la duración en que la luz queda al máximo (0.7 = el 70%).")]
+    [SerializeField, Range(0f, 1f)] private float parteEstable = 0.7f;
+    [Tooltip("Parte siguiente en que la luz baja despacio (0.2 = el 20%). Lo que sobra es el final, cuando se apaga rápido.")]
+    [SerializeField, Range(0f, 1f)] private float parteBajada = 0.2f;
+    [Tooltip("Cuánta luz queda al terminar la bajada lenta (0.5 = la mitad). Desde ahí cae a 0 en el tramo final.")]
+    [SerializeField, Range(0.05f, 1f)] private float luzAlFinalDeLaBajada = 0.5f;
+    [Tooltip("Parpadeo extra en el tramo final, cuando la llama se está muriendo (0 = nada).")]
+    [SerializeField, Range(0f, 1f)] private float parpadeoAlMorir = 0.35f;
+    [Tooltip("Color al que va la luz mientras el fósforo se muere.")]
+    [SerializeField] private Color colorAlMorir = new Color(1f, 0.32f, 0.12f, 1f);
+
     [Header("Referencias")]
     [Tooltip("Luz 2D que representa el fósforo encendido. Se activa/desactiva junto con el estado.")]
     [SerializeField] private Light2D luzFosforo;
@@ -43,6 +55,7 @@ public class FosforoManager : MonoBehaviour
     private float intensidadBaseLuz; // intensidad que configuraste en el Inspector, se guarda una sola vez
     private float radioInteriorBase; // radios de la luz tal como quedaron en el Inspector
     private float radioExteriorBase;
+    private Color colorBaseLuz;
     private bool encendidoHabilitado = true; // el tutorial lo apaga hasta que el jugador recoge los fósforos
     private float fuerzaParpadeo; // 0 = llama quieta; la Presencia la hace temblar más en cada nivel
 
@@ -71,6 +84,36 @@ public class FosforoManager : MonoBehaviour
     public float TiempoRestante => encendido ? tiempoRestanteQuemado : 0f;
     public float ProgresoRestante => encendido ? Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo) : 0f;
 
+    /// <summary>Tamaño/fuerza de la llama ahora: 1 = entera, 0 = apagada (sigue la curva 70/20/10).</summary>
+    public float FuerzaLlama => encendido ? CurvaLlama(1f - ProgresoRestante) : 0f;
+
+    /// <summary>Cuánto se enrojece la llama al morir: 0 = color normal, 1 = roja del todo.</summary>
+    public float RojezLlama => encendido ? CurvaRojez(1f - ProgresoRestante) : 0f;
+
+    /// <summary>Nivel de temblor que pidió la Presencia (0 = quieta).</summary>
+    public float FuerzaParpadeo => fuerzaParpadeo;
+
+    // t = parte de la duración que ya se quemó (0 recién encendido, 1 apagado).
+    private float CurvaLlama(float t)
+    {
+        float finEstable = parteEstable;
+        float finBajada = Mathf.Min(1f, parteEstable + parteBajada);
+        if (t <= finEstable) return 1f;
+        if (t <= finBajada)
+            return Mathf.Lerp(1f, luzAlFinalDeLaBajada, Mathf.SmoothStep(0f, 1f, (t - finEstable) / Mathf.Max(0.0001f, finBajada - finEstable)));
+        float u = (t - finBajada) / Mathf.Max(0.0001f, 1f - finBajada);
+        return luzAlFinalDeLaBajada * (1f - Mathf.Clamp01(u));
+    }
+
+    // Empieza a ponerse roja con la bajada lenta y termina roja del todo al apagarse.
+    private float CurvaRojez(float t)
+    {
+        if (t <= parteEstable) return 0f;
+        return Mathf.Clamp01((t - parteEstable) / Mathf.Max(0.0001f, 1f - parteEstable));
+    }
+
+    private bool EnTramoFinal(float t) => t > Mathf.Min(1f, parteEstable + parteBajada);
+
     /// <summary>
     /// Permite o bloquea el encendido con la tecla E. Por defecto está permitido; solo
     /// el tutorial lo bloquea hasta que el jugador recoge los fósforos de la mesita.
@@ -96,6 +139,7 @@ public class FosforoManager : MonoBehaviour
             intensidadBaseLuz = luzFosforo.intensity; // recordamos el valor que dejaste en el Inspector
             radioInteriorBase = luzFosforo.pointLightInnerRadius;
             radioExteriorBase = luzFosforo.pointLightOuterRadius;
+            colorBaseLuz = luzFosforo.color;
             luzFosforo.gameObject.SetActive(false); // arranca apagado: sin fósforo, sin luz
         }
     }
@@ -154,6 +198,7 @@ public class FosforoManager : MonoBehaviour
             luzFosforo.intensity = intensidadBaseLuz; // arranca a full brillo, el fade lo maneja QuemarFosforo()
             luzFosforo.pointLightInnerRadius = radioInteriorBase; // y a radio completo, igual en todos los fósforos
             luzFosforo.pointLightOuterRadius = radioExteriorBase;
+            luzFosforo.color = colorBaseLuz;
         }
 
         // TEMPORAL: mientras no haya arte ni panel de inspección, este log confirma
@@ -205,15 +250,16 @@ public class FosforoManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Baja la intensidad y el alcance de la luz a medida que se acaba el tiempo del fósforo,
-    /// para que se sienta que se está "apagando" en vez de cortarse de golpe.
-    /// No tocamos esto mientras está pausado por inspección: el fósforo no debe
-    /// seguir "muriendo" visualmente si tampoco está perdiendo tiempo.
+    /// La luz sigue la curva de la llama: el 70% del tiempo queda al máximo, el 20%
+    /// siguiente baja despacio (y se va poniendo roja) y en el 10% final se apaga rápido.
+    /// Mientras está pausado por inspección el tiempo no avanza, así que la luz tampoco
+    /// "muere", pero la llama puede seguir temblando.
     /// </summary>
     private void ActualizarIntensidadLuz()
     {
         // 1 = recién encendido, 0 = a punto de apagarse.
         float progreso = Mathf.Clamp01(tiempoRestanteQuemado / duracionFosforo);
+        float quemado = 1f - progreso;
 
         // Se publica aunque no haya Light2D asignada: la barra de UI no depende de la luz.
         OnProgresoFosforoCambiado?.Invoke(progreso);
@@ -221,16 +267,21 @@ public class FosforoManager : MonoBehaviour
         if (luzFosforo == null)
             return;
 
+        float fuerza = CurvaLlama(quemado);
+
+        float temblor = fuerzaParpadeo;
+        if (EnTramoFinal(quemado)) temblor = Mathf.Max(temblor, parpadeoAlMorir);
         float parpadeo = 1f;
-        if (fuerzaParpadeo > 0f && Time.timeScale > 0f)
-            parpadeo = 1f - fuerzaParpadeo * Mathf.PerlinNoise(Time.time * 12f, 0.37f);
+        if (temblor > 0f && Time.timeScale > 0f)
+            parpadeo = 1f - temblor * Mathf.PerlinNoise(Time.time * 12f, 0.37f);
 
-        luzFosforo.intensity = intensidadBaseLuz * progreso * parpadeo;
+        luzFosforo.intensity = intensidadBaseLuz * fuerza * parpadeo;
+        luzFosforo.color = Color.Lerp(colorBaseLuz, colorAlMorir, CurvaRojez(quemado));
 
-        // El alcance se encoge al mismo ritmo que la intensidad: todos los fósforos
-        // arrancan con el radio completo y se van cerrando hasta quedar a oscuras.
-        luzFosforo.pointLightInnerRadius = radioInteriorBase * progreso;
-        luzFosforo.pointLightOuterRadius = radioExteriorBase * progreso;
+        // El alcance sigue la misma curva: radio completo casi todo el fósforo, y se
+        // cierra recién cuando la llama empieza a morir.
+        luzFosforo.pointLightInnerRadius = radioInteriorBase * fuerza;
+        luzFosforo.pointLightOuterRadius = radioExteriorBase * fuerza;
     }
 
     /// <summary>

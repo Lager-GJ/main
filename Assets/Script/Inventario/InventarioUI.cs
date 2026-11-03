@@ -281,6 +281,8 @@ namespace Terror
 
             tarjeta = TarjetaLectura.Crear(raiz, fuente, spriteSiguiente, sonidoPagina);
             primerPlano = PrimerPlanoObjeto.Crear(raiz, fuente, sonidoAbrir, sonidoPagina);
+            // Mirar en el cuarto los objetos de información (2026-10-30).
+            AcercamientoObjeto.Crear(raiz, fuente, sonidoAbrir, sonidoPagina);
         }
 
         private void Rearmar()

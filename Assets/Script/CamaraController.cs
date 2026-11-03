@@ -54,17 +54,66 @@ public class CamaraController : MonoBehaviour
     /// </summary>
     public void Enfocar(Vector3 punto, float zoom, float duracion)
     {
+        duracionCambio = 0f; // corta un MoverEnfoque a medias
         puntoEnfoque = punto;
         zoomEnfoque = Mathf.Clamp(zoom, 0.1f, 1f);
         duracionEnfoque = Mathf.Max(0.01f, duracion);
         pesoObjetivo = 1f;
     }
 
+    /// <summary>True si la cámara está acercada (o acercándose) a algo, sin contar la vuelta.</summary>
+    public bool Enfocada => pesoObjetivo > 0f;
+    public Vector3 PuntoEnfoque => puntoEnfoque;
+    public float ZoomEnfoque => zoomEnfoque;
+    /// <summary>Medio alto de lo que se ve sin zoom (orthographicSize normal).</summary>
+    public float TamanoBase => tamanoBase;
+
+    // Paso de un enfoque a otro (del cajón a un objeto del cajón y de vuelta).
+    private Vector3 cambioDesdePunto, cambioHastaPunto;
+    private float cambioDesdeZoom, cambioHastaZoom;
+    private float duracionCambio, tiempoCambio;
+
+    /// <summary>
+    /// Como Enfocar, pero si la cámara ya está acercada a otra cosa viaja suave desde
+    /// ahí, en vez de saltar (Enfocar solo anima la ida desde la cámara normal).
+    /// </summary>
+    public void MoverEnfoque(Vector3 punto, float zoom, float duracion)
+    {
+        if (!Enfocada || pesoEnfoque < 1f)
+        {
+            Enfocar(punto, zoom, duracion);
+            return;
+        }
+        cambioDesdePunto = puntoEnfoque;
+        cambioDesdeZoom = zoomEnfoque;
+        cambioHastaPunto = punto;
+        cambioHastaZoom = Mathf.Clamp(zoom, 0.1f, 1f);
+        duracionCambio = Mathf.Max(0.01f, duracion);
+        tiempoCambio = 0f;
+    }
+
     /// <summary>Vuelve a la cámara normal (siguiendo a Luis).</summary>
     public void Soltar(float duracion)
     {
+        duracionCambio = 0f;
         duracionEnfoque = Mathf.Max(0.01f, duracion);
         pesoObjetivo = 0f;
+    }
+
+    /// <summary>
+    /// Deja la cámara quieta en 'punto' (los dos límites iguales), como en las paredes
+    /// del cuarto. saltar = llega ya, sin el suavizado (para cambiar de pared a oscuras).
+    /// </summary>
+    public void FijarEn(Vector2 punto, bool saltar)
+    {
+        minBounds = punto;
+        maxBounds = punto;
+        if (!saltar) return;
+
+        float z = posicionIniciada ? posicionSuave.z : transform.position.z;
+        posicionSuave = new Vector3(punto.x, punto.y, z);
+        posicionIniciada = true;
+        transform.position = posicionSuave;
     }
 
     private void OnDestroy()
@@ -113,6 +162,15 @@ public class CamaraController : MonoBehaviour
 
         // 3. Movemos la cámara de forma fluida
         posicionSuave = Vector3.Lerp(posicionSuave, clampedPosition, smoothSpeed);
+
+        if (duracionCambio > 0f)
+        {
+            tiempoCambio += Time.unscaledDeltaTime;
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(tiempoCambio / duracionCambio));
+            puntoEnfoque = Vector3.Lerp(cambioDesdePunto, cambioHastaPunto, k);
+            zoomEnfoque = Mathf.Lerp(cambioDesdeZoom, cambioHastaZoom, k);
+            if (tiempoCambio >= duracionCambio) duracionCambio = 0f;
+        }
 
         pesoEnfoque = Mathf.MoveTowards(pesoEnfoque, pesoObjetivo, Time.unscaledDeltaTime / duracionEnfoque);
         float e = Mathf.SmoothStep(0f, 1f, pesoEnfoque);

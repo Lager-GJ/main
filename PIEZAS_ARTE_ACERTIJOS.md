@@ -21,6 +21,27 @@ Hay dos cosas más:
 - El juego oscurece todo con la luz real: el fósforo, la puerta y una luz suave sobre el mueble que se mira. Se dibuja sin sombras de luz propias.
 - Al acercarse, la cámara amplía 4 veces en el velador y el joyero, y ~2 veces en el secretero. Cuanto más resolución tengan esas piezas, mejor se van a ver de cerca.
 
+## 0b. El cuarto en 4 paredes (2026-10-29)
+
+El cuarto ya no es un panorama ancho (`FondoDefi`): son **4 paredes de una pantalla cada una**. Cuando Luis llega al borde, la pantalla funde a negro y aparece la pared siguiente. Es circular: a la derecha de la pared 4 vuelve la 1. Bocetos originales: `Fondos bocetos.pdf`.
+
+Hoy se usan los bocetos oscurecidos como fondo provisorio: `Assets/Recursos/Paredes/Pared{1..4}_Boceto.png`.
+
+| Pared | Qué tiene | Acertijos que viven ahí |
+|---|---|---|
+| 1 | Puerta, repisa con altar, retratos, cruz, cama, velador, mesita con la Virgen | Cajón del inicio (velador), joyero (sobre la mesita), puerta de salida |
+| 2 | Ventana con juguetes, tocador con espejo, móvil de hierbas | **Tocador = el antiguo secretero** (cajón secreto con la agenda); el marco vacío es el cuadrito ovalado junto al espejo |
+| 3 | Máquina de coser, silla, tele | Tele embrujada, foto del campo (en el piso), canasta |
+| 4 | Dos repisas vacías, armario | Armario con la lata y la llave de la puerta |
+
+**Arte que hace falta:**
+- **Las 4 paredes finales**, en **1920 × 1080**, con el mismo encuadre que los bocetos. El suelo tiene que estar a la misma altura en las 4: el borde entre pared y piso a **~71 % del alto** (y ≈ 768 px) y los pies de Luis a ~84 % (y ≈ 912 px), porque Luis camina a la misma altura en todas. En las paredes 2 y 4 cambia la dirección de las tablas del piso (nota del boceto).
+- **Los muebles NO van aparte:** quedan pintados en la pared. Los muebles cerrados del juego son zonas invisibles encima del dibujo.
+- **Tocador abierto** (reemplaza `SecreteroInterior`): hoy, al abrir el tocador, aparece el dibujo viejo del secretero encima. Hace falta el tocador con sus cajones abiertos y un **cajón secreto** que aparece al poner la foto en el marco.
+- **Armario abierto de 3 puertas:** el abierto de hoy es el viejo de 2 puertas y es un poco más angosto que el del boceto.
+- **Velador con el cajón afuera** dibujado igual que el velador del boceto (`Velador_CajonInclinado.png` sigue siendo el del panorama viejo).
+- Los objetos sueltos (joyero, marco vacío, canasta, foto del campo, caramelos) siguen siendo piezas aparte.
+
 ## 1. En el cuarto
 
 | Archivo | Tamaño | Qué es / dónde va |
@@ -135,6 +156,25 @@ Son los objetos que ya estaban pintados en `FondoDefi`: al tocarlos se ven en la
 | `Objeto_MaquinaCoser.png` | Sin reverso (en la mano solo se mece). |
 
 **La abuelita se llama Rosa.** Aparece así en la foto vieja («Rosita y…»), el joyero («Para mi Rosa»), la agenda («R. M.»), la cruz y la foto de la familia. La clienta de la agenda pasó a ser «Doña Teresa».
+
+## 2g. La llama del fósforo y la caja de la pantalla (2026-10-30)
+
+**La llama, aparte de Luis (para Anavi).** Hoy la llama está pintada dentro de los dibujos de Luis con fósforo (`Niño/Estatico-LUZ.png`, `paso-DEr-LUZ.png`, `paso-IZ-LUZ.png`), así que no se puede mover sola. Para que se incline al caminar, tiemble con la Presencia y se ponga roja al morir hace falta:
+
+- **Los mismos 3 dibujos de Luis con el fósforo en la mano, pero sin la llama**: el palito y la cabeza del fósforo sí, el fuego no.
+- **La llama sola**, en un PNG aparte:
+  - con fondo transparente, la llama derecha (apuntando hacia arriba) y en tonos claros, amarillo y blanco. El código la tiñe de rojo cuando se está muriendo, así que **no hay que dibujarla roja**;
+  - el **pivote abajo al centro**, en la base de la llama, que es donde toca la cabeza del fósforo;
+  - si se quiere que la llama "baile", puede ser una tira de 3 o 4 cuadros.
+- **Cuando llegue el arte**, en Unity:
+  1. se cambian los dibujos de Luis por los que no tienen llama;
+  2. se crea un hijo de `Personaje` en la cabeza del fósforo, con un `SpriteRenderer` que tenga la llama y el material `Sprite-Lit-Default`;
+  3. a ese hijo se le agrega el componente **`LlamaFosforo`**, que ya está hecho. Todo se ajusta en el Inspector: inclinación, color al morir, tamaño al morir y agitación por nivel.
+
+**La caja de la pantalla (arriba a la izquierda).** Por ahora usa los mismos dibujos provisorios de la caja en primer plano (`Caja_Frente`, `Caja_Bandeja`, `Caja_Fosforo`). La chispa y la llama de la animación son brillos hechos en código. Si el equipo quiere hacer su versión:
+
+- un ícono chico de la caja que se lea bien a unos 70 × 96 px;
+- opcional: una chispa y una llama dibujadas para la animación de encender.
 
 ## 3. Íconos del inventario
 
