@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Terror.UI.UIRuntime;
 
@@ -187,6 +188,13 @@ namespace Terror.UI
         /// <summary>La puerta se cerró de golpe (fin de la parte con luz de afuera).</summary>
         public static event Action OnPuertaCerrada;
 
+        /// <summary>
+        /// Lo pone el botón "Omitir intro" de Historia. Con true el cuarto no pasa por el
+        /// cajón ni por el tutorial: Luis empieza con la caja de fósforos, a oscuras, y
+        /// solo falta pulsar E para encender el primero. "Volver a ver tutorial" lo apaga.
+        /// </summary>
+        public static bool OmitirTutorial;
+
         /// <summary>El jugador leyó la nota de debajo de los fósforos.</summary>
         public static event Action OnNotaLeida;
 
@@ -232,6 +240,7 @@ namespace Terror.UI
         private Image marcoCajon;
         private VistaCajaFosforos vistaCaja;
         private bool notaPendiente;
+        private GameObject botonVolverATutorial;
 
         public Color Tinte => tinteActual;
 
@@ -308,6 +317,12 @@ namespace Terror.UI
 
             FosforoManager.Instance?.HabilitarEncendido(false);
 
+            if (OmitirTutorial)
+            {
+                EmpezarConLaCajaEnLaMano();
+                yield break;
+            }
+
             fase = Fase.PuertaAbierta;
             PonerTinte(tintePuerta);
             FondoAlfa(fondoConPuertaAbierta);
@@ -320,6 +335,49 @@ namespace Terror.UI
 
             Sonar(sonidoAbrirCajon);
             Decir(textoAlAbrir);
+        }
+
+        // Es el estado en que queda el cuarto justo después del portazo (ver TomarFosforos),
+        // pero con el cajón cerrado y sin pasar por el tutorial: la caja ya es de Luis y el
+        // paso "Pulsa E" del tutorial se dispara al recoger los fósforos.
+        private void EmpezarConLaCajaEnLaMano()
+        {
+            fase = Fase.Oscuro;
+            PonerTinte(tinteOscuro);
+            FondoAlfa(fondoAOscuras);
+            luzPuertaOverlay.color = new Color(1f, 1f, 1f, 0f);
+            brillo.color = new Color(1f, 1f, 1f, 0f);
+            if (luzPuerta != null) luzPuerta.gameObject.SetActive(false);
+            zonaFosforos.gameObject.SetActive(false); // ya están en la mano
+
+            if (fosforosRecogibles != null) fosforosRecogibles.Recoger();
+            FosforoManager.Instance?.HabilitarEncendido(true);
+
+            ConstruirBotonVolverATutorial();
+        }
+
+        // En el mismo lugar donde estaba "Omitir intro" en Historia. Solo se ve hasta que
+        // se enciende el primer fósforo: después volver a empezar el cuarto perdería progreso.
+        private void ConstruirBotonVolverATutorial()
+        {
+            Transform padre = contenedorUI != null ? contenedorUI : transform;
+            RectTransform rt = NuevoRect("BotonVolverATutorial", padre, new Vector2(610f, 480f), new Vector2(640f, 70f));
+            botonVolverATutorial = rt.gameObject;
+            botonVolverATutorial.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0f); // recibe el clic
+            BotonPlano(botonVolverATutorial, VolverAVerTutorial);
+
+            TextMeshProUGUI texto = NuevoTexto("Texto", rt, Vector2.zero, rt.sizeDelta, 42f, FontStyles.Normal);
+            texto.text = "Volver a ver tutorial  »";
+
+            if (panel != null && panel.transform.parent == padre)
+                rt.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
+        }
+
+        private void VolverAVerTutorial()
+        {
+            OmitirTutorial = false;
+            Time.timeScale = 1f; // global: sobrevive a la recarga
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         // ---------- API pública ----------
@@ -591,6 +649,7 @@ namespace Terror.UI
             // Primer fósforo: con luz se ve la nota que estaba debajo de la caja.
             // Si todavía se está mirando la caja, aparece al volver al cajón.
             fase = Fase.Iluminado;
+            if (botonVolverATutorial != null) botonVolverATutorial.SetActive(false);
             notaPendiente = true;
             if (vistaCaja == null || !vistaCaja.Visible) MostrarNota();
             StartCoroutine(Animar(0.8f, AlfaHudOculto));

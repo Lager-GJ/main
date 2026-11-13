@@ -4,8 +4,9 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Botón "Omitir" de las tarjetas de Historia: salta todas las tarjetas y va directo
 /// a la escena del juego (la que diga StoryManager.nombreDeLaEscenaDelJuego).
-/// El juego arranca igual en el primer plano del cajón, porque esa parte enseña a
-/// prender el fósforo.
+/// También omite el tutorial del cuarto: Luis arranca con la caja de fósforos y solo
+/// falta pulsar E para encender el primero (ver InicioCuarto.OmitirTutorial). Se puede
+/// volver a ver con el botón "Volver a ver tutorial" que aparece en su lugar.
 /// </summary>
 public class BotonOmitirHistoria : MonoBehaviour
 {
@@ -17,10 +18,14 @@ public class BotonOmitirHistoria : MonoBehaviour
 
     private bool cargando;
 
+    // Cada vez que se entra a Historia se empieza de cero: el tutorial se omite solo si se pulsa el botón.
+    private void Awake() => Terror.UI.InicioCuarto.OmitirTutorial = false;
+
     public void Omitir()
     {
         if (cargando) return;
         cargando = true;
+        Terror.UI.InicioCuarto.OmitirTutorial = true;
 
         if (historia == null) historia = FindFirstObjectByType<StoryManager>();
         string escena = historia != null && !string.IsNullOrEmpty(historia.nombreDeLaEscenaDelJuego)
