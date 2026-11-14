@@ -324,6 +324,13 @@ namespace Terror
         internal void Mirar(DefinicionObjeto def)
         {
             if (def == null) return;
+            // Los libros (la agenda) se hojean en la tarjeta: clic en la hoja derecha/izquierda.
+            if (tarjeta != null && def.paginasLibro != null && def.paginasLibro.Length > 0)
+            {
+                tarjeta.transform.SetAsLastSibling();
+                tarjeta.Mostrar(def);
+                return;
+            }
             if (primerPlano != null)
             {
                 primerPlano.Mostrar(def);

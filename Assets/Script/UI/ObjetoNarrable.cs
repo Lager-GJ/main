@@ -33,6 +33,10 @@ namespace Terror.UI
         [Tooltip("Segundos que el mensaje sigue en pantalla tras el click aunque el mouse se vaya (si la narración dura más, espera a que termine).")]
         [SerializeField] private float segundosMensajeTrasClick = 3f;
 
+        [Header("Dibujo en el cuarto")]
+        [Tooltip("Marcado: la Image de este objeto se ve de verdad sobre el fondo (con la luz del cuarto), en vez de ser una zona invisible. Usa el sprite de la Image. Sirve para objetos nuevos dibujados aparte, como el retrato.")]
+        [SerializeField] private bool mostrarDibujoEnCuarto;
+
         [Header("Primer plano")]
         [Tooltip("Desmarcado: el click solo muestra el mensaje (la tele, que tiene su susto).")]
         [SerializeField] private bool primerPlano = true;
@@ -60,7 +64,17 @@ namespace Terror.UI
         private void Awake()
         {
             Image zona = GetComponent<Image>();
-            zona.color = new Color(1f, 1f, 1f, 0f);   // invisible, pero sigue recibiendo el mouse
+            if (mostrarDibujoEnCuarto && zona.sprite != null)
+            {
+                // El objeto es un dibujo propio: se ve sobre el fondo y recibe la luz como el resto.
+                zona.color = Color.white;
+                zona.preserveAspect = true;
+                SpriteIluminado.Agregar(zona, 0, 1.5f);
+            }
+            else
+            {
+                zona.color = new Color(1f, 1f, 1f, 0f);   // invisible, pero sigue recibiendo el mouse
+            }
             if (contornoPropio) contorno = CrearContorno();
         }
 

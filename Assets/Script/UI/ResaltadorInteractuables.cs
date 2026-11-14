@@ -33,6 +33,14 @@ namespace Terror.UI
         private Image imagenBrillo;
         private readonly Vector3[] esquinas = new Vector3[4];
 
+        // Orden de dibujo del borde: por encima de los muebles abiertos (4), los objetos (5) y el
+        // cajón (6), que dibujan con SpriteRenderer. Con 8 quedaba detrás del dibujo del cajón.
+        private const int OrdenDelBorde = 40;
+
+        // Con la cámara acercada (el cajón) el borde se afina: sus medidas son del Canvas del mundo
+        // y, sin esto, se veía enorme al lado de un objeto chico.
+        private float escalaZoom = 1f;
+
         private void LateUpdate()
         {
             // Opciones → Accesibilidad → Resaltar objetos: 0 apagado, 1 normal, 2 alto contraste.
@@ -45,8 +53,13 @@ namespace Terror.UI
             }
             if (objetivo == null) return;
 
+            escalaZoom = 1f;
+            var camara = CamaraController.Instance;
+            if (camara != null && camara.TamanoBase > 0f && Camera.main != null)
+                escalaZoom = Mathf.Clamp(Camera.main.orthographicSize / camara.TamanoBase, 0.2f, 1f);
+
             bool alto = modo == 2;
-            Ubicar(objetivo, alto ? grosor * 1.7f : grosor);
+            Ubicar(objetivo, (alto ? grosor * 1.7f : grosor) * escalaZoom);
             // Alto contraste: más grueso, casi blanco y sin bajar tanto al latir.
             Color c = alto ? new Color(1f, 0.97f, 0.75f, 1f) : color;
             float a = Mathf.Lerp(alto ? 0.85f : 0.55f, 1f, 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * velocidadLatido));
@@ -125,7 +138,7 @@ namespace Terror.UI
                 brillo.SetParent(raiz.transform, false);
                 var c = brillo.GetComponent<Canvas>();
                 c.overrideSorting = true;
-                c.sortingOrder = 8;
+                c.sortingOrder = OrdenDelBorde;
             }
 
             // La caja que ocupa en el mundo (sirve aunque esté rotado o escalado distinto en x e y).
@@ -136,7 +149,7 @@ namespace Terror.UI
             Vector3 centro = (min + max) * 0.5f;
             brillo.position = new Vector3(centro.x, centro.y, raiz.transform.position.z);
             brillo.rotation = raiz.transform.rotation;
-            brillo.sizeDelta = new Vector2((max.x - min.x) / escala.x, (max.y - min.y) / escala.y) + Vector2.one * (margen + grosor) * 2f;
+            brillo.sizeDelta = new Vector2((max.x - min.x) / escala.x, (max.y - min.y) / escala.y) + Vector2.one * (margen * escalaZoom + grosor) * 2f;
             imagenBrillo.pixelsPerUnitMultiplier = BordeSprite / grosor;
             if (!brillo.gameObject.activeSelf) brillo.gameObject.SetActive(true);
         }
@@ -158,7 +171,7 @@ namespace Terror.UI
             // es una marca del juego, se tiene que ver.
             var c = go.AddComponent<Canvas>();
             c.overrideSorting = true;
-            c.sortingOrder = 8;
+            c.sortingOrder = OrdenDelBorde;
             go.SetActive(false);
         }
 

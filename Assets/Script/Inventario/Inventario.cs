@@ -21,6 +21,10 @@ namespace Terror
         [TextArea(1, 3)] public string[] textos;
         [Tooltip("Opcional: un dibujo distinto para cada texto (ej. el frente y el reverso de una foto). Vacío en un lugar = el dibujo de siempre.")]
         public Sprite[] dibujoPorTexto;
+        [Tooltip("Opcional, para libros (la agenda): las hojas abiertas. Se ve la primera; un clic en la hoja de la derecha pasa a la siguiente y en la de la izquierda vuelve. Vacío = tarjeta normal.")]
+        public Sprite[] paginasLibro;
+        [Tooltip("Opcional: el texto de abajo para cada hoja del libro. Vacío = no hay texto.")]
+        [TextArea(1, 3)] public string[] textosLibro;
     }
 
     /// <summary>

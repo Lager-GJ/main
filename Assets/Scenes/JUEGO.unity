@@ -3951,7 +3951,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 3035810867696587833, guid: 5693eb9fec31956468001f08cb8d2a68, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3978,9 +3978,10 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 1
   primerPlano: 1
   nombre: Foto del estante
-  frente: {fileID: 21300000, guid: d1b938c8f997406a897615152dc13fd6, type: 3}
+  frente: {fileID: 3035810867696587833, guid: 5693eb9fec31956468001f08cb8d2a68, type: 3}
   reverso: {fileID: 21300000, guid: 2bf548af87c54586b6eee3b563bef97c, type: 3}
   textosExtra:
   - Las rayas son finitas y derechas... como hechas con una aguja.
@@ -4581,7 +4582,7 @@ MonoBehaviour:
   enElCuarto: 1
   contenedorMundo: {fileID: 501822584}
   veladorCerrado: {fileID: 1919334042}
-  spriteVeladorAbierto: {fileID: 3135699115276671769, guid: 4dbd9fdb8cc7afc439721cc888a3fd94, type: 3}
+  spriteVeladorAbierto: {fileID: -1395634314622060028, guid: a7d0549340f8f1d4f8cd538b49043c81, type: 3}
   tamanoOriginalDibujo: {x: 1751, y: 3311}
   centroCajonEnDibujo: {x: 279, y: 345}
   tamanoCajonEnDibujo: {x: 180, y: 50}
@@ -4605,11 +4606,11 @@ MonoBehaviour:
   posicionCajon: {x: 0, y: -60}
   brilloFosforo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
   nombreFosforos: "F\xF3sforos \xABLa Chispa\xBB"
-  spriteFosforos: {fileID: 21300000, guid: 5838eb72d434453e976df235231e1e0f, type: 3}
+  spriteFosforos: {fileID: 0}
   posicionFosforos: {x: -294, y: -23}
   tamanoFosforos: {x: 512, y: 375}
-  fosforosYaDibujados: 1
   rotacionFosforos: 0
+  fosforosYaDibujados: 1
   cajaEnPrimerPlano: 1
   caja:
     frente: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
@@ -5934,7 +5935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc84381c0bb4d0c89a6e8cdacbdd849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecuenciaAperturaLata
-  spriteAbierta: {fileID: -9204275543964097235, guid: 71dcc3bafefb53d4e97f0583fda7b80e, type: 3}
+  spriteAbierta: {fileID: 7557594770531162485, guid: 7e57983f0467c4942bdfe7d026c05da4, type: 3}
   textoChiste: {fileID: 900000030}
   duracionTemblor: 0.6
   temblorPorSegundo: 14
@@ -6229,7 +6230,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4967148922121714972, guid: 9b989651c56f89146a4390ff6bc262e4, type: 3}
+  m_Sprite: {fileID: 3514586618973397971, guid: a94e18daa810e7c4dba6ff9a5d43897f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -7611,11 +7612,13 @@ MonoBehaviour:
     - {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
     - {fileID: 21300000, guid: 4695537b9772417284dcd48e88a789a1, type: 3}
     - {fileID: 21300000, guid: e223ab5de9bf40aebb6b3136ea1c5a67, type: 3}
+    paginasLibro: []
+    textosLibro: []
   - id: agenda
     nombre: Agenda de la abuelita
-    icono: {fileID: 21300000, guid: dbeb2dbd1a5d4eda9aa2048454c79d1c, type: 3}
+    icono: {fileID: -8287667045868146214, guid: 4951e9bd91e7a68429daf931db91ad1f, type: 3}
     ilustracion: {fileID: 0}
-    reverso: {fileID: 21300000, guid: 53bcad337316408c9c42390f15c2e791, type: 3}
+    reverso: {fileID: 0}
     textos:
     - 'La agenda de costura de la abuelita: pedidos, medidas, nombres de las vecinas...'
     - "\xABDo\xF1a Teresa: vestido azul para el s\xE1bado. Do\xF1a Carmen: basta
@@ -7623,6 +7626,13 @@ MonoBehaviour:
     - "En la \xFAltima hoja, subrayado: \xABClave del joyero: el a\xF1o en que volvimos
       al campo\xBB."
     dibujoPorTexto: []
+    paginasLibro:
+    - {fileID: 1764536574058344977, guid: 99da2de6ad3552e4496b9cd4ff1d572b, type: 3}
+    - {fileID: -4712542743726413182, guid: 113a8c8773d43174487b18afc4f07a7c, type: 3}
+    textosLibro:
+    - 'La agenda de costura de la abuelita: pedidos, medidas, nombres de las vecinas...'
+    - "En la \xFAltima hoja, subrayado: \xABClave del joyero: el a\xF1o en que volvimos
+      al campo\xBB."
   - id: llave_pequena
     nombre: "Llave peque\xF1a"
     icono: {fileID: 21300000, guid: f32e683ecda7481694fe1c45a873635e, type: 3}
@@ -7632,6 +7642,8 @@ MonoBehaviour:
     - Una llavecita dorada. Estaba en el joyero de la abuelita.
     - "\xBFQu\xE9 se abrir\xE1 con algo tan chiquito?"
     dibujoPorTexto: []
+    paginasLibro: []
+    textosLibro: []
   - id: llave_armario
     nombre: Llave del armario
     icono: {fileID: 21300000, guid: 3776fd09c24e4050af1fef5feec7d6e8, type: 3}
@@ -7641,14 +7653,18 @@ MonoBehaviour:
     - Estaba en la lata de galletas, entre hilos y agujas.
     - "Tiene una cinta que dice \xABarmario\xBB."
     dibujoPorTexto: []
+    paginasLibro: []
+    textosLibro: []
   - id: llave_puerta
     nombre: Llave de la puerta
-    icono: {fileID: 21300000, guid: e3f2fd540fa2460bb895cb007707d04e, type: 3}
+    icono: {fileID: 347172880587908169, guid: f6cbc78c84aa2cc4b95e9337754c10fb, type: 3}
     ilustracion: {fileID: 0}
-    reverso: {fileID: 21300000, guid: 4ed4213463f44c149def2614f6c8dd28, type: 3}
+    reverso: {fileID: 1175462014635641225, guid: d84a94a528bb1e84caa0c6572ac53ecf, type: 3}
     textos:
     - "\xA1La llave del cuarto! Con esto puedo salir."
     dibujoPorTexto: []
+    paginasLibro: []
+    textosLibro: []
 --- !u!114 &920000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7844,17 +7860,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 920000011}
-  m_LocalRotation: {x: 0, y: 0, z: 0.087156, w: 0.996195}
+  m_LocalRotation: {x: 0, y: 0, z: 0.76604, w: 0.64279}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 900000051}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 10}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 100}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 3, y: -281.9}
-  m_SizeDelta: {x: 150, y: 80}
+  m_SizeDelta: {x: 80, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &920000013
 CanvasRenderer:
@@ -7884,9 +7900,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e3f2fd540fa2460bb895cb007707d04e, type: 3}
+  m_Sprite: {fileID: 347172880587908169, guid: f6cbc78c84aa2cc4b95e9337754c10fb, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -9335,7 +9351,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 159.5}
-  m_SizeDelta: {x: 44, y: 30}
+  m_SizeDelta: {x: 52, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &930000115
 CanvasRenderer:
@@ -9365,9 +9381,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: dbeb2dbd1a5d4eda9aa2048454c79d1c, type: 3}
+  m_Sprite: {fileID: -8287667045868146214, guid: 4951e9bd91e7a68429daf931db91ad1f, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -11692,8 +11708,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoEnPrimerPlano
   nombre: Lata de galletas
-  frente: {fileID: 21300000, guid: 187f79365d3347d5b8bba917f4ef59dd, type: 3}
-  reverso: {fileID: 21300000, guid: 55294faff1b046239d5fc028e0e5a2cc, type: 3}
+  frente: {fileID: 3514586618973397971, guid: a94e18daa810e7c4dba6ff9a5d43897f, type: 3}
+  reverso: {fileID: 0}
   textos: []
   textoBoton: 
   requiereFosforo: 1
@@ -13748,9 +13764,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1548913901372772283, guid: 44aff36dfd0a78941a569d2a0c92ec44, type: 3}
+  m_Sprite: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -16161,7 +16177,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -9204275543964097235, guid: 71dcc3bafefb53d4e97f0583fda7b80e, type: 3}
+  m_Sprite: {fileID: 7557594770531162485, guid: 7e57983f0467c4942bdfe7d026c05da4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17223,12 +17239,12 @@ MonoBehaviour:
   - {fileID: 988922454}
   - {fileID: 1048960151}
   - {fileID: 1149999353}
-  spriteFosforoNuevo: {fileID: 8339267962354346179, guid: ad942156062c887418f5351aea1bb563, type: 3}
-  spriteFosforoQuemado: {fileID: 4104167850733375378, guid: f4d097d3b06e20d4d9066b986afe0178, type: 3}
+  spriteFosforoNuevo: {fileID: 0}
+  spriteFosforoQuemado: {fileID: 0}
   spriteCaja: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
-  cajaYaAbierta: 1
   spriteBandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
   spriteFosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
+  cajaYaAbierta: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   margen: {x: 36, y: 36}
   altoReposo: 96

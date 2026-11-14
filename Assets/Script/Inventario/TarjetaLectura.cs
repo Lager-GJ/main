@@ -23,6 +23,8 @@ namespace Terror
 
         private static readonly Vector2 TamanoTarjeta = new Vector2(1000f, 510f);
         private static readonly Vector2 PosicionTarjeta = new Vector2(0f, 70f);
+        private const string AyudaNormal = "Clic o > para seguir  ·  Esc para cerrar";
+        private const string AyudaLibro = "Clic en la hoja de la derecha para pasar  ·  izquierda para volver  ·  Esc para cerrar";
 
         private CanvasGroup grupo;
         private RectTransform rectTarjeta;
@@ -32,12 +34,17 @@ namespace Terror
         private Image borde;
         private TextMeshProUGUI titulo;
         private TextMeshProUGUI texto;
+        private TextMeshProUGUI ayuda;
+        private GameObject zonaIzquierda, zonaDerecha;
         private AudioSource audioFuente;
         private AudioClip sonidoPagina;
 
         private string[] textos = Array.Empty<string>();
         private Sprite[] dibujos;
         private Sprite dibujoBase;
+        private Sprite[] libro;        // hojas abiertas de un libro (la agenda); null = tarjeta normal
+        private string[] textosLibro;
+        private int paginaLibro;
         private int indice;
         private Action alCerrar;
 
@@ -68,6 +75,18 @@ namespace Terror
             t.dibujo.preserveAspect = true;
             t.dibujo.raycastTarget = false;
 
+            // Libro abierto: la mitad izquierda vuelve una hoja, la derecha pasa a la siguiente.
+            Image izq = NuevaImagen("HojaIzquierda", t.rectTarjeta, new Vector2(-330f, 50f), new Vector2(660f, 743f), null);
+            izq.color = new Color(0f, 0f, 0f, 0f);
+            BotonPlano(izq.gameObject, t.HojaAnterior);
+            t.zonaIzquierda = izq.gameObject;
+            Image der = NuevaImagen("HojaDerecha", t.rectTarjeta, new Vector2(330f, 50f), new Vector2(660f, 743f), null);
+            der.color = new Color(0f, 0f, 0f, 0f);
+            BotonPlano(der.gameObject, t.HojaSiguiente);
+            t.zonaDerecha = der.gameObject;
+            t.zonaIzquierda.SetActive(false);
+            t.zonaDerecha.SetActive(false);
+
             t.ilustracion = NuevaImagen("Ilustracion", t.rectTarjeta, Vector2.zero, TamanoTarjeta, null);
             t.ilustracion.preserveAspect = true;
             t.ilustracion.raycastTarget = false;
@@ -90,8 +109,8 @@ namespace Terror
             }
             siguiente.gameObject.AddComponent<Button>().onClick.AddListener(t.Avanzar);
 
-            NuevoTexto("Ayuda", go.transform, new Vector2(0f, -515f), new Vector2(1500f, 44f), 24f, FontStyles.Italic, fuente).text =
-                "Clic o > para seguir  ·  Esc para cerrar";
+            t.ayuda = NuevoTexto("Ayuda", go.transform, new Vector2(0f, -515f), new Vector2(1500f, 44f), 24f, FontStyles.Italic, fuente);
+            t.ayuda.text = AyudaNormal;
 
             Instance = t;
             go.SetActive(false);
@@ -114,11 +133,17 @@ namespace Terror
         public void Mostrar(DefinicionObjeto def, Action alCerrarTarjeta = null)
         {
             if (def == null) return;
-            Mostrar(def.nombre, def.icono, def.ilustracion, def.textos, def.dibujoPorTexto, alCerrarTarjeta);
+            Mostrar(def.nombre, def.icono, def.ilustracion, def.textos, def.dibujoPorTexto, alCerrarTarjeta, def.paginasLibro, def.textosLibro);
         }
 
-        public void Mostrar(string nombre, Sprite dibujoObjeto, Sprite arte, string[] textosTarjeta, Sprite[] dibujosPorTexto = null, Action alCerrarTarjeta = null)
+        public void Mostrar(string nombre, Sprite dibujoObjeto, Sprite arte, string[] textosTarjeta, Sprite[] dibujosPorTexto = null, Action alCerrarTarjeta = null,
+            Sprite[] hojasLibro = null, string[] textosHojas = null)
         {
+            libro = hojasLibro != null && hojasLibro.Length > 0 ? hojasLibro : null;
+            textosLibro = textosHojas;
+            paginaLibro = 0;
+            bool modoLibro = libro != null;
+
             textos = textosTarjeta != null && textosTarjeta.Length > 0 ? textosTarjeta : new[] { "" };
             dibujos = dibujosPorTexto;
             dibujoBase = dibujoObjeto;
@@ -126,14 +151,21 @@ namespace Terror
             alCerrar = alCerrarTarjeta;
 
             // Con arte final, la ilustración es la tarjeta entera (trae su propio borde).
-            bool conArte = arte != null;
+            bool conArte = arte != null && !modoLibro;
             ilustracion.sprite = arte;
             ilustracion.enabled = conArte;
-            fondoTarjeta.color = conArte ? new Color(0f, 0f, 0f, 0f) : new Color(0.5f, 0.5f, 0.5f, 1f);
-            borde.enabled = !conArte;
+            fondoTarjeta.color = conArte || modoLibro ? new Color(0f, 0f, 0f, 0f) : new Color(0.5f, 0.5f, 0.5f, 1f);
+            borde.enabled = !conArte && !modoLibro;
             dibujo.enabled = !conArte;
-            titulo.gameObject.SetActive(!conArte);
+            titulo.gameObject.SetActive(!conArte && !modoLibro);
             titulo.text = nombre;
+
+            // Libro: las dos hojas ocupan casi toda la pantalla; tarjeta normal: el dibujo chico.
+            dibujo.rectTransform.anchoredPosition = modoLibro ? new Vector2(0f, 50f) : new Vector2(0f, -20f);
+            dibujo.rectTransform.sizeDelta = modoLibro ? new Vector2(1320f, 743f) : TamanoTarjeta * 0.72f;
+            zonaIzquierda.SetActive(modoLibro);
+            zonaDerecha.SetActive(modoLibro);
+            ayuda.text = modoLibro ? AyudaLibro : AyudaNormal;
 
             MostrarPagina();
             transform.SetAsLastSibling();
@@ -151,6 +183,14 @@ namespace Terror
 
         private void MostrarPagina()
         {
+            if (libro != null)
+            {
+                Sprite hoja = libro[Mathf.Clamp(paginaLibro, 0, libro.Length - 1)];
+                dibujo.sprite = hoja;
+                dibujo.color = hoja != null ? Color.white : new Color(0.72f, 0.72f, 0.72f, 1f);
+                texto.text = textosLibro != null && paginaLibro < textosLibro.Length ? textosLibro[paginaLibro] : "";
+                return;
+            }
             texto.text = indice < textos.Length ? textos[indice] : "";
             Sprite s = dibujos != null && indice < dibujos.Length && dibujos[indice] != null ? dibujos[indice] : dibujoBase;
             dibujo.sprite = s;
@@ -162,12 +202,38 @@ namespace Terror
             if (!gameObject.activeSelf) return;
             if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
 
+            if (libro != null)
+            {
+                // El botón > pasa de hoja y, en la última, cierra.
+                if (paginaLibro < libro.Length - 1) HojaSiguiente();
+                else Cerrar();
+                return;
+            }
+
             indice++;
             if (indice >= textos.Length)
             {
                 Cerrar();
                 return;
             }
+            MostrarPagina();
+            Sonar();
+        }
+
+        private void HojaSiguiente()
+        {
+            if (libro == null || paginaLibro >= libro.Length - 1) return;
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+            paginaLibro++;
+            MostrarPagina();
+            Sonar();
+        }
+
+        private void HojaAnterior()
+        {
+            if (libro == null || paginaLibro <= 0) return;
+            if (PauseManager.Instance != null && PauseManager.Instance.EstaPausado) return;
+            paginaLibro--;
             MostrarPagina();
             Sonar();
         }
