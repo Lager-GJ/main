@@ -31,6 +31,8 @@ public class InventarioFosforo : MonoBehaviour
     [SerializeField] private Sprite spriteBandeja;
     [Tooltip("Un fósforo suelto, con la cabeza arriba (Caja_Fosforo).")]
     [SerializeField] private Sprite spriteFosforo;
+    [Tooltip("Marcado: el dibujo de la caja ya trae la bandeja y los fósforos (caja abierta). La bandeja y el fósforo viejos no se ven en reposo; el fósforo solo aparece al encender.")]
+    [SerializeField] private bool cajaYaAbierta = true;
     [SerializeField] private TMP_FontAsset fuente;
 
     [Header("Reposo")]
@@ -149,7 +151,9 @@ public class InventarioFosforo : MonoBehaviour
         raiz.anchorMin = raiz.anchorMax = raiz.pivot = new Vector2(0f, 1f);
         raiz.anchoredPosition = new Vector2(margen.x, -margen.y);
 
-        tamCaja = new Vector2(altoReposo * AnchoCaja / AltoCaja, altoReposo);
+        float proporcion = AnchoCaja / AltoCaja;
+        if (cajaYaAbierta && spriteCaja != null && spriteCaja.rect.height > 0f) proporcion = spriteCaja.rect.width / spriteCaja.rect.height;
+        tamCaja = new Vector2(altoReposo * proporcion, altoReposo);
         raiz.sizeDelta = new Vector2(tamCaja.x + 120f, tamCaja.y);
         grupo = raiz.gameObject.AddComponent<CanvasGroup>();
         grupo.blocksRaycasts = false;
@@ -168,6 +172,7 @@ public class InventarioFosforo : MonoBehaviour
         var imgBandeja = NuevaImagen("Bandeja", caja, new Vector2(0f, yBandejaCerrada), tamBandeja, spriteBandeja);
         if (spriteBandeja == null) imgBandeja.color = new Color(0.25f, 0.18f, 0.42f, 1f);
         bandeja = imgBandeja.rectTransform;
+        if (cajaYaAbierta) imgBandeja.enabled = false;
 
         // El fósforo que va a salir, dentro de la bandeja (detrás del frente).
         tamFosforo = new Vector2(AnchoFosforo, AltoFosforo) * k;
@@ -178,6 +183,7 @@ public class InventarioFosforo : MonoBehaviour
 
         var imgFrente = NuevaImagen("Frente", caja, Vector2.zero, tamCaja, spriteCaja);
         if (spriteCaja == null) imgFrente.color = new Color(0.78f, 0.7f, 0.38f, 1f);
+        imgFrente.preserveAspect = cajaYaAbierta;
 
         // Llama: dos brillos (afuera naranja, adentro casi blanco) en la cabeza del fósforo.
         llama = NuevoRect("Llama", fosforo, new Vector2(0f, tamFosforo.y * 0.5f), Vector2.zero);
@@ -229,7 +235,7 @@ public class InventarioFosforo : MonoBehaviour
         fosforo.localScale = Vector3.one;
         imgFosforo.color = new Color(imgFosforo.color.r, imgFosforo.color.g, imgFosforo.color.b, 1f);
         // Sin fósforos, la bandeja está vacía.
-        fosforo.gameObject.SetActive(quedan > 0);
+        fosforo.gameObject.SetActive(quedan > 0 && !cajaYaAbierta);
     }
 
     private void PintarContador()

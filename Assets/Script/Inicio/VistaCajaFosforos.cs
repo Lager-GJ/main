@@ -37,7 +37,9 @@ namespace Terror.UI
             public Sprite fosforo;
             [Tooltip("Halo del fósforo encendido. Vacío = sin halo.")]
             public Sprite brillo;
-            [Tooltip("Tamaño de la funda en pantalla.")]
+            [Tooltip("Marcado: el dibujo del frente ya muestra la caja abierta con sus fósforos. No se usan la bandeja ni los fósforos sueltos: al abrir solo hay un pequeño golpe.")]
+            public bool dibujoCompleto;
+            [Tooltip("Tamaño de la funda en pantalla (frente y reverso se ajustan a su proporción dentro de este alto).")]
             public Vector2 tamano = new Vector2(380f, 545f);
             public Vector2 posicion = new Vector2(0f, 0f);
             [Tooltip("Adónde se corre la caja al abrirla, para dejar lugar a la hoja de instrucciones.")]
@@ -128,7 +130,7 @@ namespace Terror.UI
             girando = false;
             pagina = -1;
             girador.localScale = Vector3.one;
-            funda.sprite = cfg.frente;
+            PonerSpriteFunda(cfg.frente);
             caja.anchoredPosition = Abierta ? cfg.posicionAbierta : cfg.posicion;
             PonerTinte(tinteInicial);
             MostrarFosforos(fosforosQueQuedan);
@@ -286,7 +288,7 @@ namespace Terror.UI
             Sonar(cfg.sonidoVoltear);
             yield return Animar(0.16f, p => girador.localScale = new Vector3(Mathf.Cos(p * Mathf.PI * 0.5f), 1f + 0.04f * p, 1f));
             reverso = !reverso;
-            funda.sprite = reverso ? cfg.reverso : cfg.frente;
+            PonerSpriteFunda(reverso ? cfg.reverso : cfg.frente);
             ActualizarAyuda();
             yield return Animar(0.16f, p => girador.localScale = new Vector3(Mathf.Sin(p * Mathf.PI * 0.5f), 1.04f - 0.04f * p, 1f));
             girador.localScale = Vector3.one;
@@ -298,7 +300,11 @@ namespace Terror.UI
             abriendo = true;
             Sonar(cfg.sonidoAbrir);
             RectTransform b = bandeja.rectTransform;
-            yield return Animar(0.45f, p => b.anchoredPosition = new Vector2(0f, Mathf.Lerp(yCerrada, yAbierta, 1f - Mathf.Pow(1f - p, 3f))));
+            if (cfg.dibujoCompleto)
+                yield return Animar(0.45f, p => girador.localScale = Vector3.one * (1f + 0.07f * Mathf.Sin(p * Mathf.PI)));
+            else
+                yield return Animar(0.45f, p => b.anchoredPosition = new Vector2(0f, Mathf.Lerp(yCerrada, yAbierta, 1f - Mathf.Pow(1f - p, 3f))));
+            girador.localScale = Vector3.one;
             Abierta = true;
             abriendo = false;
             ActualizarAyuda();
@@ -323,6 +329,19 @@ namespace Terror.UI
             ayuda.text = reverso ? cfg.ayudaReverso : Abierta ? cfg.ayudaAbierta : cfg.ayudaCerrada;
             ayuda.fontStyle = FontStyles.Italic;
             ayuda.color = new Color(0.85f, 0.85f, 0.85f, 0.9f);
+        }
+
+        /// <summary>
+        /// Cambia el dibujo de la funda y la ajusta a su proporción: el frente es vertical y el
+        /// reverso horizontal, así que no se pueden estirar al mismo rectángulo.
+        /// </summary>
+        private void PonerSpriteFunda(Sprite sprite)
+        {
+            funda.sprite = sprite;
+            if (sprite == null || sprite.rect.height <= 0f) { funda.rectTransform.sizeDelta = cfg.tamano; return; }
+            float asp = sprite.rect.width / sprite.rect.height;
+            Vector2 caja = asp >= 1f ? new Vector2(cfg.tamano.y * 0.95f, cfg.tamano.y * 0.8f) : cfg.tamano;
+            funda.rectTransform.sizeDelta = asp > caja.x / caja.y ? new Vector2(caja.x, caja.x / asp) : new Vector2(caja.y * asp, caja.y);
         }
 
         private void Sonar(AudioClip clip)
@@ -369,6 +388,8 @@ namespace Terror.UI
             }
 
             funda = NuevaImagen("Funda", girador, Vector2.zero, tam, cfg.frente);
+            PonerSpriteFunda(cfg.frente);
+            if (cfg.dibujoCompleto) bandeja.gameObject.SetActive(false);
             BotonPlano(funda.gameObject, ClicEnCaja);
             funda.gameObject.AddComponent<ResaltarAlPasar>();
 

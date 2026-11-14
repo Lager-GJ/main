@@ -4582,20 +4582,21 @@ MonoBehaviour:
   contenedorMundo: {fileID: 501822584}
   veladorCerrado: {fileID: 1919334042}
   spriteVeladorAbierto: {fileID: 3135699115276671769, guid: 4dbd9fdb8cc7afc439721cc888a3fd94, type: 3}
+  tamanoOriginalDibujo: {x: 1751, y: 3311}
   centroCajonEnDibujo: {x: 279, y: 345}
   tamanoCajonEnDibujo: {x: 180, y: 50}
   acostarObjetos: 1
   bordeCajonEnDibujo:
-  - {x: 198, y: 318}
-  - {x: 402, y: 318}
-  - {x: 350, y: 436}
-  - {x: 132, y: 436}
+  - {x: 302, y: 1599}
+  - {x: 1472, y: 1599}
+  - {x: 1472, y: 1894}
+  - {x: 277, y: 1894}
   bordeCajonEnDiseno:
   - {x: -578.7, y: 307.8}
   - {x: 576, y: 307.8}
   - {x: 624.6, y: -216}
   - {x: -624.6, y: -216}
-  zoomCajon: 0.21
+  zoomCajon: 0.16
   tinteEnCuarto: {r: 0.85, g: 0.83, b: 0.8, a: 1}
   materialIluminado: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   luzVista: {fileID: 950000045}
@@ -4605,17 +4606,19 @@ MonoBehaviour:
   brilloFosforo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
   nombreFosforos: "F\xF3sforos \xABLa Chispa\xBB"
   spriteFosforos: {fileID: 21300000, guid: 5838eb72d434453e976df235231e1e0f, type: 3}
-  posicionFosforos: {x: 18, y: 0}
-  tamanoFosforos: {x: 300, y: 300}
+  posicionFosforos: {x: -294, y: -23}
+  tamanoFosforos: {x: 512, y: 375}
+  fosforosYaDibujados: 1
   rotacionFosforos: 0
   cajaEnPrimerPlano: 1
   caja:
-    frente: {fileID: 21300000, guid: cf69b59a7a744f63bd6e20147ecb8308, type: 3}
-    reverso: {fileID: 21300000, guid: f666f8387b3f41f2b87e5cbeedaaa853, type: 3}
+    frente: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
+    reverso: {fileID: -9109863272657478861, guid: a07806efcb691de4d9cffc9cd7544ca1, type: 3}
     bandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
     fosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
     brillo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
-    tamano: {x: 380, y: 545}
+    dibujoCompleto: 1
+    tamano: {x: 430, y: 650}
     posicion: {x: 0, y: 0}
     posicionAbierta: {x: -560, y: 0}
     subidaBandeja: 0.38
@@ -4637,8 +4640,8 @@ MonoBehaviour:
     sonidoAbrir: {fileID: 8300000, guid: 007c1f682165a9d478358bbe50642f9b, type: 3}
   nombreNota: Una nota
   spriteNota: {fileID: 21300000, guid: fd4756b0c19549c1a0228f39c4bb49ce, type: 3}
-  posicionNota: {x: 18, y: -9}
-  tamanoNota: {x: 270, y: 198}
+  posicionNota: {x: -294, y: -23}
+  tamanoNota: {x: 310, y: 228}
   rotacionNota: 0
   ilustracionNota: {fileID: 0}
   reversoNota: {fileID: 21300000, guid: fb73ca68871548eeb9afa325568e5d33, type: 3}
@@ -4658,8 +4661,8 @@ MonoBehaviour:
   elementos:
   - nombre: Rosario
     sprite: {fileID: 21300000, guid: 5edf584097024bc6bf9ad859847cde77, type: 3}
-    posicion: {x: -261, y: 54}
-    tamano: {x: 378, y: 306}
+    posicion: {x: 170, y: 110}
+    tamano: {x: 321, y: 260}
     rotacion: 0
     reverso: {fileID: 21300000, guid: a3238f244c1f43218a5d7207efb3b31d, type: 3}
     ilustracion: {fileID: 0}
@@ -4669,8 +4672,8 @@ MonoBehaviour:
     sonido: {fileID: 0}
   - nombre: Hilo y aguja
     sprite: {fileID: 21300000, guid: 66f8461e65404635b90b28e6ddd74d49, type: 3}
-    posicion: {x: 351, y: 117}
-    tamano: {x: 234, y: 216}
+    posicion: {x: 450, y: 110}
+    tamano: {x: 199, y: 184}
     rotacion: 0
     reverso: {fileID: 21300000, guid: 5c991496c09547968b248d8e6cda8c54, type: 3}
     ilustracion: {fileID: 0}
@@ -4680,8 +4683,8 @@ MonoBehaviour:
     sonido: {fileID: 0}
   - nombre: Cabo de vela
     sprite: {fileID: 21300000, guid: 1a5c723d9ba44dd1a8482b7c4b176410, type: 3}
-    posicion: {x: 288, y: -68}
-    tamano: {x: 252, y: 153}
+    posicion: {x: 400, y: -110}
+    tamano: {x: 214, y: 130}
     rotacion: 0
     reverso: {fileID: 21300000, guid: d7b7d487d868420fa405711cd8b22dad, type: 3}
     ilustracion: {fileID: 0}
@@ -4691,8 +4694,8 @@ MonoBehaviour:
     sonido: {fileID: 0}
   - nombre: Foto vieja
     sprite: {fileID: 21300000, guid: f7937bdbf4f949acbbd0cc162d7be72c, type: 3}
-    posicion: {x: -390, y: -80}
-    tamano: {x: 170, y: 125}
+    posicion: {x: 40, y: -110}
+    tamano: {x: 145, y: 106}
     rotacion: -7
     reverso: {fileID: 21300000, guid: 70bd736500054c5a93db6231bc1747fa, type: 3}
     ilustracion: {fileID: 0}
@@ -4702,8 +4705,8 @@ MonoBehaviour:
     sonido: {fileID: 0}
   - nombre: Estampita
     sprite: {fileID: 21300000, guid: 2d4ebff19ddb476d9acc02f3dcb3169c, type: 3}
-    posicion: {x: -185, y: -95}
-    tamano: {x: 90, y: 130}
+    posicion: {x: 170, y: -110}
+    tamano: {x: 77, y: 110}
     rotacion: 8
     reverso: {fileID: 21300000, guid: ee79f4a7559b45639b1fb2bce52c720b, type: 3}
     ilustracion: {fileID: 0}
@@ -17222,7 +17225,8 @@ MonoBehaviour:
   - {fileID: 1149999353}
   spriteFosforoNuevo: {fileID: 8339267962354346179, guid: ad942156062c887418f5351aea1bb563, type: 3}
   spriteFosforoQuemado: {fileID: 4104167850733375378, guid: f4d097d3b06e20d4d9066b986afe0178, type: 3}
-  spriteCaja: {fileID: 21300000, guid: cf69b59a7a744f63bd6e20147ecb8308, type: 3}
+  spriteCaja: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
+  cajaYaAbierta: 1
   spriteBandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
   spriteFosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}

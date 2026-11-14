@@ -81,6 +81,8 @@ namespace Terror.UI
         [SerializeField] private Image veladorCerrado;
         [Tooltip("Dibujo del velador con el cajón afuera, del mismo tamaño que el cerrado (CajonAbr).")]
         [SerializeField] private Sprite spriteVeladorAbierto;
+        [Tooltip("Tamaño en píxeles de la imagen ORIGINAL del velador abierto (el recorte del sprite). Las coordenadas de abajo se miden en ese tamaño; si Unity reduce la textura (Max Size), el juego las convierte solas. 0,0 = usar el tamaño que tenga el sprite.")]
+        [SerializeField] private Vector2 tamanoOriginalDibujo = Vector2.zero;
         [Tooltip("Centro del interior del cajón en el dibujo del velador abierto, en píxeles del dibujo (0,0 = arriba a la izquierda).")]
         [SerializeField] private Vector2 centroCajonEnDibujo = new Vector2(279f, 345f);
         [Tooltip("Ancho y fondo del interior del cajón en el dibujo, en píxeles.")]
@@ -118,6 +120,8 @@ namespace Terror.UI
         [SerializeField] private Vector2 posicionFosforos = new Vector2(40f, -10f);
         [SerializeField] private Vector2 tamanoFosforos = new Vector2(306f, 198f);
         [SerializeField] private float rotacionFosforos = -3f;
+        [Tooltip("Marcado: la caja ya está pintada en el dibujo del cajón. La zona queda invisible (solo recibe el clic y el resaltado de nombre) y se ubica con Posicion/Tamano Fosforos encima del dibujo.")]
+        [SerializeField] private bool fosforosYaDibujados = true;
 
         [Header("Caja en primer plano (se voltea y se abre)")]
         [Tooltip("Desmarcado: como antes, tocar la caja en el cajón ya provoca el portazo.")]
@@ -799,7 +803,7 @@ namespace Terror.UI
                 zonasElementos[i] = NuevaZona(e.nombre, e.sprite, e.posicion, e.tamano, e.rotacion);
             }
 
-            zonaFosforos = NuevaZona(nombreFosforos, spriteFosforos, posicionFosforos, tamanoFosforos, rotacionFosforos);
+            zonaFosforos = NuevaZona(nombreFosforos, fosforosYaDibujados ? null : spriteFosforos, posicionFosforos, tamanoFosforos, rotacionFosforos, fosforosYaDibujados);
 
             // Luz fría que entra desde la puerta (a la izquierda) y se pierde hacia la derecha.
             luzPuertaOverlay = NuevaImagen("LuzDeLaPuerta", interior, Vector2.zero, tamanoCajon * 1.15f, CrearDegradeHorizontal());
@@ -865,10 +869,16 @@ namespace Terror.UI
 
             // Del dibujo (píxeles, y hacia abajo) al rectángulo del velador.
             Vector2 dibujo = spriteVeladorAbierto != null ? spriteVeladorAbierto.rect.size : new Vector2(626f, 626f);
+            // Unity puede achicar la textura (Max Size 2048): las medidas se pasan a su tamaño real.
+            Vector2 aEscala = tamanoOriginalDibujo.x > 0f && tamanoOriginalDibujo.y > 0f
+                ? new Vector2(dibujo.x / tamanoOriginalDibujo.x, dibujo.y / tamanoOriginalDibujo.y)
+                : Vector2.one;
+            Vector2 centroPx = Vector2.Scale(centroCajonEnDibujo, aEscala);
+            Vector2 tamanoPx = Vector2.Scale(tamanoCajonEnDibujo, aEscala);
             Vector2 centro = new Vector2(
-                (centroCajonEnDibujo.x / dibujo.x - 0.5f) * tam.x,
-                (0.5f - centroCajonEnDibujo.y / dibujo.y) * tam.y);
-            Vector2 tamCajon = new Vector2(tamanoCajonEnDibujo.x / dibujo.x * tam.x, tamanoCajonEnDibujo.y / dibujo.y * tam.y);
+                (centroPx.x / dibujo.x - 0.5f) * tam.x,
+                (0.5f - centroPx.y / dibujo.y) * tam.y);
+            Vector2 tamCajon = new Vector2(tamanoPx.x / dibujo.x * tam.x, tamanoPx.y / dibujo.y * tam.y);
 
             RectTransform cajon;
             RectTransform foco;
@@ -877,7 +887,9 @@ namespace Terror.UI
                 // Cajón inclinado: los objetos se acuestan sobre su piso (ver NuevaZona).
                 tamanoDibujo = dibujo;
                 tamanoEnCuarto = tam;
-                plano = PlanoInclinado.Desde(bordeCajonEnDiseno, bordeCajonEnDibujo);
+                var bordePx = new Vector2[bordeCajonEnDibujo.Length];
+                for (int i = 0; i < bordePx.Length; i++) bordePx[i] = Vector2.Scale(bordeCajonEnDibujo[i], aEscala);
+                plano = PlanoInclinado.Desde(bordeCajonEnDiseno, bordePx);
                 cajon = NuevoRect("CajonInterior", enCuarto, Vector2.zero, tam);
 
                 // La cámara apunta al centro del piso del cajón.
@@ -952,7 +964,7 @@ namespace Terror.UI
             tarjeta.SetActive(false);
         }
 
-        private ZonaCajon NuevaZona(string nombre, Sprite sprite, Vector2 posicion, Vector2 tamano, float rotacion)
+        private ZonaCajon NuevaZona(string nombre, Sprite sprite, Vector2 posicion, Vector2 tamano, float rotacion, bool invisible = false)
         {
             Image img = NuevaImagen(string.IsNullOrEmpty(nombre) ? "Objeto" : nombre, interior, posicion, tamano, sprite);
             img.preserveAspect = true;
@@ -962,20 +974,21 @@ namespace Terror.UI
 
             // Sin dibujo todavía: un papel gris con borde blanco (sirve para la foto y la estampita).
             Image borde = null;
-            if (sprite == null)
+            if (sprite == null && !invisible)
             {
                 borde = NuevaImagen("Borde", img.transform, Vector2.zero, tamano, MarcoDibujado.Obtener(64, 4f, 3f, 1f));
                 borde.type = Image.Type.Sliced;
                 borde.raycastTarget = false;
             }
 
-            if (UsaCuarto)
+            if (UsaCuarto && !invisible)
             {
                 SpriteIluminado.Agregar(img, 5, 2f, materialIluminado);
                 if (borde != null) SpriteIluminado.Agregar(borde, 5, 2.5f, materialIluminado);
             }
 
             var zona = img.gameObject.AddComponent<ZonaCajon>();
+            zona.Invisible = invisible;
             zona.Iniciar(this, nombre, img, borde);
             return zona;
         }
@@ -1168,6 +1181,9 @@ namespace Terror.UI
         public string Nombre { get; private set; }
         public Image Imagen { get; private set; }
 
+        /// <summary>Sin dibujo propio (ya está pintada en el fondo): solo recibe el mouse.</summary>
+        internal bool Invisible { get; set; }
+
         internal void Iniciar(InicioCuarto inicio, string nombre, Image imagen, Image bordeSinDibujo)
         {
             dueno = inicio;
@@ -1188,6 +1204,7 @@ namespace Terror.UI
         internal void AplicarTinte()
         {
             if (Imagen == null || bloqueada) return;
+            if (Invisible) { Imagen.color = new Color(1f, 1f, 1f, 0f); return; }
             Color c = dueno.Tinte;
             float f = encima ? 1.3f : 1f;
             // Sin dibujo, la zona es un papel gris: se tiñe igual para que no brille en la oscuridad.
