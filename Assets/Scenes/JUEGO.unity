@@ -3876,6 +3876,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 0
   nombre: 
   frente: {fileID: 0}
@@ -3920,8 +3921,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2700.594, y: -404.87}
-  m_SizeDelta: {x: 119.5556, y: 154.14}
+  m_AnchoredPosition: {x: -2691.0586, y: -399.91}
+  m_SizeDelta: {x: 172.0021, y: 212.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &710000013
 CanvasRenderer:
@@ -4083,6 +4084,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 1
   nombre: Retrato
   frente: {fileID: 21300000, guid: 782b784ee0ab4c3dbe349a70c4af9e79, type: 3}
@@ -4186,6 +4188,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 1
   nombre: Foto de la familia
   frente: {fileID: 21300000, guid: 2a93b4faa1084e73a1a8e198722e663c, type: 3}
@@ -4290,6 +4293,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 1
   nombre: Cuadro de la Virgen
   frente: {fileID: 21300000, guid: e9c55a35d30e4a0aaec4171091e5e993, type: 3}
@@ -4393,6 +4397,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 1
   nombre: Crucifijo
   frente: {fileID: 21300000, guid: 69fd240752864b2d8191569e603ed2dc, type: 3}
@@ -4496,6 +4501,7 @@ MonoBehaviour:
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
+  mostrarDibujoEnCuarto: 0
   primerPlano: 1
   nombre: "M\xE1quina de coser"
   frente: {fileID: 21300000, guid: c36dd07274d74719bc7d35ea9ab8f56d, type: 3}
