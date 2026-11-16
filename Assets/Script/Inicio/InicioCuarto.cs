@@ -17,7 +17,7 @@ namespace Terror.UI
     ///
     /// 1. Puerta abierta: entra un poco de luz de afuera (luzPuerta) y el cajón se ve en
     ///    primer plano. Todos sus objetos se pueden tocar y muestran su mensaje.
-    /// 2. Al tocar la caja de fósforos ("La Chispa") se ve en primer plano: se puede
+    /// 2. Al tocar la caja de fósforos ("El Cuco") se ve en primer plano: se puede
     ///    voltear y, al abrirla, la puerta se cierra de golpe, se va la luz y todo queda
     ///    casi a oscuras. Recién ahí se pueden prender fósforos (aparece la hoja de
     ///    instrucciones "Pulsa E" del tutorial). Ver VistaCajaFosforos.
@@ -115,7 +115,7 @@ namespace Terror.UI
         [SerializeField] private Sprite brilloFosforo;
 
         [Header("Caja de fósforos")]
-        [SerializeField] private string nombreFosforos = "Fósforos «La Chispa»";
+        [SerializeField] private string nombreFosforos = "Fósforos «El Cuco»";
         [SerializeField] private Sprite spriteFosforos;
         [SerializeField] private Vector2 posicionFosforos = new Vector2(40f, -10f);
         [SerializeField] private Vector2 tamanoFosforos = new Vector2(306f, 198f);
@@ -160,7 +160,7 @@ namespace Terror.UI
 
         [Header("Textos")]
         [TextArea(1, 3)] [SerializeField] private string textoAlAbrir = "Aquí guarda la abuelita sus cosas... y los fósforos.";
-        [TextArea(1, 3)] [SerializeField] private string textoTomarFosforos = "«La Chispa»... «Cada llama tiene un precio». Qué raro.";
+        [TextArea(1, 3)] [SerializeField] private string textoTomarFosforos = "«El Cuco»... «Cada llama tiene un precio». Qué raro.";
         [TextArea(1, 3)] [SerializeField] private string textoPortazo = "¡PUM! La puerta se cerró sola... y con llave.";
         [TextArea(1, 3)] [SerializeField] private string textoSinLuz = "Está muy oscuro. No veo nada.";
         [TextArea(1, 3)] [SerializeField] private string textoNotaAparece = "Debajo de los fósforos había una nota...";

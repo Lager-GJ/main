@@ -40,7 +40,15 @@ Hoy se usan los bocetos oscurecidos como fondo provisorio: `Assets/Recursos/Pare
 - **Tocador abierto** (reemplaza `SecreteroInterior`): hoy, al abrir el tocador, aparece el dibujo viejo del secretero encima. Hace falta el tocador con sus cajones abiertos y un **cajón secreto** que aparece al poner la foto en el marco.
 - **Armario abierto de 3 puertas:** el abierto de hoy es el viejo de 2 puertas y es un poco más angosto que el del boceto.
 - **Velador con el cajón afuera** dibujado igual que el velador del boceto (`Velador_CajonInclinado.png` sigue siendo el del panorama viejo).
-- Los objetos sueltos (joyero, marco vacío, canasta, foto del campo, caramelos) siguen siendo piezas aparte.
+- Los objetos sueltos (joyero, marco vacío, canasta, foto del campo) siguen siendo piezas aparte.
+
+## 0c. Lo que falta del arte nuevo (2026-11-16)
+
+Ya entraron al juego (Diego, 12–15/11): la pared 1, la caja «El Cuco» (frente y reverso, también en la cajita de la esquina), el cajón abierto (`LUMBRE_CAJON_ABIERTO`), la agenda que se hojea, el retrato de los abuelos, la llave, la lata y las galletas. **Gracias.** Para la próxima tanda, mejor en **PNG con fondo transparente** (Unity no importa `.webp`).
+
+Pendiente de ver en Play:
+1. **Cajón del inicio.** Los objetos (rosario, foto, hilo, vela, estampita) se acuestan sobre el piso del cajón de `LUMBRE_CAJON_ABIERTO`, que se ve casi de frente. Si quedan raros, hará falta un velador con el cajón **sacado e inclinado ~45°** y el piso vacío a la vista (como §2c), avisando las 4 esquinas del borde de arriba del cajón.
+2. **Cajita de la esquina (arriba a la izquierda).** Hoy usa el dibujo completo de «El Cuco» con la bandeja vieja de «La Chispa» detrás. Para animarla bien hacen falta piezas separadas como en §2g: la funda sola (sin fósforos), la bandeja sola y un fósforo suelto.
 
 ## 1. En el cuarto
 
@@ -148,7 +156,7 @@ Son los objetos que ya estaban pintados en `FondoDefi`: al tocarlos se ven en la
 
 | Archivo | Qué es |
 |---|---|
-| `Objeto_FotoEstante.png` / `_Reverso` | Portarretrato con el vidrio rayado sobre la cara. Atrás tiene la patita y dice «¿quién te rayó?». |
+| `Retrato_Abuelos.png` / `Objeto_FotoEstante_Reverso` | (2026-11) La boda de los abuelitos, con una foto del abuelito de viejito metida en el marco. Atrás tiene la patita y dice «¿quién te rayó?» (el vidrio ahora está limpio: el texto lo aprovecha). |
 | `Objeto_Retrato.png` / `_Reverso` | El retrato del niño. Atrás: «Luis, siete años (para que no se olvide)». |
 | `Objeto_FotoFamilia.png` / `_Reverso` | Atrás: «Navidad en la casa», los nombres y uno tachado. |
 | `Objeto_CuadroVirgen.png` / `_Reverso` | Atrás: «Ella te cuida cuando no hay luz». |

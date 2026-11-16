@@ -9,7 +9,7 @@ using static Terror.UI.UIRuntime;
 namespace Terror.UI
 {
     /// <summary>
-    /// La caja de fósforos "La Chispa" en primer plano (pedido de David, 2026-10-27).
+    /// La caja de fósforos ("El Cuco" desde 2026-11-12, antes "La Chispa") en primer plano (pedido de David, 2026-10-27).
     /// Al tocarla en el cajón del inicio, la caja se ve en grande:
     ///  - un clic en la caja (o A/D, flechas) la da vuelta para leer el reverso: la
     ///    advertencia y "Lea las instrucciones antes de usar";
@@ -31,7 +31,7 @@ namespace Terror.UI
             public Sprite frente;
             [Tooltip("Reverso de la caja: advertencia y \"Lea las instrucciones antes de usar\".")]
             public Sprite reverso;
-            [Tooltip("La bandeja que sale de la funda al abrir.")]
+            [Tooltip("La bandeja que sale de la funda al abrir (no se usa con Dibujo Completo).")]
             public Sprite bandeja;
             [Tooltip("Un fósforo (se repite por cada fósforo que queda).")]
             public Sprite fosforo;
@@ -42,7 +42,7 @@ namespace Terror.UI
             [Tooltip("Tamaño de la funda en pantalla (frente y reverso se ajustan a su proporción dentro de este alto).")]
             public Vector2 tamano = new Vector2(380f, 545f);
             public Vector2 posicion = new Vector2(0f, 0f);
-            [Tooltip("Adónde se corre la caja al abrirla, para dejar lugar a la hoja de instrucciones.")]
+            [Tooltip("Adónde se corre la caja mientras está a la vista la hoja de instrucciones (TarjetaTutorial). Al cerrarse la hoja vuelve a 'posicion'.")]
             public Vector2 posicionAbierta = new Vector2(-560f, 0f);
             [Tooltip("Cuánto sube la bandeja al abrir (fracción del alto de la funda).")]
             [Range(0f, 0.6f)] public float subidaBandeja = 0.38f;
@@ -55,7 +55,7 @@ namespace Terror.UI
             [Tooltip("Lo que lee Inspeccionar con la caja ya abierta, una página por clic.")]
             [TextArea(1, 3)] public string[] descripcion =
             {
-                "«La Chispa». Fósforos de cocina, de los de antes.",
+                "«El Cuco». Fósforos de cocina, de los de antes.",
                 "Abajo, en letras chiquitas: «Cada llama tiene un precio».",
             };
             [Tooltip("Última página de la descripción. {0} = fósforos que quedan.")]
@@ -131,7 +131,7 @@ namespace Terror.UI
             pagina = -1;
             girador.localScale = Vector3.one;
             PonerSpriteFunda(cfg.frente);
-            caja.anchoredPosition = Abierta ? cfg.posicionAbierta : cfg.posicion;
+            caja.anchoredPosition = PosicionObjetivo;
             PonerTinte(tinteInicial);
             MostrarFosforos(fosforosQueQuedan);
             ActualizarAyuda();
@@ -309,12 +309,14 @@ namespace Terror.UI
             abriendo = false;
             ActualizarAyuda();
             alAbrir?.Invoke();
-
-            // Se corre a un costado para dejar lugar a la hoja de instrucciones.
-            Vector2 desde = caja.anchoredPosition;
-            yield return EsperarSinPausa(0.35f);
-            yield return Animar(0.5f, p => caja.anchoredPosition = Vector2.Lerp(desde, cfg.posicionAbierta, p * p * (3f - 2f * p)));
+            // Cuando aparece la hoja de instrucciones, LateUpdate corre la caja a un costado;
+            // cuando la hoja se cierra, la devuelve al centro (2026-11-12: antes se quedaba
+            // corrida encima de Luis).
         }
+
+        /// <summary>Corrida a un costado solo mientras la hoja de instrucciones está a la vista.</summary>
+        private bool Corrida => Abierta && TarjetaTutorial.Visibles > 0;
+        private Vector2 PosicionObjetivo => Corrida ? cfg.posicionAbierta : cfg.posicion;
 
         /// <summary>El portazo: la caja tiembla en la mano.</summary>
         public void Sacudir(float amplitud)
@@ -376,7 +378,6 @@ namespace Terror.UI
             yCerrada = tam.y * 0.5f - tam.y * 30f / 870f - tamBandeja.y * 0.5f;
             yAbierta = yCerrada + tam.y * cfg.subidaBandeja;
             bandeja = NuevaImagen("Bandeja", girador, new Vector2(0f, yCerrada), tamBandeja, cfg.bandeja);
-            if (cfg.bandeja == null) bandeja.color = new Color(0.39f, 0.32f, 0.6f, 1f);
             BotonPlano(bandeja.gameObject, ClicEnCaja);
 
             float k = tam.x / 607f;
@@ -412,12 +413,20 @@ namespace Terror.UI
 
         private void LateUpdate()
         {
-            // La ayuda y el botón siguen a la caja cuando se corre a un costado.
             if (ayuda == null) return;
+
+            // Se desliza hacia donde tiene que estar (al costado de la hoja, o al centro).
+            Vector2 objetivo = PosicionObjetivo;
+            if ((caja.anchoredPosition - objetivo).sqrMagnitude > 0.25f)
+                caja.anchoredPosition = Vector2.Lerp(caja.anchoredPosition, objetivo, 1f - Mathf.Exp(-9f * Time.unscaledDeltaTime));
+            else
+                caja.anchoredPosition = objetivo;
+
+            // La ayuda y el botón siguen a la caja.
             float x = caja.anchoredPosition.x;
             float yAbajo = caja.anchoredPosition.y - cfg.tamano.y * 0.5f;
-            ayuda.rectTransform.anchoredPosition = new Vector2(Abierta ? x : cfg.posicion.x, yAbajo - 50f);
-            ayuda.rectTransform.sizeDelta = new Vector2(Abierta ? 700f : 1400f, 80f);
+            ayuda.rectTransform.anchoredPosition = new Vector2(x, yAbajo - 50f);
+            ayuda.rectTransform.sizeDelta = new Vector2(Corrida ? 700f : 1400f, 80f);
             ((RectTransform)botonInspeccionar.transform).anchoredPosition = new Vector2(x, yAbajo - 125f);
         }
     }
