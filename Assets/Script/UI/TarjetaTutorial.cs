@@ -50,15 +50,23 @@ namespace Terror.UI
 
         private void Awake() => Construir();
 
+        /// <summary>Cuántas tarjetas hay a la vista (la caja de fósforos se corre mientras haya una).</summary>
+        public static int Visibles { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Reiniciar() => Visibles = 0;
+
         private void OnEnable()
         {
             Construir();
             if (fondo != null) fondo.SetActive(true);
+            Visibles++;
         }
 
         private void OnDisable()
         {
             if (fondo != null) fondo.SetActive(false);
+            Visibles = Mathf.Max(0, Visibles - 1);
         }
 
         private void OnDestroy()

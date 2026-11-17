@@ -3304,53 +3304,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1217477881}
   m_CullTransparentMesh: 1
---- !u!1 &553615651
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 553615653}
-  - component: {fileID: 553615652}
-  m_Layer: 0
-  m_Name: Manager_Inventario
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &553615652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553615651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60d1bd8897a4dc48857f820e21585c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventarioSupervivencia
-  itemsRecolectados: 0
-  itemsParaGanar: 3
-  ganarAlJuntarTodos: 0
---- !u!4 &553615653
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553615651}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3702.7231, y: -756.38116, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &557736363
 GameObject:
   m_ObjectHideFlags: 0
@@ -3969,18 +3922,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b23155f46534c4294e0a86c9da03ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Terror.UI.ObjetoNarrable
-  mensaje: "Una foto vieja. El vidrio est\xE1 rayado justo sobre la cara."
+  mensaje: "Los abuelitos el d\xEDa de su boda. En la esquina, metida en el marco,
+    una foto del abuelito ya de viejito."
   narracion: {fileID: 0}
   volumen: 1
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
   segundosMensajeTrasClick: 3
   mostrarDibujoEnCuarto: 1
   primerPlano: 1
-  nombre: Foto del estante
+  nombre: Retrato de los abuelitos
   frente: {fileID: 3035810867696587833, guid: 5693eb9fec31956468001f08cb8d2a68, type: 3}
   reverso: {fileID: 21300000, guid: 2bf548af87c54586b6eee3b563bef97c, type: 3}
   textosExtra:
-  - Las rayas son finitas y derechas... como hechas con una aguja.
+  - "Atr\xE1s dice \xAB\xBFqui\xE9n te ray\xF3?\xBB... pero el vidrio est\xE1 limpito."
   contornoPropio: 0
   colorContorno: {r: 1, g: 0.78, b: 0.45, a: 0.9}
   grosorContorno: 3
@@ -4607,7 +4561,7 @@ MonoBehaviour:
   tamanoCajon: {x: 1260, y: 720}
   posicionCajon: {x: 0, y: -60}
   brilloFosforo: {fileID: 21300000, guid: 63da3c1723d847ac8667ced6994bc71a, type: 3}
-  nombreFosforos: "F\xF3sforos \xABLa Chispa\xBB"
+  nombreFosforos: "F\xF3sforos \xABEl Cuco\xBB"
   spriteFosforos: {fileID: 0}
   posicionFosforos: {x: -294, y: -23}
   tamanoFosforos: {x: 512, y: 375}
@@ -4636,7 +4590,7 @@ MonoBehaviour:
       para guardarla'
     textoInspeccionar: Inspeccionar
     descripcion:
-    - "\xABLa Chispa\xBB. F\xF3sforos de cocina, de los de antes."
+    - "\xABEl Cuco\xBB. F\xF3sforos de cocina, de los de antes."
     - "Abajo, en letras chiquitas: \xABCada llama tiene un precio\xBB."
     descripcionQuedan: Me quedan {0}. Tengo que cuidarlos.
     sonidoVoltear: {fileID: 8300000, guid: 87277cd809e16d24a860a7b20d686952, type: 3}
@@ -4663,7 +4617,7 @@ MonoBehaviour:
   colorTarjetaProvisoria: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   elementos: []
   textoAlAbrir: "Aqu\xED guarda la abuelita sus cosas... y los f\xF3sforos."
-  textoTomarFosforos: "\xABLa Chispa\xBB... \xABCada llama tiene un precio\xBB. Qu\xE9
+  textoTomarFosforos: "\xABEl Cuco\xBB... \xABCada llama tiene un precio\xBB. Qu\xE9
     raro."
   textoPortazo: "\xA1PUM! La puerta se cerr\xF3 sola... y con llave."
   textoSinLuz: "Est\xE1 muy oscuro. No veo nada."
@@ -14111,7 +14065,6 @@ SceneRoots:
   - {fileID: 503766254}
   - {fileID: 1744529935}
   - {fileID: 557736365}
-  - {fileID: 553615653}
   - {fileID: 150038092}
   - {fileID: 730000002}
   - {fileID: 730000012}
