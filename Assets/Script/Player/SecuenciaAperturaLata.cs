@@ -34,6 +34,10 @@ public class SecuenciaAperturaLata : MonoBehaviour
     [Header("Al terminar")]
     [Tooltip("Marcado: la lata es la victoria (regla vieja). Desmarcado: queda abierta y entrega lo de abajo.")]
     [SerializeField] private bool ganarAlTerminar = false;
+    [Tooltip("Con 'Ganar Al Terminar': esconder la lata al ganar (regla vieja). Desmarcado: queda a la vista detrás de la pantalla final.")]
+    [SerializeField] private bool ocultarAlGanar = true;
+    [Tooltip("La lata se agranda a esta escala al abrirse, para verla en primer plano. 1 = no cambia.")]
+    [SerializeField] private float escalaAlAbrir = 1f;
     [Tooltip("Objeto que se guarda en el inventario al terminar (ej. llave_armario).")]
     [SerializeField] private string entregarAlTerminar;
     [SerializeField] private UnityEngine.Events.UnityEvent alTerminar;
@@ -121,6 +125,12 @@ public class SecuenciaAperturaLata : MonoBehaviour
         if (textoChiste != null)
             textoChiste.SetActive(true);
 
+        if (!Mathf.Approximately(escalaAlAbrir, 1f))
+        {
+            transform.SetAsLastSibling();
+            StartCoroutine(Agrandar());
+        }
+
         float espera = 0f;
         while (espera < esperaAntesDeGanar)
         {
@@ -142,7 +152,7 @@ public class SecuenciaAperturaLata : MonoBehaviour
 
         if (ganarAlTerminar)
         {
-            gameObject.SetActive(false);
+            if (ocultarAlGanar) gameObject.SetActive(false);
             GameStateManager.Instance.Ganar();
             yield break;
         }
@@ -151,6 +161,18 @@ public class SecuenciaAperturaLata : MonoBehaviour
         if (!string.IsNullOrEmpty(entregarAlTerminar) && Inventario.Instance != null)
             Inventario.Instance.Agregar(entregarAlTerminar);
         alTerminar?.Invoke();
+    }
+
+    private IEnumerator Agrandar()
+    {
+        Vector3 desde = transform.localScale, hasta = desde * escalaAlAbrir;
+        const float duracion = 0.35f;
+        for (float t = 0f; t < duracion; t += Paso())
+        {
+            transform.localScale = Vector3.Lerp(desde, hasta, Mathf.SmoothStep(0f, 1f, t / duracion));
+            yield return null;
+        }
+        transform.localScale = hasta;
     }
 
     private static void LiberarCierre()

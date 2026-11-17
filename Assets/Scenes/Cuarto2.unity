@@ -2680,9 +2680,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1548913901372772283, guid: 44aff36dfd0a78941a569d2a0c92ec44, type: 3}
+  m_Sprite: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -3515,7 +3515,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -9204275543964097235, guid: 71dcc3bafefb53d4e97f0583fda7b80e, type: 3}
+  m_Sprite: {fileID: 7557594770531162485, guid: 7e57983f0467c4942bdfe7d026c05da4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3898,9 +3898,9 @@ MonoBehaviour:
   - {fileID: 988922454}
   - {fileID: 1048960151}
   - {fileID: 1149999353}
-  spriteFosforoNuevo: {fileID: 8339267962354346179, guid: ad942156062c887418f5351aea1bb563, type: 3}
-  spriteFosforoQuemado: {fileID: 4104167850733375378, guid: f4d097d3b06e20d4d9066b986afe0178, type: 3}
-  spriteCaja: {fileID: 21300000, guid: cf69b59a7a744f63bd6e20147ecb8308, type: 3}
+  spriteFosforoNuevo: {fileID: 0}
+  spriteFosforoQuemado: {fileID: 0}
+  spriteCaja: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
   spriteBandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
   spriteFosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
   fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}

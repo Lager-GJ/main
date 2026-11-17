@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Terror.UI.UIRuntime;
 
@@ -80,6 +81,10 @@ namespace Terror.UI
         [SerializeField] private Image veladorCerrado;
         [Tooltip("Dibujo del velador con el cajón afuera, del mismo tamaño que el cerrado (CajonAbr).")]
         [SerializeField] private Sprite spriteVeladorAbierto;
+        [Tooltip("El mismo velador abierto pero SIN la caja de fósforos pintada. Al tomar la caja, el dibujo cambia a este. Vacío = la caja pintada se queda. Tiene que tener el mismo recorte y tamaño que el de arriba.")]
+        [SerializeField] private Sprite spriteVeladorSinCaja;
+        [Tooltip("Tamaño en píxeles de la imagen ORIGINAL del velador abierto (el recorte del sprite). Las coordenadas de abajo se miden en ese tamaño; si Unity reduce la textura (Max Size), el juego las convierte solas. 0,0 = usar el tamaño que tenga el sprite.")]
+        [SerializeField] private Vector2 tamanoOriginalDibujo = Vector2.zero;
         [Tooltip("Centro del interior del cajón en el dibujo del velador abierto, en píxeles del dibujo (0,0 = arriba a la izquierda).")]
         [SerializeField] private Vector2 centroCajonEnDibujo = new Vector2(279f, 345f);
         [Tooltip("Ancho y fondo del interior del cajón en el dibujo, en píxeles.")]
@@ -117,6 +122,8 @@ namespace Terror.UI
         [SerializeField] private Vector2 posicionFosforos = new Vector2(40f, -10f);
         [SerializeField] private Vector2 tamanoFosforos = new Vector2(306f, 198f);
         [SerializeField] private float rotacionFosforos = -3f;
+        [Tooltip("Marcado: la caja ya está pintada en el dibujo del cajón. La zona queda invisible (solo recibe el clic y el resaltado de nombre) y se ubica con Posicion/Tamano Fosforos encima del dibujo.")]
+        [SerializeField] private bool fosforosYaDibujados = true;
 
         [Header("Caja en primer plano (se voltea y se abre)")]
         [Tooltip("Desmarcado: como antes, tocar la caja en el cajón ya provoca el portazo.")]
@@ -139,6 +146,8 @@ namespace Terror.UI
         };
         [Tooltip("Para conectar el contenido real de la nota cuando exista.")]
         [SerializeField] private UnityEvent alLeerNota;
+        [Tooltip("Marcado: al encender el primer fósforo aparece la nota que estaba debajo de la caja. Desmarcado: no hay nota.")]
+        [SerializeField] private bool hayNota = false;
 
         [Header("Tarjetas (mismo concepto que Historia)")]
         [Tooltip("Borde del cajón y de las tarjetas provisorias. Vacío = borde de tiza generado en código.")]
@@ -187,6 +196,13 @@ namespace Terror.UI
         /// <summary>La puerta se cerró de golpe (fin de la parte con luz de afuera).</summary>
         public static event Action OnPuertaCerrada;
 
+        /// <summary>
+        /// Lo pone el botón "Omitir intro" de Historia. Con true el cuarto no pasa por el
+        /// cajón ni por el tutorial: Luis empieza con la caja de fósforos, a oscuras, y
+        /// solo falta pulsar E para encender el primero. "Volver a ver tutorial" lo apaga.
+        /// </summary>
+        public static bool OmitirTutorial;
+
         /// <summary>El jugador leyó la nota de debajo de los fósforos.</summary>
         public static event Action OnNotaLeida;
 
@@ -202,6 +218,7 @@ namespace Terror.UI
         private Image brillo;
         private ZonaCajon zonaFosforos;
         private ZonaCajon zonaNota;
+        private Image imagenVeladorAbierto;
         private ZonaCajon[] zonasElementos;
         private int[] clicksElementos;
         private TextMeshProUGUI textoMensaje;
@@ -232,6 +249,7 @@ namespace Terror.UI
         private Image marcoCajon;
         private VistaCajaFosforos vistaCaja;
         private bool notaPendiente;
+        private GameObject botonVolverATutorial;
 
         public Color Tinte => tinteActual;
 
@@ -308,6 +326,16 @@ namespace Terror.UI
 
             FosforoManager.Instance?.HabilitarEncendido(false);
 
+            // La bandera vale solo para esta entrada: si se vuelve a cargar el cuarto
+            // (reintentar, abrir JUEGO directo) el tutorial completo sale de nuevo.
+            bool omitir = OmitirTutorial;
+            OmitirTutorial = false;
+            if (omitir)
+            {
+                EmpezarConLaCajaEnLaMano();
+                yield break;
+            }
+
             fase = Fase.PuertaAbierta;
             PonerTinte(tintePuerta);
             FondoAlfa(fondoConPuertaAbierta);
@@ -320,6 +348,50 @@ namespace Terror.UI
 
             Sonar(sonidoAbrirCajon);
             Decir(textoAlAbrir);
+        }
+
+        // Es el estado en que queda el cuarto justo después del portazo (ver TomarFosforos),
+        // pero con el cajón cerrado y sin pasar por el tutorial: la caja ya es de Luis y el
+        // paso "Pulsa E" del tutorial se dispara al recoger los fósforos.
+        private void EmpezarConLaCajaEnLaMano()
+        {
+            QuitarCajaDelCajon();
+            fase = Fase.Oscuro;
+            PonerTinte(tinteOscuro);
+            FondoAlfa(fondoAOscuras);
+            luzPuertaOverlay.color = new Color(1f, 1f, 1f, 0f);
+            brillo.color = new Color(1f, 1f, 1f, 0f);
+            if (luzPuerta != null) luzPuerta.gameObject.SetActive(false);
+            zonaFosforos.gameObject.SetActive(false); // ya están en la mano
+
+            if (fosforosRecogibles != null) fosforosRecogibles.Recoger();
+            FosforoManager.Instance?.HabilitarEncendido(true);
+
+            ConstruirBotonVolverATutorial();
+        }
+
+        // En el mismo lugar donde estaba "Omitir intro" en Historia. Solo se ve hasta que
+        // se enciende el primer fósforo: después volver a empezar el cuarto perdería progreso.
+        private void ConstruirBotonVolverATutorial()
+        {
+            Transform padre = contenedorUI != null ? contenedorUI : transform;
+            RectTransform rt = NuevoRect("BotonVolverATutorial", padre, new Vector2(610f, 480f), new Vector2(640f, 70f));
+            botonVolverATutorial = rt.gameObject;
+            botonVolverATutorial.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0f); // recibe el clic
+            BotonPlano(botonVolverATutorial, VolverAVerTutorial);
+
+            TextMeshProUGUI texto = NuevoTexto("Texto", rt, Vector2.zero, rt.sizeDelta, 42f, FontStyles.Normal);
+            texto.text = "Volver a ver tutorial  »";
+
+            if (panel != null && panel.transform.parent == padre)
+                rt.SetSiblingIndex(panel.transform.GetSiblingIndex() + 1);
+        }
+
+        private void VolverAVerTutorial()
+        {
+            OmitirTutorial = false;
+            Time.timeScale = 1f; // global: sobrevive a la recarga
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         // ---------- API pública ----------
@@ -534,9 +606,17 @@ namespace Terror.UI
             ActualizarEtiqueta();
         }
 
+        /// <summary>Se tomó la caja: el dibujo del velador pasa a la versión sin la caja pintada.</summary>
+        private void QuitarCajaDelCajon()
+        {
+            if (spriteVeladorSinCaja != null && imagenVeladorAbierto != null)
+                imagenVeladorAbierto.sprite = spriteVeladorSinCaja;
+        }
+
         private IEnumerator TomarFosforos(bool enLaMano = false)
         {
             fase = Fase.Oscuro;
+            QuitarCajaDelCajon();
             if (!enLaMano)
             {
                 Sonar(sonidoTomarFosforos);
@@ -591,8 +671,9 @@ namespace Terror.UI
             // Primer fósforo: con luz se ve la nota que estaba debajo de la caja.
             // Si todavía se está mirando la caja, aparece al volver al cajón.
             fase = Fase.Iluminado;
-            notaPendiente = true;
-            if (vistaCaja == null || !vistaCaja.Visible) MostrarNota();
+            if (botonVolverATutorial != null) botonVolverATutorial.SetActive(false);
+            notaPendiente = hayNota;
+            if (hayNota && (vistaCaja == null || !vistaCaja.Visible)) MostrarNota();
             StartCoroutine(Animar(0.8f, AlfaHudOculto));
 
             if (PanelInspeccion.Instance != null)
@@ -740,7 +821,7 @@ namespace Terror.UI
                 zonasElementos[i] = NuevaZona(e.nombre, e.sprite, e.posicion, e.tamano, e.rotacion);
             }
 
-            zonaFosforos = NuevaZona(nombreFosforos, spriteFosforos, posicionFosforos, tamanoFosforos, rotacionFosforos);
+            zonaFosforos = NuevaZona(nombreFosforos, fosforosYaDibujados ? null : spriteFosforos, posicionFosforos, tamanoFosforos, rotacionFosforos, fosforosYaDibujados);
 
             // Luz fría que entra desde la puerta (a la izquierda) y se pierde hacia la derecha.
             luzPuertaOverlay = NuevaImagen("LuzDeLaPuerta", interior, Vector2.zero, tamanoCajon * 1.15f, CrearDegradeHorizontal());
@@ -797,6 +878,7 @@ namespace Terror.UI
             BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
 
             var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
+            imagenVeladorAbierto = abierto;
             // El velador cerrado puede ser transparente (el mueble ya está dibujado en la
             // pared); el abierto se ve siempre.
             Color c = veladorCerrado.color;
@@ -806,10 +888,16 @@ namespace Terror.UI
 
             // Del dibujo (píxeles, y hacia abajo) al rectángulo del velador.
             Vector2 dibujo = spriteVeladorAbierto != null ? spriteVeladorAbierto.rect.size : new Vector2(626f, 626f);
+            // Unity puede achicar la textura (Max Size 2048): las medidas se pasan a su tamaño real.
+            Vector2 aEscala = tamanoOriginalDibujo.x > 0f && tamanoOriginalDibujo.y > 0f
+                ? new Vector2(dibujo.x / tamanoOriginalDibujo.x, dibujo.y / tamanoOriginalDibujo.y)
+                : Vector2.one;
+            Vector2 centroPx = Vector2.Scale(centroCajonEnDibujo, aEscala);
+            Vector2 tamanoPx = Vector2.Scale(tamanoCajonEnDibujo, aEscala);
             Vector2 centro = new Vector2(
-                (centroCajonEnDibujo.x / dibujo.x - 0.5f) * tam.x,
-                (0.5f - centroCajonEnDibujo.y / dibujo.y) * tam.y);
-            Vector2 tamCajon = new Vector2(tamanoCajonEnDibujo.x / dibujo.x * tam.x, tamanoCajonEnDibujo.y / dibujo.y * tam.y);
+                (centroPx.x / dibujo.x - 0.5f) * tam.x,
+                (0.5f - centroPx.y / dibujo.y) * tam.y);
+            Vector2 tamCajon = new Vector2(tamanoPx.x / dibujo.x * tam.x, tamanoPx.y / dibujo.y * tam.y);
 
             RectTransform cajon;
             RectTransform foco;
@@ -818,7 +906,9 @@ namespace Terror.UI
                 // Cajón inclinado: los objetos se acuestan sobre su piso (ver NuevaZona).
                 tamanoDibujo = dibujo;
                 tamanoEnCuarto = tam;
-                plano = PlanoInclinado.Desde(bordeCajonEnDiseno, bordeCajonEnDibujo);
+                var bordePx = new Vector2[bordeCajonEnDibujo.Length];
+                for (int i = 0; i < bordePx.Length; i++) bordePx[i] = Vector2.Scale(bordeCajonEnDibujo[i], aEscala);
+                plano = PlanoInclinado.Desde(bordeCajonEnDiseno, bordePx);
                 cajon = NuevoRect("CajonInterior", enCuarto, Vector2.zero, tam);
 
                 // La cámara apunta al centro del piso del cajón.
@@ -893,7 +983,7 @@ namespace Terror.UI
             tarjeta.SetActive(false);
         }
 
-        private ZonaCajon NuevaZona(string nombre, Sprite sprite, Vector2 posicion, Vector2 tamano, float rotacion)
+        private ZonaCajon NuevaZona(string nombre, Sprite sprite, Vector2 posicion, Vector2 tamano, float rotacion, bool invisible = false)
         {
             Image img = NuevaImagen(string.IsNullOrEmpty(nombre) ? "Objeto" : nombre, interior, posicion, tamano, sprite);
             img.preserveAspect = true;
@@ -903,20 +993,21 @@ namespace Terror.UI
 
             // Sin dibujo todavía: un papel gris con borde blanco (sirve para la foto y la estampita).
             Image borde = null;
-            if (sprite == null)
+            if (sprite == null && !invisible)
             {
                 borde = NuevaImagen("Borde", img.transform, Vector2.zero, tamano, MarcoDibujado.Obtener(64, 4f, 3f, 1f));
                 borde.type = Image.Type.Sliced;
                 borde.raycastTarget = false;
             }
 
-            if (UsaCuarto)
+            if (UsaCuarto && !invisible)
             {
                 SpriteIluminado.Agregar(img, 5, 2f, materialIluminado);
                 if (borde != null) SpriteIluminado.Agregar(borde, 5, 2.5f, materialIluminado);
             }
 
             var zona = img.gameObject.AddComponent<ZonaCajon>();
+            zona.Invisible = invisible;
             zona.Iniciar(this, nombre, img, borde);
             return zona;
         }
@@ -1109,6 +1200,9 @@ namespace Terror.UI
         public string Nombre { get; private set; }
         public Image Imagen { get; private set; }
 
+        /// <summary>Sin dibujo propio (ya está pintada en el fondo): solo recibe el mouse.</summary>
+        internal bool Invisible { get; set; }
+
         internal void Iniciar(InicioCuarto inicio, string nombre, Image imagen, Image bordeSinDibujo)
         {
             dueno = inicio;
@@ -1129,6 +1223,7 @@ namespace Terror.UI
         internal void AplicarTinte()
         {
             if (Imagen == null || bloqueada) return;
+            if (Invisible) { Imagen.color = new Color(1f, 1f, 1f, 0f); return; }
             Color c = dueno.Tinte;
             float f = encima ? 1.3f : 1f;
             // Sin dibujo, la zona es un papel gris: se tiñe igual para que no brille en la oscuridad.
