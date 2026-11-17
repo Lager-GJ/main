@@ -15,7 +15,10 @@ namespace Terror
     ///
     /// Se abre desde el joyero del cuarto (Button → Mostrar) como cualquier primer plano
     /// (PanelInspeccion: zoom, cámara lenta, fósforo en pausa). Se arma en runtime.
-    /// Diales con + / - o con el teclado: números, ← → ↑ ↓, Backspace y Enter.
+    /// Diseño del equipo (2026-11-17): una tarjeta de papel con el título arriba, 4 ruedas
+    /// de 140 x 190 con el número en Jaini y flechas para subir y bajar, y la pista abajo.
+    /// La rueda activa lleva borde de 6 px. Se abre solo al poner el código correcto; si
+    /// no, no pasa nada. Teclado: números, ← → ↑ ↓ y Backspace.
     /// Al acertar, el joyero se abre y aparece la llave pequeña para tomarla.
     /// </summary>
     public class CandadoNumerico : MonoBehaviour
@@ -67,15 +70,20 @@ namespace Terror
         [TextArea(1, 2)] [SerializeField] private string textoFaltanPistas = "No sé la clave...";
 
         [Header("Textos")]
+        [Tooltip("Título de la tarjeta del candado.")]
+        [SerializeField] private string titulo = "Candado";
         [TextArea(1, 2)] [SerializeField] private string textoSinPista = "Un candado de cuatro números. ¿Cuál será la clave?";
         [TextArea(1, 2)] [SerializeField] private string textoConPista = "«Clave del joyero: el año en que volvimos al campo»";
+        [Tooltip("En desuso desde 2026-11-17: con un código equivocado no pasa nada.")]
         [TextArea(1, 2)] [SerializeField] private string textoError = "No... esa no es.";
         [TextArea(1, 2)] [SerializeField] private string textoAcierto = "¡Clic! El joyero se abrió.";
         [TextArea(1, 2)] [SerializeField] private string textoVacio = "El joyero ya está vacío.";
-        [SerializeField] private string textoAyuda = "+ / - o los números del teclado  ·  Enter para probar  ·  Esc para salir";
+        [Tooltip("En desuso desde 2026-11-17: el candado ya no tiene línea de ayuda.")]
+        [SerializeField] private string textoAyuda = "";
 
         [Header("Sonidos")]
         [SerializeField] private AudioClip sonidoDial;
+        [Tooltip("En desuso desde 2026-11-17: con un código equivocado no pasa nada.")]
         [SerializeField] private AudioClip sonidoError;
         [SerializeField] private AudioClip sonidoAbrir;
 
@@ -86,9 +94,7 @@ namespace Terror
         private TextMeshProUGUI[] digitos;
         private Image[] marcos;
         private TextMeshProUGUI pista;
-        private TextMeshProUGUI mensaje;
         private AudioSource audioFuente;
-        private Coroutine rutinaMensaje;
         private int[] valores = new int[4];
         private int cursor;
         private bool abierto;
@@ -168,8 +174,8 @@ namespace Terror
                     valores[cursor] = n;
                     Sonar(sonidoDial);
                     if (cursor < 3) cursor++;
-                    else Probar();
                     Refrescar();
+                    Probar();
                     return;
                 }
             }
@@ -187,20 +193,15 @@ namespace Terror
             valores[i] = (valores[i] + delta + 10) % 10;
             Sonar(sonidoDial);
             Refrescar();
+            Probar();
         }
 
+        // Se abre solo al quedar el código correcto; si no, no pasa nada (diseño 2026-11-17).
         private void Probar()
         {
             if (abierto) return;
             string intento = $"{valores[0]}{valores[1]}{valores[2]}{valores[3]}";
-            if (intento == codigo)
-            {
-                StartCoroutine(Abrir());
-                return;
-            }
-            Sonar(sonidoError);
-            Decir(textoError);
-            StartCoroutine(Sacudir(interior, 10f));
+            if (intento == codigo) StartCoroutine(Abrir());
         }
 
         private IEnumerator Abrir()
@@ -208,7 +209,10 @@ namespace Terror
             abierto = true;
             Sonar(sonidoAbrir);
             Decir(textoAcierto);
-            yield return Animar(0.2f, p => placa.transform.localScale = Vector3.one * (1f - p));
+            // Las ruedas quedan un momento a la vista con el código puesto y la tarjeta se va.
+            Refrescar();
+            yield return EsperarSinPausa(0.5f);
+            yield return Animar(0.25f, p => placa.transform.localScale = Vector3.one * (1f - p * p));
             ActualizarVista();
             if (objetoLlave != null)
             {
@@ -261,7 +265,8 @@ namespace Terror
             for (int i = 0; i < 4; i++)
             {
                 digitos[i].text = valores[i].ToString();
-                marcos[i].color = i == cursor ? new Color(1f, 0.85f, 0.55f, 1f) : new Color(1f, 1f, 1f, 0.45f);
+                // La rueda activa lleva borde de 6 px; las otras, de 3.
+                marcos[i].sprite = ArteUI.Borde(i == cursor && !abierto ? 6 : 3, RadioRueda);
             }
         }
 
@@ -313,7 +318,7 @@ namespace Terror
             }
             else
             {
-                panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.4f); // se ve el cuarto (con zoom) detrás
+                panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.5f); // capa oscura del 50 % (diseño 2026-11-17)
                 BotonPlano(panel, () => PanelInspeccion.Instance?.Cerrar()); // clic afuera: cierra
             }
 
@@ -325,32 +330,39 @@ namespace Terror
             if (joyeroCerrado == null) imagenJoyero.color = new Color(1f, 1f, 1f, 0f); // sin dibujo (el neceser): solo recibe clics
             BotonPlano(interior.gameObject, null); // un clic sobre el joyero no cierra
 
-            // Placa con los 4 diales
-            placa = NuevoRect("Candado", interior, posicionPlaca, new Vector2(400f, 260f)).gameObject;
+            // La tarjeta de papel con el candado: título, 4 ruedas y la pista abajo. Va en la
+            // pantalla, también cuando el joyero se abre en el cuarto.
+            var tarjeta = NuevaImagen("TarjetaCandado", panel.transform, new Vector2(0f, 20f), TamTarjeta, ArteUI.Papel());
+            tarjeta.type = Image.Type.Sliced;
+            if (tarjeta.sprite == null) tarjeta.color = new Color(0.92f, 0.91f, 0.88f, 1f);
+            BotonPlano(tarjeta.gameObject, null); // un clic sobre la tarjeta no cierra
+            placa = tarjeta.gameObject;
+
+            var textoTitulo = NuevoTexto("Titulo", tarjeta.transform, new Vector2(0f, 205f), new Vector2(760f, 70f), 52f, FontStyles.Normal, fuente);
+            textoTitulo.text = titulo;
+            textoTitulo.color = ArteUI.Tinta;
+
             digitos = new TextMeshProUGUI[4];
             marcos = new Image[4];
-            Sprite marco = MarcoDibujado.Obtener(64, 4f, 3f, 1f);
+            TMP_FontAsset fuenteNumeros = ArteUI.FuenteNumeros(fuente);
             for (int i = 0; i < 4; i++)
             {
                 int indice = i;
-                float x = -150f + i * 100f;
-                var fondo = NuevaImagen("Dial" + i, placa.transform, new Vector2(x, 0f), new Vector2(84f, 104f), null);
-                fondo.color = new Color(0.12f, 0.1f, 0.08f, 0.95f);
-                BotonPlano(fondo.gameObject, () => { cursor = indice; Refrescar(); });
-                marcos[i] = NuevaImagen("Marco", fondo.transform, Vector2.zero, new Vector2(92f, 112f), marco);
+                float x = (i - 1.5f) * PasoRuedas;
+                var rueda = NuevaImagen("Rueda" + i, tarjeta.transform, new Vector2(x, YRuedas), TamRueda, ArteUI.Relleno(RadioRueda));
+                rueda.type = Image.Type.Sliced;
+                rueda.color = ArteUI.Casilla;
+                BotonPlano(rueda.gameObject, () => { cursor = indice; Refrescar(); });
+                marcos[i] = NuevaImagen("Borde", rueda.transform, Vector2.zero, TamRueda, ArteUI.Borde(3, RadioRueda));
                 marcos[i].type = Image.Type.Sliced;
+                marcos[i].color = ArteUI.Tinta;
                 marcos[i].raycastTarget = false;
-                digitos[i] = NuevoTexto("Numero", fondo.transform, Vector2.zero, new Vector2(84f, 104f), 70f, FontStyles.Bold, fuente);
-                digitos[i].color = new Color(0.95f, 0.88f, 0.7f);
+                digitos[i] = NuevoTexto("Numero", rueda.transform, new Vector2(0f, -4f), TamRueda, 110f, FontStyles.Normal, fuenteNumeros);
+                digitos[i].color = ArteUI.Tinta;
 
-                Flecha("Arriba" + i, x, 92f, "+", () => Girar(indice, 1));
-                Flecha("Abajo" + i, x, -92f, "-", () => Girar(indice, -1));
+                Flecha("Arriba" + i, tarjeta.transform, x, YRuedas + TamRueda.y * 0.5f + 32f, true, () => Girar(indice, 1));
+                Flecha("Abajo" + i, tarjeta.transform, x, YRuedas - TamRueda.y * 0.5f - 32f, false, () => Girar(indice, -1));
             }
-
-            var probar = NuevaImagen("Probar", panel.transform, new Vector2(0f, -330f), new Vector2(260f, 70f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            probar.type = Image.Type.Sliced;
-            BotonPlano(probar.gameObject, Probar);
-            NuevoTexto("Texto", probar.transform, Vector2.zero, new Vector2(260f, 70f), 34f, FontStyles.Normal, fuente).text = "Probar";
 
             // La llave (aparece al abrir)
             // Acostada sobre el terciopelo del joyero abierto (visto un poco desde arriba).
@@ -365,48 +377,39 @@ namespace Terror
                 imgLlave.gameObject.SetActive(false);
             }
 
-            pista = NuevoTexto("Pista", panel.transform, new Vector2(0f, 400f), new Vector2(1500f, 60f), 36f, FontStyles.Italic, fuente);
-            pista.color = new Color(0.96f, 0.9f, 0.78f);
-            mensaje = NuevoTexto("Mensaje", panel.transform, new Vector2(0f, -410f), new Vector2(1500f, 60f), 38f, FontStyles.Normal, fuente);
-            mensaje.gameObject.SetActive(false);
-            var ayuda = NuevoTexto("Ayuda", panel.transform, new Vector2(0f, -490f), new Vector2(1500f, 40f), 24f, FontStyles.Italic, fuente);
-            ayuda.text = textoAyuda;
-            ayuda.color = new Color(0.8f, 0.8f, 0.8f, 0.8f);
+            // La pista, abajo dentro de la tarjeta.
+            pista = NuevoTexto("Pista", tarjeta.transform, new Vector2(0f, -218f), new Vector2(760f, 70f), 30f, FontStyles.Italic, fuente);
+            pista.color = new Color(ArteUI.Tinta.r, ArteUI.Tinta.g, ArteUI.Tinta.b, 0.85f);
+            pista.textWrappingMode = TextWrappingModes.Normal;
+            pista.enableAutoSizing = true;
+            pista.fontSizeMin = 22f;
+            pista.fontSizeMax = 30f;
 
             panel.SetActive(false);
         }
 
-        private void Flecha(string nombre, float x, float y, string simbolo, System.Action alClic)
+        private static readonly Vector2 TamTarjeta = new Vector2(900f, 580f);
+        private static readonly Vector2 TamRueda = new Vector2(140f, 190f);
+        private const float PasoRuedas = 170f;
+        private const float YRuedas = 0f;
+        private const int RadioRueda = 10;
+
+        // Flecha en "V" para subir o bajar una rueda. La zona de clic es más grande que el dibujo.
+        private void Flecha(string nombre, Transform padre, float x, float y, bool arriba, System.Action alClic)
         {
-            var t = NuevoTexto(nombre, placa.transform, new Vector2(x, y), new Vector2(84f, 60f), 40f, FontStyles.Normal, fuente);
-            t.text = simbolo;
-            t.raycastTarget = true;
-            BotonPlano(t.gameObject, alClic);
+            var zona = NuevaImagen(nombre, padre, new Vector2(x, y), new Vector2(TamRueda.x, 52f), null);
+            zona.color = new Color(0f, 0f, 0f, 0f);
+            BotonPlano(zona.gameObject, alClic);
+            var dibujo = NuevaImagen("V", zona.transform, Vector2.zero, new Vector2(48f, 28f), ArteUI.Flecha(arriba));
+            dibujo.color = ArteUI.Tinta;
+            dibujo.raycastTarget = false;
+            zona.gameObject.AddComponent<ResaltarAlPasar>();
         }
 
         // ---------- Mensajes y sonido ----------
 
-        private void Decir(string texto)
-        {
-            if (mensaje == null || string.IsNullOrEmpty(texto)) return;
-            if (rutinaMensaje != null) StopCoroutine(rutinaMensaje);
-            rutinaMensaje = StartCoroutine(MostrarMensaje(texto));
-        }
-
-        private IEnumerator MostrarMensaje(string texto)
-        {
-            mensaje.text = texto;
-            mensaje.alpha = 1f;
-            mensaje.gameObject.SetActive(true);
-            yield return new WaitForSecondsRealtime(2.5f);
-            for (float t = 0f; t < 0.4f; t += Time.unscaledDeltaTime)
-            {
-                mensaje.alpha = 1f - t / 0.4f;
-                yield return null;
-            }
-            mensaje.gameObject.SetActive(false);
-            rutinaMensaje = null;
-        }
+        // Los mensajes (acierto, vacío) van a la franja de diálogos, como el resto.
+        private void Decir(string texto) => DecirAfuera(texto);
 
         private void Sonar(AudioClip clip)
         {

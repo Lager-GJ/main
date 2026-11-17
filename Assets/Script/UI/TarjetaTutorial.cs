@@ -43,14 +43,25 @@ namespace Terror.UI
         [SerializeField] private TMP_FontAsset fuente;
 
         private GameObject fondo;
+        private GameObject velo;
+        private CanvasGroup grupoFondo;
+        private Image imagenVelo;
+        private TMP_Text titulo;
+        private RectTransform rectTitulo;
+        private Vector2 posTitulo;
+        private Coroutine animacion;
+        private bool cerrando;
         private bool construida;
+
+        private const float AlfaVelo = 0.6f;
+        private const float SubidaEntrada = 40f;
 
         private bool ConPapel => papel != null;
         private Color ColorTexto => ConPapel ? tinta : Color.white;
 
         private void Awake() => Construir();
 
-        /// <summary>Cuántas tarjetas hay a la vista (la caja de fósforos se corre mientras haya una).</summary>
+        /// <summary>Cuántas tarjetas hay a la vista.</summary>
         public static int Visibles { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -59,19 +70,30 @@ namespace Terror.UI
         private void OnEnable()
         {
             Construir();
+            cerrando = false;
+            if (velo != null) velo.SetActive(true);
             if (fondo != null) fondo.SetActive(true);
             Visibles++;
+            // Entra subiendo un poco y apareciendo (2026-11-17). Tiempo real: el tutorial
+            // puede tener el juego congelado o en cámara lenta.
+            if (animacion != null) StopCoroutine(animacion);
+            animacion = StartCoroutine(Animar(0.35f, false));
         }
 
         private void OnDisable()
         {
+            if (velo != null) velo.SetActive(false);
             if (fondo != null) fondo.SetActive(false);
             Visibles = Mathf.Max(0, Visibles - 1);
+            animacion = null;
+            cerrando = false;
+            PonerProgreso(1f);
         }
 
         private void OnDestroy()
         {
             if (fondo != null) Destroy(fondo);
+            if (velo != null) Destroy(velo);
         }
 
         private void Update()
@@ -83,21 +105,68 @@ namespace Terror.UI
             if (k[Controles.Equivalente(teclaQueCierra)].wasPressedThisFrame) Cerrar();
         }
 
-        public void Cerrar() => gameObject.SetActive(false);
+        /// <summary>Se cierra con una animación corta (la X, el botón o la tecla).</summary>
+        public void Cerrar()
+        {
+            if (!isActiveAndEnabled || cerrando) return;
+            cerrando = true;
+            if (animacion != null) StopCoroutine(animacion);
+            animacion = StartCoroutine(Animar(0.2f, true));
+        }
+
+        private System.Collections.IEnumerator Animar(float duracion, bool salir)
+        {
+            for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
+            {
+                float p = t / duracion;
+                PonerProgreso(salir ? 1f - p * p : 1f - Mathf.Pow(1f - p, 3f));
+                yield return null;
+            }
+            PonerProgreso(salir ? 0f : 1f);
+            animacion = null;
+            if (salir) gameObject.SetActive(false);
+        }
+
+        // 0 = escondida (transparente y un poco más abajo), 1 = en su lugar.
+        private void PonerProgreso(float p)
+        {
+            if (grupoFondo == null) return;
+            Vector2 baja = new Vector2(0f, -SubidaEntrada * (1f - p));
+            grupoFondo.alpha = p;
+            ((RectTransform)fondo.transform).anchoredPosition = posicion + baja;
+            rectTitulo.anchoredPosition = posTitulo + baja;
+            titulo.alpha = p;
+            imagenVelo.color = new Color(0f, 0f, 0f, AlfaVelo * p);
+        }
 
         private void Construir()
         {
             if (construida) return;
             construida = true;
 
-            var titulo = GetComponent<TMP_Text>();
+            titulo = GetComponent<TMP_Text>();
             if (fuente == null) fuente = titulo.font;
             float medioAlto = tamano.y * 0.5f, medioAncho = tamano.x * 0.5f;
 
+            // Velo: oscurece todo lo de atrás (la caja, el cajón) para que la hoja se lea
+            // sola. Es enorme a propósito, así tapa la pantalla sea cual sea el padre.
+            var rt = (RectTransform)transform;
+            velo = new GameObject(name + "_Velo", typeof(RectTransform), typeof(Image));
+            var rv = (RectTransform)velo.transform;
+            rv.SetParent(rt.parent, false);
+            rv.SetSiblingIndex(rt.GetSiblingIndex());
+            rv.anchorMin = rv.anchorMax = rv.pivot = new Vector2(0.5f, 0.5f);
+            rv.anchoredPosition = Vector2.zero;
+            rv.sizeDelta = new Vector2(8000f, 8000f);
+            imagenVelo = velo.GetComponent<Image>();
+            imagenVelo.color = new Color(0f, 0f, 0f, AlfaVelo);
+            imagenVelo.raycastTarget = true; // los clics no pasan al cajón de atrás
+            velo.SetActive(gameObject.activeSelf);
+
             // El fondo va detrás del título: es un hermano anterior (un hijo se dibujaría
             // encima). Las imágenes y los botones van dentro del fondo.
-            var rt = (RectTransform)transform;
-            fondo = new GameObject(name + "_Tarjeta", typeof(RectTransform), typeof(Image));
+            fondo = new GameObject(name + "_Tarjeta", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            grupoFondo = fondo.GetComponent<CanvasGroup>();
             var rf = (RectTransform)fondo.transform;
             rf.SetParent(rt.parent, false);
             rf.SetSiblingIndex(rt.GetSiblingIndex());
@@ -139,6 +208,8 @@ namespace Terror.UI
             rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
             rt.localScale = Vector3.one;
             rt.anchoredPosition = posicion + new Vector2(0f, yTitulo);
+            rectTitulo = rt;
+            posTitulo = rt.anchoredPosition;
             rt.sizeDelta = new Vector2(tamano.x - 220f, 120f);
             titulo.margin = Vector4.zero;
             titulo.textWrappingMode = TextWrappingModes.Normal;

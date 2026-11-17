@@ -10,7 +10,7 @@ namespace Terror.UI
     ///  - Si 'alInspeccionar' tiene algo (el candado del joyero, la cerradura de la lata),
     ///    el clic lo hace directo: el joyero acerca la cámara y se abre en su lugar.
     ///  - Si no, la cámara se acerca al objeto en el cuarto (AcercamientoObjeto): clic
-    ///    para darle la vuelta e "Inspeccionar" para leer los textos de a uno. Si no se
+    ///    en el objeto para leer los textos de a uno y "Voltear" para darle la vuelta. Si no se
     ///    puede, la ventana de primer plano (PrimerPlanoObjeto).
     /// </summary>
     public class ObjetoEnPrimerPlano : MonoBehaviour
@@ -20,9 +20,9 @@ namespace Terror.UI
         [SerializeField] private Sprite frente;
         [Tooltip("Vacío = no se da vuelta.")]
         [SerializeField] private Sprite reverso;
-        [Tooltip("Descripción: una página por cada clic en Inspeccionar (si no hay acción).")]
+        [Tooltip("Descripción: una página por cada clic en el objeto (si no hay acción).")]
         [TextArea(1, 3)] [SerializeField] private string[] textos;
-        [Tooltip("Vacío = \"Inspeccionar\".")]
+        [Tooltip("En desuso desde 2026-11-17: el botón del primer plano ahora es siempre \"Voltear\".")]
         [SerializeField] private string textoBoton;
         [Tooltip("Solo se puede tocar con un fósforo encendido (como todo el cuarto).")]
         [SerializeField] private bool requiereFosforo = true;

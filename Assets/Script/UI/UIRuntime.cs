@@ -45,6 +45,31 @@ namespace Terror.UI
         }
 
         /// <summary>
+        /// Contorno oscuro y sombra suave alrededor de las letras, para que el texto se lea
+        /// sobre cualquier fondo, también sobre la luz blanca de la puerta o del fósforo
+        /// (2026-11-17). Cada texto queda con su propia copia del material de la fuente.
+        /// </summary>
+        public static void Legible(TMP_Text t, float contorno = 0.2f)
+        {
+            if (t == null) return;
+            t.outlineWidth = contorno;
+            t.outlineColor = new Color32(0, 0, 0, 230);
+
+            Material m = t.fontMaterial; // la copia propia de este texto
+            if (m != null && m.HasProperty(ShaderUtilities.ID_UnderlayColor))
+            {
+                m.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+                m.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0f, 0f, 0f, 0.8f));
+                m.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0.4f);
+                m.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.4f);
+                m.SetFloat(ShaderUtilities.ID_UnderlayDilate, 0.5f);
+                m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.6f);
+            }
+            t.UpdateMeshPadding();
+            t.SetAllDirty();
+        }
+
+        /// <summary>
         /// Un rectángulo nuevo dentro de 'padre' que ocupa exactamente el mismo lugar del
         /// mundo que 'molde' (sin heredar su escala, que puede ser desigual en x e y).
         /// Sirve para armar el mueble abierto encima del mueble cerrado del cuarto.

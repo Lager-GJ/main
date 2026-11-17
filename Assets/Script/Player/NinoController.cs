@@ -48,6 +48,10 @@ public class NinoController : MonoBehaviour
 
     private void Awake()
     {
+        // Se desvanece mientras se mira algo de cerca (2026-11-17).
+        if (GetComponent<Terror.LuisEnPrimerPlano>() == null)
+            gameObject.AddComponent<Terror.LuisEnPrimerPlano>();
+
         // Auto-asignamos el Animator si se nos olvidó arrastrarlo en el inspector
         if (animator == null)
         {

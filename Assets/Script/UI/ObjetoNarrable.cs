@@ -12,8 +12,8 @@ namespace Terror.UI
     ///   - Al pasar el mouse se ilumina su borde (ResaltadorInteractuables, el mismo para
     ///     todo lo que se puede tocar) y aparece el mensaje en la parte de abajo.
     ///   - Al hacer click la cámara se acerca al objeto en su lugar (AcercamientoObjeto,
-    ///     2026-10-30, la misma transición que el joyero): clic para darle la vuelta e
-    ///     Inspeccionar para leer el mensaje y sus textos. Sin música.
+    ///     2026-10-30, la misma transición que el joyero): clic en el objeto para leer el
+    ///     mensaje y sus textos, y "Voltear" para darle la vuelta. Sin música.
     ///   - Sin dibujo de frente (la tele): como antes, el mensaje en el cartel, y la
     ///     narración solo si tiene una asignada.
     /// Misma regla que el resto del juego: sin fósforo encendido no se ve ni se oye nada.
@@ -45,7 +45,7 @@ namespace Terror.UI
         [SerializeField] private Sprite frente;
         [Tooltip("El otro lado. Vacío = no se da vuelta.")]
         [SerializeField] private Sprite reverso;
-        [Tooltip("Lo que lee Inspeccionar después del mensaje.")]
+        [Tooltip("Lo que se lee con los clics siguientes en el objeto, después del mensaje.")]
         [SerializeField, TextArea(1, 3)] private string[] textosExtra;
 
         [Header("Contorno (en desuso: ahora lo dibuja ResaltadorInteractuables)")]
@@ -276,7 +276,8 @@ namespace Terror.UI
             grupo.blocksRaycasts = false;
             grupo.interactable = false;
 
-            // Franja oscura abajo, para que el texto se lea sobre cualquier parte del cuarto.
+            // Diseño del equipo (2026-11-17): una banda que se oscurece hacia abajo y el
+            // texto centrado, de 967 px de ancho, empezando a 829 px del borde de arriba.
             var franja = new GameObject("Franja", typeof(RectTransform), typeof(Image));
             var rf = (RectTransform)franja.transform;
             rf.SetParent(transform, false);
@@ -284,30 +285,42 @@ namespace Terror.UI
             rf.anchorMax = new Vector2(1f, 0f);
             rf.pivot = new Vector2(0.5f, 0f);
             rf.anchoredPosition = Vector2.zero;
-            rf.sizeDelta = new Vector2(0f, 190f);
+            rf.sizeDelta = new Vector2(0f, AltoFranja);
             var imagenFranja = franja.GetComponent<Image>();
-            imagenFranja.color = new Color(0f, 0f, 0f, 0.65f);
+            imagenFranja.sprite = ArteUI.Degradado();
+            imagenFranja.color = new Color(1f, 1f, 1f, 0.85f);
             imagenFranja.raycastTarget = false;
 
             var goTexto = new GameObject("Texto", typeof(RectTransform));
             var rt = (RectTransform)goTexto.transform;
-            rt.SetParent(rf, false);
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = new Vector2(220f, 20f);
-            rt.offsetMax = new Vector2(-220f, -20f);
+            rt.SetParent(transform, false);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, 1080f - DesdeArriba);
+            rt.sizeDelta = new Vector2(AnchoTexto, 130f);
             texto = goTexto.AddComponent<TextMeshProUGUI>();
-            texto.alignment = TextAlignmentOptions.Center;
+            texto.alignment = TextAlignmentOptions.Top;
             texto.fontSize = 44f;
-            texto.fontStyle = FontStyles.Italic;
-            texto.color = new Color(0.96f, 0.9f, 0.78f);
+            // Si el mensaje es largo, se achica en vez de salirse.
+            texto.enableAutoSizing = true;
+            texto.fontSizeMin = 28f;
+            texto.fontSizeMax = 44f;
+            texto.overflowMode = TextOverflowModes.Truncate;
+            texto.fontStyle = FontStyles.Normal;
+            texto.color = ArteUI.TextoClaro;
             texto.textWrappingMode = TextWrappingModes.Normal;
             texto.raycastTarget = false;
+            ArteUI.Sombra(texto);
 
             fuenteAudio = gameObject.AddComponent<AudioSource>();
             fuenteAudio.playOnAwake = false;
             fuenteAudio.spatialBlend = 0f;
         }
+
+        // Medidas del diseño, en píxeles de 1920 x 1080.
+        private const float AnchoTexto = 967f;
+        private const float DesdeArriba = 829f;
+        private const float AltoFranja = 360f;
 
         private void OnDestroy()
         {
@@ -325,12 +338,54 @@ namespace Terror.UI
                 else fuenteAudio.UnPause();
             }
 
+            // Terminó el mensaje de turno: pasa el siguiente de la fila.
+            if (!pausado && fila.Count > 0 && !hoverActivo && Time.unscaledTime >= visibleHasta)
+            {
+                Pendiente p = fila[0];
+                fila.RemoveAt(0);
+                if (p.quien != null) MostrarYa(p.quien, p.mensaje, p.fuente, p.segundos);
+                hoverActivo = false;
+            }
+
             bool visible = !pausado && (hoverActivo || Time.unscaledTime < visibleHasta);
             grupo.alpha = Mathf.MoveTowards(grupo.alpha, visible ? 1f : 0f, Time.unscaledDeltaTime / 0.2f);
         }
 
+        // Mensajes con tiempo que llegaron mientras se leía otro: esperan su turno
+        // (2026-11-17: los pensamientos de la Presencia pisaban a los de los objetos).
+        private struct Pendiente
+        {
+            public Object quien;
+            public string mensaje;
+            public TMP_FontAsset fuente;
+            public float segundos;
+        }
+        private readonly System.Collections.Generic.List<Pendiente> fila = new System.Collections.Generic.List<Pendiente>();
+        private const int MaximoEnFila = 3;
+
+        // Un mensaje con tiempo de otro dueño que todavía no se terminó de leer.
+        private bool OcupadoPorOtro(Object quien) =>
+            dueno != null && dueno != quien && Time.unscaledTime < visibleHasta - 0.4f;
+
         /// <param name="segundosMinimos">0 = solo mientras dure el hover; si no, se mantiene al menos ese tiempo.</param>
         public void Mostrar(Object quien, string mensaje, TMP_FontAsset fuente, float segundosMinimos)
+        {
+            if (string.IsNullOrEmpty(mensaje)) return;
+
+            // Un mensaje con tiempo no corta a otro que se está leyendo: va a la fila.
+            // El hover (el jugador señalando algo) sí entra enseguida.
+            if (segundosMinimos > 0f && OcupadoPorOtro(quien))
+            {
+                fila.RemoveAll(p => p.quien == quien); // de cada uno, solo el último
+                if (fila.Count >= MaximoEnFila) fila.RemoveAt(0);
+                fila.Add(new Pendiente { quien = quien, mensaje = mensaje, fuente = fuente, segundos = segundosMinimos });
+                return;
+            }
+
+            MostrarYa(quien, mensaje, fuente, segundosMinimos);
+        }
+
+        private void MostrarYa(Object quien, string mensaje, TMP_FontAsset fuente, float segundosMinimos)
         {
             if (dueno != quien && fuenteAudio.isPlaying)
                 fuenteAudio.Stop();   // la narración de otro objeto no sigue debajo del texto nuevo
@@ -338,8 +393,23 @@ namespace Terror.UI
             dueno = quien;
             hoverActivo = true;
             texto.text = mensaje;
-            if (fuente != null) texto.font = fuente;
+            if (fuente != null && texto.font != fuente)
+            {
+                texto.font = fuente;
+                ArteUI.Sombra(texto); // la fuente nueva trae su material: se vuelve a poner la sombra
+            }
             visibleHasta = segundosMinimos > 0f ? Time.unscaledTime + segundosMinimos : 0f;
+        }
+
+        /// <summary>
+        /// Un diálogo con su tiempo (según lo largo del texto): lo que piensa Luis, la
+        /// descripción de un objeto en primer plano, un aviso.
+        /// </summary>
+        public void Decir(Object quien, string mensaje, TMP_FontAsset fuente)
+        {
+            if (string.IsNullOrEmpty(mensaje)) return;
+            Mostrar(quien, mensaje, fuente, Mathf.Clamp(mensaje.Length * 0.06f, 2.5f, 5f));
+            SoltarHover(quien);
         }
 
         public void SoltarHover(Object quien)

@@ -219,9 +219,9 @@ namespace Terror.UI
         private ZonaCajon zonaFosforos;
         private ZonaCajon zonaNota;
         private Image imagenVeladorAbierto;
+        private Sprite spriteVeladorConCaja;
         private ZonaCajon[] zonasElementos;
         private int[] clicksElementos;
-        private TextMeshProUGUI textoMensaje;
         private TextMeshProUGUI textoEtiqueta;
         private AudioSource audioFuente;
         private NinoController nino;
@@ -231,7 +231,6 @@ namespace Terror.UI
         private Vector2 posicionBaseInterior;
         private Vector3 escalaInterior = Vector3.one;
         private Coroutine rutinaTinte;
-        private Coroutine rutinaMensaje;
         private Coroutine rutinaSacudida;
         private ZonaCajon zonaEncima;
 
@@ -472,7 +471,7 @@ namespace Terror.UI
             MirarObjeto(e.nombre, e.sprite, e.reverso, e.ilustracion, e.textos, e.sonido != null ? e.sonido : sonidoObjeto, zona);
         }
 
-        // Mirar un objeto del cajón (clic para darle la vuelta, Inspeccionar para leerlo).
+        // Mirar un objeto del cajón (clic para leerlo, "Voltear" para darle la vuelta).
         // Con el cajón abierto en el cuarto, la cámara se acerca al objeto ahí mismo
         // (AcercamientoObjeto, 2026-10-30); si no, la ventana de primer plano, y sin
         // PrimerPlanoObjeto en la escena, la tarjeta de antes.
@@ -583,6 +582,12 @@ namespace Terror.UI
         {
             if (vistaCaja.Visible) return;
             zonaFosforos.gameObject.SetActive(false); // está en la mano
+            // Y tampoco se ve pintada en el cajón: antes había dos cajas a la vez (2026-11-17).
+            if (imagenVeladorAbierto != null && spriteVeladorSinCaja != null && imagenVeladorAbierto.sprite != spriteVeladorSinCaja)
+            {
+                spriteVeladorConCaja = imagenVeladorAbierto.sprite;
+                imagenVeladorAbierto.sprite = spriteVeladorSinCaja;
+            }
             vistaCaja.Mostrar(tintePuerta, FosforoManager.Instance != null ? FosforoManager.Instance.FosforosRestantes : 4);
             Sonar(sonidoObjeto);
             Decir(textoTomarFosforos);
@@ -600,7 +605,11 @@ namespace Terror.UI
         {
             // Sin abrir: la caja vuelve al cajón y todo sigue como antes.
             if (!abierta && fase == Fase.PuertaAbierta)
+            {
                 zonaFosforos.gameObject.SetActive(true);
+                if (imagenVeladorAbierto != null && spriteVeladorConCaja != null)
+                    imagenVeladorAbierto.sprite = spriteVeladorConCaja;
+            }
 
             if (notaPendiente) MostrarNota();
             ActualizarEtiqueta();
@@ -659,26 +668,48 @@ namespace Terror.UI
 
             CambiarTinte(tinteFosforo, 0.35f);
             StartCoroutine(Animar(0.35f, p => brillo.color = new Color(1f, 1f, 1f, 0.55f * p)));
-            if (vistaCaja != null && vistaCaja.Visible)
+
+            // Prender con la caja en la mano guarda la caja y vuelve al cuarto en el acto:
+            // se cierran la caja y el cajón, y el fósforo sale de la cajita de arriba a la
+            // izquierda (InventarioFosforo), que se ve desde ese momento (pedido de David,
+            // 2026-11-17).
+            bool conLaCaja = vistaCaja != null && vistaCaja.Visible;
+            bool primerFosforo = fase == Fase.Oscuro;
+
+            if (primerFosforo)
+            {
+                // Primer fósforo: con luz se ve la nota que estaba debajo de la caja.
+                // Si todavía se está mirando la caja, aparece al volver al cajón.
+                fase = Fase.Iluminado;
+                if (botonVolverATutorial != null) botonVolverATutorial.SetActive(false);
+                notaPendiente = hayNota;
+                if (hayNota && !conLaCaja) MostrarNota();
+                StartCoroutine(Animar(0.8f, AlfaHudOculto));
+
+                if (PanelInspeccion.Instance != null)
+                    PanelInspeccion.Instance.CierreBloqueado = false;
+                ActualizarEtiqueta();
+            }
+
+            // Con nota pendiente se vuelve al cajón para verla; si no, al cuarto.
+            if ((conLaCaja || primerFosforo) && !notaPendiente)
+            {
+                VolverAlCuarto();
+                return;
+            }
+
+            if (conLaCaja)
             {
                 vistaCaja.CambiarTinte(tinteFosforo, 0.35f);
                 vistaCaja.Halo(true);
                 vistaCaja.SacarFosforo(FosforoManager.Instance != null ? FosforoManager.Instance.FosforosRestantes : 0);
             }
+        }
 
-            if (fase != Fase.Oscuro) return;
-
-            // Primer fósforo: con luz se ve la nota que estaba debajo de la caja.
-            // Si todavía se está mirando la caja, aparece al volver al cajón.
-            fase = Fase.Iluminado;
-            if (botonVolverATutorial != null) botonVolverATutorial.SetActive(false);
-            notaPendiente = hayNota;
-            if (hayNota && (vistaCaja == null || !vistaCaja.Visible)) MostrarNota();
-            StartCoroutine(Animar(0.8f, AlfaHudOculto));
-
-            if (PanelInspeccion.Instance != null)
-                PanelInspeccion.Instance.CierreBloqueado = false;
-            ActualizarEtiqueta();
+        private void VolverAlCuarto()
+        {
+            if (vistaCaja != null && vistaCaja.Visible) vistaCaja.CerrarSinAnimar();
+            if (PanelAbierto && PanelInspeccion.Instance != null) PanelInspeccion.Instance.Cerrar();
         }
 
         private void MostrarNota()
@@ -834,10 +865,10 @@ namespace Terror.UI
             brillo.color = new Color(1f, 1f, 1f, 0f);
             if (UsaCuarto) brillo.gameObject.SetActive(false);
 
-            textoMensaje = NuevoTexto("TextoCajon", panel.transform, new Vector2(0f, -462f), new Vector2(1500f, 90f), 40f, FontStyles.Normal);
-            textoMensaje.gameObject.SetActive(false);
-            textoEtiqueta = NuevoTexto("EtiquetaCajon", panel.transform, new Vector2(0f, -515f), new Vector2(1500f, 44f), 26f, FontStyles.Italic);
-            textoEtiqueta.color = new Color(0.8f, 0.8f, 0.8f, 0.85f);
+            // Arriba: abajo va la franja de subtítulos (2026-11-17).
+            textoEtiqueta = NuevoTexto("EtiquetaCajon", panel.transform, new Vector2(0f, 480f), new Vector2(1500f, 44f), 30f, FontStyles.Italic);
+            textoEtiqueta.color = new Color(0.85f, 0.85f, 0.85f, 0.95f);
+            UIRuntime.Legible(textoEtiqueta);
 
             // El cajón se presenta como una tarjeta de Historia: con su borde blanco de tiza.
             if (cajonConMarco && !UsaCuarto)
@@ -1078,28 +1109,15 @@ namespace Terror.UI
 
         // ---------- Texto ----------
 
+        // Los pensamientos de Luis van a la franja de subtítulos de abajo, la misma que usa
+        // todo el cuarto (2026-11-17): antes salían en un texto propio que quedaba debajo
+        // del botón Inspeccionar de la caja y se tapaban.
         private void Decir(string texto)
         {
-            if (textoMensaje == null || string.IsNullOrEmpty(texto)) return;
-            if (rutinaMensaje != null) StopCoroutine(rutinaMensaje);
-            rutinaMensaje = StartCoroutine(MostrarMensaje(texto));
-        }
-
-        private IEnumerator MostrarMensaje(string texto)
-        {
-            textoMensaje.text = texto;
-            textoMensaje.alpha = 1f;
-            textoMensaje.gameObject.SetActive(true);
-
-            yield return new WaitForSecondsRealtime(Mathf.Clamp(texto.Length * 0.06f, 2.5f, 5f));
-
-            for (float t = 0f; t < 0.4f; t += Time.unscaledDeltaTime)
-            {
-                textoMensaje.alpha = 1f - t / 0.4f;
-                yield return null;
-            }
-            textoMensaje.gameObject.SetActive(false);
-            rutinaMensaje = null;
+            if (string.IsNullOrEmpty(texto)) return;
+            var cartel = CartelNarrativa.Instancia;
+            cartel.Mostrar(this, texto, fuente, Mathf.Clamp(texto.Length * 0.06f, 2.5f, 5f));
+            cartel.SoltarHover(this);
         }
 
         private void ActualizarEtiqueta()

@@ -24,6 +24,9 @@ namespace Terror.UI
             // Aseguramos que el texto inicie apagado al arrancar
             if (textoMostrar != null)
             {
+                // Los textos van sobre el cuarto: contorno y sombra para leerlos con luz.
+                foreach (var t in textoMostrar.GetComponentsInChildren<TMPro.TMP_Text>(true))
+                    UIRuntime.Legible(t);
                 textoMostrar.SetActive(false);
             }
         }

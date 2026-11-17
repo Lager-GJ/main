@@ -176,10 +176,29 @@ public class CamaraController : MonoBehaviour
         pesoEnfoque = Mathf.MoveTowards(pesoEnfoque, pesoObjetivo, Time.unscaledDeltaTime / duracionEnfoque);
         float e = Mathf.SmoothStep(0f, 1f, pesoEnfoque);
         Vector3 foco = new Vector3(puntoEnfoque.x, puntoEnfoque.y, posicionSuave.z);
-        transform.position = Vector3.Lerp(posicionSuave, foco, e) + OffsetSacudida();
+        Vector3 posicion = Vector3.Lerp(posicionSuave, foco, e);
 
+        float tamano = Mathf.Lerp(tamanoBase, tamanoBase * zoomEnfoque, e);
         if (cam != null && cam.orthographic && tamanoBase > 0f)
-            cam.orthographicSize = Mathf.Lerp(tamanoBase, tamanoBase * zoomEnfoque, e);
+        {
+            cam.orthographicSize = tamano;
+            posicion = DentroDeLaVistaNormal(posicion, tamano);
+        }
+
+        transform.position = posicion + OffsetSacudida();
+    }
+
+    // Con zoom, lo que se ve no puede salirse de lo que se ve sin zoom (la pared entera):
+    // antes, al acercarse a algo del borde (el retrato de arriba, el armario) asomaba el
+    // fondo de la cámara como una franja azul (2026-11-17).
+    private Vector3 DentroDeLaVistaNormal(Vector3 posicion, float tamano)
+    {
+        float s = Mathf.Clamp01(tamano / tamanoBase);
+        float margenY = tamanoBase * (1f - s);
+        float margenX = tamanoBase * cam.aspect * (1f - s);
+        posicion.x = Mathf.Clamp(posicion.x, posicionSuave.x - margenX, posicionSuave.x + margenX);
+        posicion.y = Mathf.Clamp(posicion.y, posicionSuave.y - margenY, posicionSuave.y + margenY);
+        return posicion;
     }
 
     private Vector3 OffsetSacudida()

@@ -15,10 +15,12 @@ namespace Terror
     /// (ControladorGeneral), justo antes de PanelVictoria: queda encima de los primeros
     /// planos y debajo de la pausa, la victoria y la derrota.
     ///
-    /// - Una bolsa abajo a la izquierda que aparece con el primer objeto guardado.
-    /// - Aviso "Guardaste: ..." al recoger algo.
-    /// - Tecla I o Tab (o clic en la bolsa): abre/cierra la lista. Clic en un objeto
+    /// - La mochila arriba a la izquierda, que aparece con el primer objeto guardado.
+    /// - Tecla I o Tab (o clic en la mochila): abre/cierra la lista. Clic en un objeto
     ///   lo muestra en primer plano (PrimerPlanoObjeto): se da vuelta y se inspecciona.
+    /// Diseño del equipo (2026-11-17): la lista es una tarjeta de papel con casillas de
+    /// 170 x 170. Vacía: borde punteado gris. Con objeto: borde negro de 3 px. Elegida
+    /// (mouse encima): borde de 7 px y más oscura; su descripción sale abajo.
     /// Mientras está abierto, el fósforo no se gasta, Luis no camina y el tiempo del
     /// cuarto pasa lento (TiempoLento).
     ///
@@ -36,6 +38,7 @@ namespace Terror
 
         [Header("Arte")]
         [SerializeField] private Sprite iconoBolsa;
+        [Tooltip("En desuso desde 2026-11-17: las casillas se dibujan en código (ArteUI).")]
         [SerializeField] private Sprite spriteRanura;
         [Tooltip("Botón > de las tarjetas (el mismo de Historia).")]
         [SerializeField] private Sprite spriteSiguiente;
@@ -48,10 +51,13 @@ namespace Terror
         [Header("Textos")]
         [SerializeField] private string titulo = "Lo que llevo";
         [SerializeField] private string textoVacio = "Todavía no llevo nada.";
-        [SerializeField] private string textoAyuda = "Clic en un objeto para mirarlo  ·  I o Esc para cerrar";
         [SerializeField] private string prefijoGuardado = "Guardaste: ";
 
-        private const int MaxRanuras = 7;
+        private const int MaxRanuras = 5;
+        private const float LadoCasilla = 170f;
+        private const float PasoCasillas = 205f;
+        private const int RadioCasilla = 10;
+        private static readonly Vector2 MargenMochila = new Vector2(36f, 30f);
 
         private RectTransform raiz;
         private CanvasGroup grupoBolsa;
@@ -61,7 +67,7 @@ namespace Terror
         private CanvasGroup grupoPanel;
         private RectTransform filaRanuras;
         private TextMeshProUGUI etiquetaNombre;
-        private TextMeshProUGUI textoSinObjetos;
+        private TextMeshProUGUI etiquetaDescripcion;
         private TarjetaLectura tarjeta;
         private PrimerPlanoObjeto primerPlano;
         private AudioSource audioFuente;
@@ -156,7 +162,7 @@ namespace Terror
             if (tarjeta != null) tarjeta.Cerrar();
             if (primerPlano != null) primerPlano.Cerrar();
             panel.SetActive(false);
-            etiquetaNombre.text = "";
+            EncimaDe(null, false);
             PanelInspeccion.Instance?.QuitarCapa(this);
             FosforoManager.Instance?.ReanudarQuemado(this);
             TiempoLento.Soltar(this);
@@ -191,8 +197,10 @@ namespace Terror
             }
 
             Sonar(sonidoGuardar);
-            if (rutinaAviso != null) StopCoroutine(rutinaAviso);
-            rutinaAviso = StartCoroutine(MostrarAviso(prefijoGuardado + def.nombre));
+            // El aviso "Guardaste: ..." ya no sale (2026-11-17): al guardar algo salían tres
+            // textos a la vez. Queda uno solo, abajo, en la franja de subtítulos
+            // (ObjetoInventario), más la bolsa que salta y su sonido. Para volver a
+            // mostrarlo: StartCoroutine(MostrarAviso(prefijoGuardado + def.nombre)).
         }
 
         private IEnumerator MostrarAviso(string texto)
@@ -221,10 +229,13 @@ namespace Terror
             Estirar(raiz);
             UbicarAntesDe(raiz, padre, insertarAntesDe);
 
-            // Bolsa (abajo a la izquierda, encima de la franja de narración)
-            rectBolsa = NuevoRect("BotonInventario", raiz, Vector2.zero, new Vector2(120f, 120f));
-            rectBolsa.anchorMin = rectBolsa.anchorMax = Vector2.zero;
-            rectBolsa.anchoredPosition = new Vector2(100f, 275f);
+            // Mochila (arriba a la izquierda; los fósforos van arriba a la derecha)
+            Vector2 tamBolsa = iconoBolsa != null && iconoBolsa.rect.height > 0f
+                ? new Vector2(118f * iconoBolsa.rect.width / iconoBolsa.rect.height, 118f)
+                : new Vector2(120f, 120f);
+            rectBolsa = NuevoRect("BotonInventario", raiz, Vector2.zero, tamBolsa);
+            rectBolsa.anchorMin = rectBolsa.anchorMax = rectBolsa.pivot = new Vector2(0f, 1f);
+            rectBolsa.anchoredPosition = new Vector2(MargenMochila.x, -MargenMochila.y);
             var imgBolsa = rectBolsa.gameObject.AddComponent<Image>();
             imgBolsa.sprite = iconoBolsa;
             imgBolsa.preserveAspect = true;
@@ -235,7 +246,7 @@ namespace Terror
             grupoBolsa.alpha = 0f;
             grupoBolsa.blocksRaycasts = false;
             grupoBolsa.interactable = false;
-            var tecla = NuevoTexto("Tecla", rectBolsa, new Vector2(0f, -78f), new Vector2(160f, 40f), 26f, FontStyles.Bold, fuente);
+            var tecla = NuevoTexto("Tecla", rectBolsa, new Vector2(0f, -tamBolsa.y * 0.5f - 22f), new Vector2(160f, 40f), 26f, FontStyles.Bold, fuente);
             tecla.text = "<link=tecla>I</link>";
             tecla.gameObject.AddComponent<MarcoTeclas>();
 
@@ -253,30 +264,31 @@ namespace Terror
             panel = new GameObject("PanelInventario", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
             panel.transform.SetParent(raiz, false);
             Estirar((RectTransform)panel.transform);
-            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.78f);
+            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.5f);
             grupoPanel = panel.GetComponent<CanvasGroup>();
             BotonPlano(panel, Cerrar); // clic afuera: cierra
 
-            var caja = NuevaImagen("Caja", panel.transform, new Vector2(0f, 30f), new Vector2(1500f, 470f), null);
-            caja.color = new Color(0.07f, 0.07f, 0.07f, 0.96f);
-            BotonPlano(caja.gameObject, null); // clic sobre la caja no cierra
-            var marco = NuevaImagen("Marco", caja.transform, Vector2.zero, new Vector2(1520f, 490f), MarcoDibujado.Obtener(128, 7f, 6f, 1f));
-            marco.type = Image.Type.Sliced;
-            marco.raycastTarget = false;
+            // La tarjeta de papel (se estira con 9-slice, sin deformar las esquinas rotas).
+            var caja = NuevaImagen("Tarjeta", panel.transform, new Vector2(0f, 30f), new Vector2(1240f, 600f), ArteUI.Papel());
+            caja.type = Image.Type.Sliced;
+            if (caja.sprite == null) caja.color = new Color(0.92f, 0.91f, 0.88f, 1f);
+            BotonPlano(caja.gameObject, null); // clic sobre la tarjeta no cierra
 
-            NuevoTexto("Titulo", caja.transform, new Vector2(0f, 180f), new Vector2(1400f, 60f), 44f, FontStyles.Italic, fuente).text = titulo;
+            var tituloTexto = NuevoTexto("Titulo", caja.transform, new Vector2(0f, 198f), new Vector2(1000f, 70f), 52f, FontStyles.Normal, fuente);
+            tituloTexto.text = titulo;
+            tituloTexto.color = ArteUI.Tinta;
 
-            filaRanuras = NuevoRect("Ranuras", caja.transform, new Vector2(0f, 10f), new Vector2(1440f, 180f));
-            textoSinObjetos = NuevoTexto("Vacio", caja.transform, new Vector2(0f, 10f), new Vector2(1400f, 60f), 34f, FontStyles.Italic, fuente);
-            textoSinObjetos.text = textoVacio;
-            textoSinObjetos.color = new Color(1f, 1f, 1f, 0.6f);
+            filaRanuras = NuevoRect("Ranuras", caja.transform, new Vector2(0f, 25f), new Vector2(PasoCasillas * MaxRanuras, LadoCasilla));
 
-            etiquetaNombre = NuevoTexto("Nombre", caja.transform, new Vector2(0f, -135f), new Vector2(1400f, 50f), 36f, FontStyles.Normal, fuente);
-            etiquetaNombre.color = new Color(0.96f, 0.9f, 0.78f);
-
-            var ayuda = NuevoTexto("Ayuda", caja.transform, new Vector2(0f, -200f), new Vector2(1400f, 40f), 24f, FontStyles.Italic, fuente);
-            ayuda.text = textoAyuda;
-            ayuda.color = new Color(0.8f, 0.8f, 0.8f, 0.8f);
+            // Debajo de las casillas: el nombre y la descripción de la elegida.
+            etiquetaNombre = NuevoTexto("Nombre", caja.transform, new Vector2(0f, -130f), new Vector2(1000f, 50f), 38f, FontStyles.Normal, fuente);
+            etiquetaNombre.color = ArteUI.Tinta;
+            etiquetaDescripcion = NuevoTexto("Descripcion", caja.transform, new Vector2(0f, -188f), new Vector2(1000f, 80f), 30f, FontStyles.Italic, fuente);
+            etiquetaDescripcion.color = new Color(ArteUI.Tinta.r, ArteUI.Tinta.g, ArteUI.Tinta.b, 0.85f);
+            etiquetaDescripcion.textWrappingMode = TextWrappingModes.Normal;
+            etiquetaDescripcion.enableAutoSizing = true;
+            etiquetaDescripcion.fontSizeMin = 22f;
+            etiquetaDescripcion.fontSizeMax = 30f;
 
             panel.SetActive(false);
 
@@ -295,30 +307,63 @@ namespace Terror
 
             var inv = Inventario.Instance;
             IReadOnlyList<string> ids = inv != null ? inv.Objetos : new List<string>();
-            textoSinObjetos.gameObject.SetActive(ids.Count == 0);
-
             int n = Mathf.Min(ids.Count, MaxRanuras);
-            const float paso = 195f;
-            float x0 = -(n - 1) * paso * 0.5f;
-            for (int i = 0; i < n; i++)
+            float x0 = -(MaxRanuras - 1) * PasoCasillas * 0.5f;
+            Vector2 lado = new Vector2(LadoCasilla, LadoCasilla);
+
+            // Siempre se ven las 5 casillas: las que no tienen nada, punteadas.
+            for (int i = 0; i < MaxRanuras; i++)
             {
+                Vector2 pos = new Vector2(x0 + i * PasoCasillas, 0f);
+                if (i >= n)
+                {
+                    var vacia = NuevaImagen("Vacia_" + i, filaRanuras, pos, lado, ArteUI.Punteado((int)LadoCasilla, (int)LadoCasilla));
+                    vacia.color = ArteUI.BordeVacio;
+                    vacia.raycastTarget = false;
+                    continue;
+                }
+
                 DefinicionObjeto def = inv.Definicion(ids[i]) ?? new DefinicionObjeto { id = ids[i], nombre = ids[i] };
 
-                var ranura = NuevaImagen("Ranura_" + def.id, filaRanuras, new Vector2(x0 + i * paso, 0f), new Vector2(165f, 165f), spriteRanura);
-                if (spriteRanura == null) ranura.color = new Color(0.15f, 0.15f, 0.15f, 1f);
-                var icono = NuevaImagen("Icono", ranura.transform, Vector2.zero, new Vector2(125f, 125f), def.icono);
-                icono.preserveAspect = true;
-                icono.raycastTarget = false;
-                if (def.icono == null) icono.color = new Color(0.6f, 0.6f, 0.6f, 1f);
+                var fondo = NuevaImagen("Ranura_" + def.id, filaRanuras, pos, lado, ArteUI.Relleno(RadioCasilla));
+                fondo.type = Image.Type.Sliced;
+                fondo.color = ArteUI.Casilla;
+                var borde = NuevaImagen("Borde", fondo.transform, Vector2.zero, lado, ArteUI.Borde(3, RadioCasilla));
+                borde.type = Image.Type.Sliced;
+                borde.color = ArteUI.Tinta;
+                borde.raycastTarget = false;
 
-                var r = ranura.gameObject.AddComponent<RanuraInventario>();
-                r.Iniciar(this, def);
+                if (def.icono != null)
+                {
+                    var icono = NuevaImagen("Icono", fondo.transform, Vector2.zero, new Vector2(126f, 126f), def.icono);
+                    icono.preserveAspect = true;
+                    icono.raycastTarget = false;
+                }
+                else
+                {
+                    // Sin dibujo: el nombre del objeto, como en la hoja de diseño.
+                    var nombre = NuevoTexto("Nombre", fondo.transform, Vector2.zero, lado - new Vector2(20f, 20f), 30f, FontStyles.Normal, fuente);
+                    nombre.text = def.nombre;
+                    nombre.color = ArteUI.Tinta;
+                    nombre.textWrappingMode = TextWrappingModes.Normal;
+                    nombre.enableAutoSizing = true;
+                    nombre.fontSizeMin = 18f;
+                    nombre.fontSizeMax = 30f;
+                }
+
+                var r = fondo.gameObject.AddComponent<RanuraInventario>();
+                r.Iniciar(this, def, fondo, borde);
             }
+            EncimaDe(null, false);
         }
 
         internal void EncimaDe(DefinicionObjeto def, bool encima)
         {
-            etiquetaNombre.text = encima && def != null ? def.nombre : "";
+            if (etiquetaNombre == null) return;
+            bool hay = encima && def != null;
+            bool vacio = Inventario.Instance == null || Inventario.Instance.Objetos.Count == 0;
+            etiquetaNombre.text = hay ? def.nombre : (vacio ? textoVacio : "");
+            etiquetaDescripcion.text = hay && def.textos != null && def.textos.Length > 0 ? def.textos[0] : "";
         }
 
         internal void Mirar(DefinicionObjeto def)
@@ -347,27 +392,42 @@ namespace Terror
         }
     }
 
-    /// <summary>Un casillero del inventario: se agranda con el mouse y al clic lo muestra en primer plano.</summary>
+    /// <summary>
+    /// Una casilla del inventario. Con el mouse encima queda elegida (borde de 7 px y más
+    /// oscura) y su descripción sale abajo; al clic la muestra en primer plano.
+    /// </summary>
     public class RanuraInventario : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
+        private const int Radio = 10;
         private InventarioUI dueno;
         private DefinicionObjeto def;
+        private Image fondo;
+        private Image borde;
 
-        internal void Iniciar(InventarioUI inventario, DefinicionObjeto definicion)
+        internal void Iniciar(InventarioUI inventario, DefinicionObjeto definicion, Image fondo, Image borde)
         {
             dueno = inventario;
             def = definicion;
+            this.fondo = fondo;
+            this.borde = borde;
+            Elegir(false);
+        }
+
+        private void Elegir(bool si)
+        {
+            if (fondo != null) fondo.color = si ? ArteUI.CasillaElegida : ArteUI.Casilla;
+            if (borde != null) borde.sprite = ArteUI.Borde(si ? 7 : 3, Radio);
         }
 
         public void OnPointerEnter(PointerEventData e)
         {
-            transform.localScale = Vector3.one * 1.08f;
+            Elegir(true);
             dueno.EncimaDe(def, true);
         }
 
         public void OnPointerExit(PointerEventData e)
         {
-            transform.localScale = Vector3.one;
+            Elegir(false);
             dueno.EncimaDe(def, false);
         }
 
