@@ -81,6 +81,8 @@ namespace Terror.UI
         [SerializeField] private Image veladorCerrado;
         [Tooltip("Dibujo del velador con el cajón afuera, del mismo tamaño que el cerrado (CajonAbr).")]
         [SerializeField] private Sprite spriteVeladorAbierto;
+        [Tooltip("El mismo velador abierto pero SIN la caja de fósforos pintada. Al tomar la caja, el dibujo cambia a este. Vacío = la caja pintada se queda. Tiene que tener el mismo recorte y tamaño que el de arriba.")]
+        [SerializeField] private Sprite spriteVeladorSinCaja;
         [Tooltip("Tamaño en píxeles de la imagen ORIGINAL del velador abierto (el recorte del sprite). Las coordenadas de abajo se miden en ese tamaño; si Unity reduce la textura (Max Size), el juego las convierte solas. 0,0 = usar el tamaño que tenga el sprite.")]
         [SerializeField] private Vector2 tamanoOriginalDibujo = Vector2.zero;
         [Tooltip("Centro del interior del cajón en el dibujo del velador abierto, en píxeles del dibujo (0,0 = arriba a la izquierda).")]
@@ -144,6 +146,8 @@ namespace Terror.UI
         };
         [Tooltip("Para conectar el contenido real de la nota cuando exista.")]
         [SerializeField] private UnityEvent alLeerNota;
+        [Tooltip("Marcado: al encender el primer fósforo aparece la nota que estaba debajo de la caja. Desmarcado: no hay nota.")]
+        [SerializeField] private bool hayNota = false;
 
         [Header("Tarjetas (mismo concepto que Historia)")]
         [Tooltip("Borde del cajón y de las tarjetas provisorias. Vacío = borde de tiza generado en código.")]
@@ -214,6 +218,7 @@ namespace Terror.UI
         private Image brillo;
         private ZonaCajon zonaFosforos;
         private ZonaCajon zonaNota;
+        private Image imagenVeladorAbierto;
         private ZonaCajon[] zonasElementos;
         private int[] clicksElementos;
         private TextMeshProUGUI textoMensaje;
@@ -321,7 +326,11 @@ namespace Terror.UI
 
             FosforoManager.Instance?.HabilitarEncendido(false);
 
-            if (OmitirTutorial)
+            // La bandera vale solo para esta entrada: si se vuelve a cargar el cuarto
+            // (reintentar, abrir JUEGO directo) el tutorial completo sale de nuevo.
+            bool omitir = OmitirTutorial;
+            OmitirTutorial = false;
+            if (omitir)
             {
                 EmpezarConLaCajaEnLaMano();
                 yield break;
@@ -346,6 +355,7 @@ namespace Terror.UI
         // paso "Pulsa E" del tutorial se dispara al recoger los fósforos.
         private void EmpezarConLaCajaEnLaMano()
         {
+            QuitarCajaDelCajon();
             fase = Fase.Oscuro;
             PonerTinte(tinteOscuro);
             FondoAlfa(fondoAOscuras);
@@ -596,9 +606,17 @@ namespace Terror.UI
             ActualizarEtiqueta();
         }
 
+        /// <summary>Se tomó la caja: el dibujo del velador pasa a la versión sin la caja pintada.</summary>
+        private void QuitarCajaDelCajon()
+        {
+            if (spriteVeladorSinCaja != null && imagenVeladorAbierto != null)
+                imagenVeladorAbierto.sprite = spriteVeladorSinCaja;
+        }
+
         private IEnumerator TomarFosforos(bool enLaMano = false)
         {
             fase = Fase.Oscuro;
+            QuitarCajaDelCajon();
             if (!enLaMano)
             {
                 Sonar(sonidoTomarFosforos);
@@ -654,8 +672,8 @@ namespace Terror.UI
             // Si todavía se está mirando la caja, aparece al volver al cajón.
             fase = Fase.Iluminado;
             if (botonVolverATutorial != null) botonVolverATutorial.SetActive(false);
-            notaPendiente = true;
-            if (vistaCaja == null || !vistaCaja.Visible) MostrarNota();
+            notaPendiente = hayNota;
+            if (hayNota && (vistaCaja == null || !vistaCaja.Visible)) MostrarNota();
             StartCoroutine(Animar(0.8f, AlfaHudOculto));
 
             if (PanelInspeccion.Instance != null)
@@ -860,6 +878,7 @@ namespace Terror.UI
             BotonPlano(afuera.gameObject, () => PanelInspeccion.Instance?.Cerrar());
 
             var abierto = NuevaImagen("VeladorAbierto", enCuarto, Vector2.zero, tam, spriteVeladorAbierto != null ? spriteVeladorAbierto : veladorCerrado.sprite);
+            imagenVeladorAbierto = abierto;
             // El velador cerrado puede ser transparente (el mueble ya está dibujado en la
             // pared); el abierto se ve siempre.
             Color c = veladorCerrado.color;
