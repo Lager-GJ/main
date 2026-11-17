@@ -60,6 +60,11 @@ namespace Terror
         [Header("Objeto que guarda")]
         [SerializeField] private string idLlave = "llave_pequena";
         [SerializeField] private string idPista = "agenda";
+        [Tooltip("Segundo objeto que hace falta tener para saber la clave (ej. foto_campo). Vacío = solo el de arriba.")]
+        [SerializeField] private string idPista2;
+        [Tooltip("Marcado: no es un joyero. Hace falta tener las pistas para siquiera probar, y al acertar el objeto va directo al inventario (sin llave en el cuarto).")]
+        [SerializeField] private bool entregaDirecta;
+        [TextArea(1, 2)] [SerializeField] private string textoFaltanPistas = "No sé la clave...";
 
         [Header("Textos")]
         [TextArea(1, 2)] [SerializeField] private string textoSinPista = "Un candado de cuatro números. ¿Cuál será la clave?";
@@ -118,11 +123,35 @@ namespace Terror
             var pi = PanelInspeccion.Instance;
             if (pi == null || pi.CierreBloqueado || pi.HayCapaAbierta) return;
 
+            if (entregaDirecta)
+            {
+                if (abierto) { DecirAfuera(textoVacio); return; }
+                if (!TienePistas()) { DecirAfuera(textoFaltanPistas); return; }
+            }
+
             Construir();
             ActualizarVista();
             pi.Mostrar(panel, origenEnElCuarto != null ? origenEnElCuarto : transform);
 
             if (abierto && llaveTomada) Decir(textoVacio);
+        }
+
+        private bool TienePistas()
+        {
+            var inv = Inventario.Instance;
+            if (inv == null) return false;
+            if (!string.IsNullOrEmpty(idPista) && !inv.Tiene(idPista)) return false;
+            if (!string.IsNullOrEmpty(idPista2) && !inv.Tiene(idPista2)) return false;
+            return true;
+        }
+
+        // Un pensamiento abajo en la pantalla (el candado todavía no está abierto en pantalla).
+        private void DecirAfuera(string texto)
+        {
+            if (string.IsNullOrEmpty(texto)) return;
+            var cartel = CartelNarrativa.Instancia;
+            cartel.Mostrar(this, texto, fuente, 3f);
+            cartel.SoltarHover(this);
         }
 
         private void Update()
@@ -186,6 +215,21 @@ namespace Terror
                 objetoLlave.gameObject.SetActive(true);
                 StartCoroutine(Pop(objetoLlave.transform));
             }
+            if (entregaDirecta) yield return EntregarDirecto();
+        }
+
+        // Sin joyero: el objeto se guarda solo, la vista se cierra y se muestra su tarjeta.
+        private IEnumerator EntregarDirecto()
+        {
+            yield return EsperarSinPausa(1.2f);
+            var inv = Inventario.Instance;
+            if (inv != null && !string.IsNullOrEmpty(idLlave)) inv.Agregar(idLlave);
+            llaveTomada = true;
+            if (PanelInspeccion.Instance != null && PanelInspeccion.Instance.VistaActual == panel)
+                PanelInspeccion.Instance.Cerrar();
+            yield return EsperarSinPausa(0.5f);
+            if (inv != null && !string.IsNullOrEmpty(idLlave) && TarjetaLectura.Instance != null)
+                TarjetaLectura.Instance.Mostrar(inv.Definicion(idLlave));
         }
 
         private void ActualizarVista()
@@ -206,7 +250,7 @@ namespace Terror
             placa.transform.localScale = Vector3.one;
             if (objetoLlave != null) objetoLlave.gameObject.SetActive(abierto && !llaveTomada);
 
-            bool conPista = Inventario.Instance != null && Inventario.Instance.Tiene(idPista);
+            bool conPista = entregaDirecta ? TienePistas() : (Inventario.Instance != null && Inventario.Instance.Tiene(idPista));
             pista.text = abierto ? "" : (conPista ? textoConPista : textoSinPista);
             Refrescar();
         }
@@ -278,6 +322,7 @@ namespace Terror
             imagenJoyero = interior.gameObject.AddComponent<Image>();
             imagenJoyero.sprite = joyeroCerrado;
             imagenJoyero.preserveAspect = true;
+            if (joyeroCerrado == null) imagenJoyero.color = new Color(1f, 1f, 1f, 0f); // sin dibujo (el neceser): solo recibe clics
             BotonPlano(interior.gameObject, null); // un clic sobre el joyero no cierra
 
             // Placa con los 4 diales
@@ -309,13 +354,16 @@ namespace Terror
 
             // La llave (aparece al abrir)
             // Acostada sobre el terciopelo del joyero abierto (visto un poco desde arriba).
-            var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 22f), new Vector2(440f, 170f), llave);
-            imgLlave.preserveAspect = false;
-            if (EnCuarto) SpriteIluminado.Agregar(imgLlave, 5, 2f, materialIluminado);
-            objetoLlave = imgLlave.gameObject.AddComponent<ObjetoInventario>();
-            objetoLlave.Configurar(idLlave, false, null);
-            objetoLlave.AlGuardarse += () => llaveTomada = true;
-            imgLlave.gameObject.SetActive(false);
+            if (!entregaDirecta)
+            {
+                var imgLlave = NuevaImagen("LlavePequena", interior, new Vector2(0f, 22f), new Vector2(440f, 170f), llave);
+                imgLlave.preserveAspect = false;
+                if (EnCuarto) SpriteIluminado.Agregar(imgLlave, 5, 2f, materialIluminado);
+                objetoLlave = imgLlave.gameObject.AddComponent<ObjetoInventario>();
+                objetoLlave.Configurar(idLlave, false, null);
+                objetoLlave.AlGuardarse += () => llaveTomada = true;
+                imgLlave.gameObject.SetActive(false);
+            }
 
             pista = NuevoTexto("Pista", panel.transform, new Vector2(0f, 400f), new Vector2(1500f, 60f), 36f, FontStyles.Italic, fuente);
             pista.color = new Color(0.96f, 0.9f, 0.78f);
