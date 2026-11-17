@@ -3847,17 +3847,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba9c3c6fd0f9c0348b3e8c5d4255d2ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventarioFosforo
-  iconosFosforos:
-  - {fileID: 1702069306}
-  - {fileID: 988922454}
-  - {fileID: 1048960151}
-  - {fileID: 1149999353}
-  spriteFosforoNuevo: {fileID: 0}
-  spriteFosforoQuemado: {fileID: 0}
-  spriteCaja: {fileID: -6916185617519492010, guid: 828988659b0ac454f8e2295756f792c7, type: 3}
-  spriteBandeja: {fileID: 21300000, guid: e4db24c0547f4da78dec14ca74e7c9c6, type: 3}
-  spriteFosforo: {fileID: 21300000, guid: 26b9a4a5c78b4320835e2d503b33112e, type: 3}
-  fuente: {fileID: 11400000, guid: 21c911762b0085843a25967b0b48a1c0, type: 2}
+  estados:
+  - {fileID: 21300000, guid: 173b7544dd1f43509166493e32636160, type: 3}
+  - {fileID: 21300000, guid: 70790416b6044c28969c7e23d516ba63, type: 3}
+  - {fileID: 21300000, guid: f01027f1f9b445a6b574e5e138278190, type: 3}
+  - {fileID: 21300000, guid: 78f4b70d75104528a7089ccd5220fc6f, type: 3}
+  - {fileID: 21300000, guid: 7cfd51420d9e4e4ab49819e0fecb4d3f, type: 3}
+  margen: {x: 36, y: 30}
+  alto: 118
+  colorLlama: {r: 1, g: 0.55, b: 0.12, a: 1}
 --- !u!1 &586428572
 GameObject:
   m_ObjectHideFlags: 0

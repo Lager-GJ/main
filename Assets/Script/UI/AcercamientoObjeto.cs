@@ -14,9 +14,13 @@ namespace Terror.UI
     /// al objeto con cámara lenta y una luz cálida lo alumbra (como LuzVistaJoyero). Lo
     /// que se ve es el objeto del cuarto mismo (el dibujo de la pared, el del cajón): no
     /// hay ventana ni se oscurece nada; el cuarto se sigue viendo alrededor.
-    ///  - Clic en el objeto (o A / D): se da vuelta; el reverso aparece en su lugar.
-    ///  - Botón "Inspeccionar" abajo: lee la descripción de a una página, o hace la acción.
+    ///  - Clic en el objeto (o Enter): interactúa. Lee la descripción de a una página, o
+    ///    hace la acción.
+    ///  - Botón "Voltear" abajo (o A / D), solo si tiene reverso: se da vuelta y el
+    ///    reverso aparece en su lugar.
     ///  - Esc o clic afuera: la cámara vuelve a donde estaba (al cuarto o al mueble abierto).
+    /// Desde 2026-11-17 (pedido de David) el objeto queda en el centro de la pantalla y
+    /// no hay línea de ayuda; antes el clic volteaba y el botón inspeccionaba.
     ///
     /// Sirve para los cuadros, fotos y demás objetos pintados en las paredes
     /// (ObjetoNarrable), para los ObjetoEnPrimerPlano sin acción y para los objetos del
@@ -43,19 +47,18 @@ namespace Terror.UI
         private const float RadioLuzMinimo = 420f;
         private const float DuracionCamara = 0.45f;
         private const int OrdenEnCuarto = 7; // encima de los muebles abiertos (6)
+        // El reverso recibe las mismas luces que las paredes (fósforo + luz del acercamiento),
+        // así que lleva el mismo tinte que ellas (Pared1..4 = 0.51, 0.47, 0.47). En blanco
+        // se "quemaba": el dorso de madera salía como un rectángulo blanco (2026-11-17).
+        private static readonly Color TinteReverso = new Color(0.51f, 0.47f, 0.47f, 1f);
 
-        private const string TextoInspeccionar = "Inspeccionar";
-        private const string TextoSeguir = "Seguir";
-        private const string AyudaVoltear = "Clic en el objeto para darle la vuelta";
-        private const string AyudaCerrar = "Esc o clic afuera para volver";
+        private const string TextoVoltear = "Voltear";
 
         // En la pantalla: solo los textos y el botón.
         private CanvasGroup grupo;
         private TextMeshProUGUI nombre;
-        private TextMeshProUGUI descripcion;
-        private TextMeshProUGUI ayuda;
+        private TMP_FontAsset fuente;
         private GameObject boton;
-        private TextMeshProUGUI textoBoton;
         private AudioSource audioFuente;
         private AudioClip sonidoVoltear;
         private AudioClip sonidoPagina;
@@ -141,11 +144,8 @@ namespace Terror.UI
             ArmarEnCuarto(zona, canvas.rootCanvas.transform);
 
             nombre.text = d.nombre ?? "";
-            descripcion.text = d.nota ?? "";
-            bool hayAlgo = d.accion != null || (d.textos != null && d.textos.Length > 0);
-            boton.SetActive(hayAlgo);
-            textoBoton.text = string.IsNullOrEmpty(d.textoBoton) ? TextoInspeccionar : d.textoBoton;
-            ayuda.text = d.reverso != null ? AyudaVoltear + "   ·   " + AyudaCerrar : AyudaCerrar;
+            Decir(d.nota);
+            boton.SetActive(d.reverso != null);
 
             transform.SetAsLastSibling();
             gameObject.SetActive(true);
@@ -209,14 +209,17 @@ namespace Terror.UI
             accion?.Invoke();
         }
 
-        /// <summary>Un mensaje en la línea de la descripción.</summary>
+        /// <summary>
+        /// Un mensaje sobre el objeto. Sale en la franja de diálogos de abajo, como el resto
+        /// (diseño del equipo, 2026-11-17).
+        /// </summary>
         public void Decir(string texto)
         {
-            if (Visible) descripcion.text = texto ?? "";
+            if (Visible) CartelNarrativa.Instancia.Decir(this, texto, fuente);
         }
 
-        // Punto y zoom para que el objeto quede en la parte de arriba de la pantalla
-        // (abajo van los textos y el botón).
+        // Punto y zoom para que el objeto quede en el centro de la pantalla (los textos y
+        // el botón van abajo, en el espacio que queda).
         private static void CalcularEnfoque(RectTransform zona, out Vector3 punto, out float zoom)
         {
             var esquinas = new Vector3[4];
@@ -233,8 +236,7 @@ namespace Terror.UI
             zoom = Mathf.Max(alto / (2f * tamano * AltoEnPantalla), ancho / (2f * tamano * aspecto * AnchoEnPantalla));
             zoom = Mathf.Clamp(zoom, ZoomMinimo, ZoomMaximo);
 
-            float altoVisible = 2f * tamano * zoom;
-            punto = centro - new Vector3(0f, altoVisible * 0.12f, 0f);
+            punto = centro;
         }
 
         // ---------- En el cuarto ----------
@@ -266,7 +268,7 @@ namespace Terror.UI
             dibujo = NuevaImagen("Dibujo", girador, Vector2.zero, tam, null);
             dibujo.preserveAspect = true;
             dibujo.color = new Color(1f, 1f, 1f, 0f); // recibe el clic, pero no se ve
-            BotonPlano(dibujo.gameObject, Voltear);
+            BotonPlano(dibujo.gameObject, Inspeccionar);
             SpriteIluminado.Agregar(dibujo, OrdenEnCuarto); // lo alumbran el fósforo y la luz de abajo
 
             // La luz cálida sobre el objeto (como LuzVistaJoyero).
@@ -327,7 +329,7 @@ namespace Terror.UI
             if (alReverso)
             {
                 dibujo.sprite = datos.reverso;
-                dibujo.color = Color.white;
+                dibujo.color = TinteReverso;
                 yield return Animar(0.25f, p => girador.localScale = new Vector3(Mathf.Sin(p * Mathf.PI * 0.5f), 1f, 1f));
             }
             else
@@ -355,8 +357,7 @@ namespace Terror.UI
             string[] t = datos.textos;
             if (t == null || t.Length == 0) return;
             pagina = (pagina + 1) % t.Length;
-            descripcion.text = t[pagina];
-            textoBoton.text = pagina < t.Length - 1 ? TextoSeguir : (string.IsNullOrEmpty(datos.textoBoton) ? TextoInspeccionar : datos.textoBoton);
+            Decir(t[pagina]);
             Sonar(sonidoPagina, 0.6f);
 
             // La página puede pedir otro dibujo (el reverso de la foto cuando lo lee).
@@ -365,7 +366,7 @@ namespace Terror.UI
             {
                 if (s == datos.reverso) StartCoroutine(Girar(true));
                 else if (s == datos.frente) StartCoroutine(Girar(false));
-                else { dibujo.sprite = s; dibujo.color = Color.white; reverso = true; }
+                else { dibujo.sprite = s; dibujo.color = TinteReverso; reverso = true; }
             }
         }
 
@@ -381,33 +382,24 @@ namespace Terror.UI
             var rt = (RectTransform)transform;
             Estirar(rt);
             grupo = GetComponent<CanvasGroup>();
+            this.fuente = fuente;
             audioFuente = gameObject.AddComponent<AudioSource>();
             audioFuente.playOnAwake = false;
             // Sin Image de fondo: los clics pasan al cuarto (el objeto y el "afuera").
 
             nombre = NuevoTexto("Nombre", transform, new Vector2(0f, 440f), new Vector2(1400f, 60f), 40f, FontStyles.Italic, fuente);
             nombre.color = new Color(0.96f, 0.9f, 0.78f, 1f);
-            nombre.outlineWidth = 0.15f;
-            nombre.outlineColor = new Color32(0, 0, 0, 200);
+            Legible(nombre); // se leen sobre la luz del acercamiento
 
-            descripcion = NuevoTexto("Descripcion", transform, new Vector2(0f, -275f), new Vector2(1500f, 120f), 40f, FontStyles.Normal, fuente);
-            descripcion.textWrappingMode = TextWrappingModes.Normal;
-            descripcion.enableAutoSizing = true;
-            descripcion.fontSizeMin = 28f;
-            descripcion.fontSizeMax = 40f;
-            descripcion.outlineWidth = 0.15f;
-            descripcion.outlineColor = new Color32(0, 0, 0, 200);
-
-            var marco = NuevaImagen("BotonInspeccionar", transform, new Vector2(0f, -395f), new Vector2(300f, 72f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
+            // La descripción sale en la franja de diálogos de abajo (CartelNarrativa).
+            // Justo debajo del objeto (que ocupa el 30 % del alto, en el centro), arriba de los diálogos.
+            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(0f, -212f), new Vector2(300f, 64f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
             marco.type = Image.Type.Sliced;
             marco.color = new Color(1f, 1f, 1f, 0.85f);
-            BotonPlano(marco.gameObject, Inspeccionar);
+            BotonPlano(marco.gameObject, Voltear);
             marco.gameObject.AddComponent<ResaltarAlPasar>();
-            textoBoton = NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, 72f), 34f, FontStyles.Normal, fuente);
+            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, 64f), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
             boton = marco.gameObject;
-
-            ayuda = NuevoTexto("Ayuda", transform, new Vector2(0f, -475f), new Vector2(1500f, 40f), 24f, FontStyles.Italic, fuente);
-            ayuda.color = new Color(0.8f, 0.8f, 0.8f, 0.8f);
         }
 
         /// <summary>Lo que quedó en el cuarto al cerrar: se desvanece y se borra.</summary>

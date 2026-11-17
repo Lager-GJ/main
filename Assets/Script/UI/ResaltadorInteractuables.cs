@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -16,6 +17,9 @@ namespace Terror.UI
     /// borde que brilla y late. Igual que el resto del cuarto, sin fósforo no se marca nada
     /// (salvo lo que se ve con la luz de la puerta al principio).
     /// Las pantallas de UI (inventario, pausa, primeros planos) no se marcan.
+    ///
+    /// Si el objeto tiene EtiquetaObjeto, además aparece su etiqueta ("Revisar el armario")
+    /// centrada justo debajo: IM Fell 32 px, clara, con sombra negra (diseño 2026-11-17).
     /// </summary>
     public class ResaltadorInteractuables : MonoBehaviour
     {
@@ -25,6 +29,8 @@ namespace Terror.UI
         [Tooltip("Grosor del brillo (unidades del Canvas del mundo).")]
         [SerializeField] private float grosor = 16f;
         [SerializeField] private float velocidadLatido = 4f;
+        [Tooltip("Fuente de las etiquetas de objeto (IM Fell English).")]
+        [SerializeField] private TMP_FontAsset fuente;
 
         private readonly List<RaycastResult> resultados = new List<RaycastResult>();
         private PointerEventData datos;
@@ -32,6 +38,13 @@ namespace Terror.UI
         private RectTransform brillo;
         private Image imagenBrillo;
         private readonly Vector3[] esquinas = new Vector3[4];
+        private Vector3 minMundo, maxMundo; // la caja del objeto resaltado, en el mundo
+
+        // La etiqueta va en un Canvas de pantalla propio (debajo de los diálogos, orden 40).
+        private RectTransform lienzoEtiqueta;
+        private RectTransform rectEtiqueta;
+        private TextMeshProUGUI textoEtiqueta;
+        private const float SeparacionEtiqueta = 14f;
 
         // Orden de dibujo del borde: por encima de los muebles abiertos (4), los objetos (5) y el
         // cajón (6), que dibujan con SpriteRenderer. Con 8 quedaba detrás del dibujo del cajón.
@@ -51,7 +64,11 @@ namespace Terror.UI
                 objetivo = nuevo;
                 if (objetivo == null && brillo != null) brillo.gameObject.SetActive(false);
             }
-            if (objetivo == null) return;
+            if (objetivo == null)
+            {
+                MostrarEtiqueta(null);
+                return;
+            }
 
             escalaZoom = 1f;
             var camara = CamaraController.Instance;
@@ -64,12 +81,81 @@ namespace Terror.UI
             Color c = alto ? new Color(1f, 0.97f, 0.75f, 1f) : color;
             float a = Mathf.Lerp(alto ? 0.85f : 0.55f, 1f, 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * velocidadLatido));
             imagenBrillo.color = new Color(c.r, c.g, c.b, c.a * a);
+
+            var etiqueta = objetivo.GetComponentInParent<EtiquetaObjeto>();
+            MostrarEtiqueta(etiqueta != null ? etiqueta.texto : null);
         }
 
         private void OnDisable()
         {
             objetivo = null;
             if (brillo != null) brillo.gameObject.SetActive(false);
+            MostrarEtiqueta(null);
+        }
+
+        private void OnDestroy()
+        {
+            if (lienzoEtiqueta != null) Destroy(lienzoEtiqueta.gameObject);
+        }
+
+        // ---------- La etiqueta ----------
+
+        private void MostrarEtiqueta(string texto)
+        {
+            if (string.IsNullOrEmpty(texto))
+            {
+                if (rectEtiqueta != null && rectEtiqueta.gameObject.activeSelf) rectEtiqueta.gameObject.SetActive(false);
+                return;
+            }
+            var cam = Camera.main;
+            if (cam == null) return;
+            if (rectEtiqueta == null) ConstruirEtiqueta();
+
+            textoEtiqueta.text = texto;
+            if (!rectEtiqueta.gameObject.activeSelf) rectEtiqueta.gameObject.SetActive(true);
+
+            // Debajo del objeto, al centro. Si no entra abajo (lo que está en el piso), arriba.
+            Vector3 abajo = new Vector3((minMundo.x + maxMundo.x) * 0.5f, minMundo.y, minMundo.z);
+            Vector3 arriba = new Vector3(abajo.x, maxMundo.y, minMundo.z);
+            Vector2 local = APantalla(cam, abajo) - new Vector2(0f, SeparacionEtiqueta);
+            Rect r = lienzoEtiqueta.rect;
+            float alto = textoEtiqueta.preferredHeight;
+            if (local.y - alto < r.yMin + 20f)
+            {
+                local = APantalla(cam, arriba) + new Vector2(0f, SeparacionEtiqueta + alto);
+            }
+            float medio = Mathf.Min(textoEtiqueta.preferredWidth, rectEtiqueta.sizeDelta.x) * 0.5f;
+            local.x = Mathf.Clamp(local.x, r.xMin + medio + 20f, r.xMax - medio - 20f);
+            rectEtiqueta.anchoredPosition = local;
+        }
+
+        private Vector2 APantalla(Camera cam, Vector3 mundo)
+        {
+            Vector2 pantalla = cam.WorldToScreenPoint(mundo);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(lienzoEtiqueta, pantalla, null, out Vector2 local);
+            return local;
+        }
+
+        private void ConstruirEtiqueta()
+        {
+            var go = new GameObject("EtiquetaObjeto", typeof(RectTransform));
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 35;
+            var escalador = go.AddComponent<CanvasScaler>();
+            escalador.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            escalador.referenceResolution = new Vector2(1920f, 1080f);
+            escalador.matchWidthOrHeight = 0.5f;
+            lienzoEtiqueta = (RectTransform)go.transform;
+
+            textoEtiqueta = UIRuntime.NuevoTexto("Texto", lienzoEtiqueta, Vector2.zero, new Vector2(900f, 50f), 32f, FontStyles.Normal, fuente);
+            rectEtiqueta = textoEtiqueta.rectTransform;
+            rectEtiqueta.pivot = new Vector2(0.5f, 1f);
+            textoEtiqueta.alignment = TextAlignmentOptions.Top;
+            textoEtiqueta.color = ArteUI.TextoClaro;
+            textoEtiqueta.textWrappingMode = TextWrappingModes.NoWrap;
+            ArteUI.Sombra(textoEtiqueta);
+            rectEtiqueta.gameObject.SetActive(false);
         }
 
         // ---------- Qué hay debajo del mouse ----------
@@ -145,6 +231,8 @@ namespace Terror.UI
             t.GetWorldCorners(esquinas);
             Vector3 min = esquinas[0], max = esquinas[0];
             for (int i = 1; i < 4; i++) { min = Vector3.Min(min, esquinas[i]); max = Vector3.Max(max, esquinas[i]); }
+            minMundo = min;
+            maxMundo = max;
             Vector3 escala = raiz.transform.lossyScale;
             Vector3 centro = (min + max) * 0.5f;
             brillo.position = new Vector3(centro.x, centro.y, raiz.transform.position.z);

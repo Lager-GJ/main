@@ -151,7 +151,11 @@ namespace Terror.UI
             // Todo apagado de entrada: cada paso enciende lo suyo cuando le toca.
             foreach (var paso in pasos)
             {
-                if (paso.panel != null) paso.panel.SetActive(false);
+                if (paso.panel != null)
+                {
+                    HacerLegible(paso.panel);
+                    paso.panel.SetActive(false);
+                }
                 if (paso.resaltar != null) paso.resaltar.Desactivar();
             }
 
@@ -169,7 +173,9 @@ namespace Terror.UI
             // Con una vista de cerca abierta (cajón, armario, inventario, tarjeta...) los
             // mensajes no se ven: no tienen que ver con lo que se está mirando.
             bool tapado = HayPrimerPlanoAbierto();
-            Esconder(panelPermanente, tapado);
+            // El objetivo fijo también se aparta mientras hay otro mensaje del tutorial a
+            // la vista: de a un mensaje por vez (2026-11-17).
+            Esconder(panelPermanente, tapado || HayOtroMensaje());
             Esconder(panelPendiente, tapado && !pendientePermitido);
 
             if (terminado) return;
@@ -235,8 +241,26 @@ namespace Terror.UI
             return panel != null && (panel.EstaAbierto || panel.HayCapaAbierta);
         }
 
+        private bool HayOtroMensaje()
+        {
+            if (panelPendiente != null && panelPendiente != panelPermanente && panelPendiente.activeSelf) return true;
+            if (terminado || !mensajeVisible || indice >= pasos.Length) return false;
+            GameObject actual = pasos[indice].panel;
+            return actual != null && actual != panelPermanente && actual.activeSelf;
+        }
+
         // Solo vuelve a mostrar lo que escondió él: si el jugador cerró un mensaje (la X
         // de la tarjeta "Pulsa E"), no reaparece al cerrar una vista de cerca.
+        // Los mensajes van sobre el cuarto: con contorno y sombra se leen también sobre
+        // la luz de la puerta o del fósforo (2026-11-17). La hoja de instrucciones no:
+        // es tinta oscura sobre papel.
+        private static void HacerLegible(GameObject panel)
+        {
+            if (panel.GetComponentInChildren<TarjetaTutorial>(true) != null) return;
+            foreach (var t in panel.GetComponentsInChildren<TMPro.TMP_Text>(true))
+                UIRuntime.Legible(t);
+        }
+
         private void Esconder(GameObject panel, bool esconder)
         {
             if (panel == null) return;
