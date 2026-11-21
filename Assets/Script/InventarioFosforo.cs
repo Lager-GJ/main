@@ -1,4 +1,5 @@
 using System.Collections;
+using Terror.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using static Terror.UI.UIRuntime;
@@ -43,6 +44,10 @@ public class InventarioFosforo : MonoBehaviour
     private CanvasGroup grupo;
     private Image etiqueta;
     private Image llama;
+    // Arte por piezas (hoja de diseño 2026-11-21): pestaña + caja + 4 fósforos. Sin ellas, se usan los 'estados'.
+    private bool conPiezas;
+    private Sprite pestana, fosforoDisponible, fosforoGastado;
+    private Image[] fosforos;
     private Coroutine animacion;
     private int quedan;
     private static Sprite brillo;
@@ -136,7 +141,13 @@ public class InventarioFosforo : MonoBehaviour
         raiz.anchorMin = raiz.anchorMax = raiz.pivot = new Vector2(1f, 1f);
         raiz.anchoredPosition = new Vector2(-margen.x, -margen.y);
 
-        Sprite muestra = Estado(4);
+        pestana = ArteUI.Recurso(ArteUI.PestanaFosforos);
+        fosforoDisponible = ArteUI.Recurso(ArteUI.IconoFosforoDisponible);
+        fosforoGastado = ArteUI.Recurso(ArteUI.IconoFosforoGastado);
+        conPiezas = pestana != null && fosforoDisponible != null && fosforoGastado != null;
+        if (conPiezas && Mathf.Approximately(alto, 118f)) alto = pestana.rect.height; // el arte nuevo se ve 1:1 en 1920x1080
+
+        Sprite muestra = conPiezas ? pestana : Estado(4);
         float proporcion = muestra != null && muestra.rect.height > 0f ? muestra.rect.width / muestra.rect.height : AnchoDibujo / AltoDibujo;
         raiz.sizeDelta = new Vector2(alto * proporcion, alto);
         grupo = raiz.gameObject.AddComponent<CanvasGroup>();
@@ -147,10 +158,53 @@ public class InventarioFosforo : MonoBehaviour
         etiqueta.preserveAspect = true;
         if (muestra == null) etiqueta.color = new Color(0.15f, 0.15f, 0.15f, 1f);
 
+        if (conPiezas) ArmarPiezas();
+
         llama = NuevaImagen("Llama", etiqueta.transform, Vector2.zero, Vector2.one * alto * 0.5f, Brillo());
         llama.color = new Color(colorLlama.r, colorLlama.g, colorLlama.b, 0f);
 
         foreach (var g in raiz.GetComponentsInChildren<Graphic>(true)) g.raycastTarget = false;
+    }
+
+    // Medidas en píxeles del dibujo de la pestaña (441 x 160): caja a la izquierda, 4 fósforos a la derecha.
+    private const float CajaX = 105f, FosforoX0 = 218f, FosforoPaso = 40f, CentroY = 80f, AltoCaja = 100f;
+
+    private Vector2 Punto(float x, float y)
+    {
+        Vector2 tam = etiqueta.rectTransform.sizeDelta;
+        return new Vector2((x / pestana.rect.width - 0.5f) * tam.x, (0.5f - y / pestana.rect.height) * tam.y);
+    }
+
+    private void ArmarPiezas()
+    {
+        float k = etiqueta.rectTransform.sizeDelta.y / pestana.rect.height;
+        Sprite caja = ArteUI.Recurso(ArteUI.IconoCajaFosforos);
+        if (caja != null)
+        {
+            float h = AltoCaja * k;
+            var c = NuevaImagen("Caja", etiqueta.transform, Punto(CajaX, CentroY), new Vector2(h * caja.rect.width / caja.rect.height, h), caja);
+            c.preserveAspect = true;
+        }
+        fosforos = new Image[4];
+        for (int i = 0; i < fosforos.Length; i++)
+        {
+            fosforos[i] = NuevaImagen("Fosforo" + i, etiqueta.transform, Punto(FosforoX0 + FosforoPaso * i, CentroY),
+                new Vector2(fosforoDisponible.rect.width * k, fosforoDisponible.rect.height * k), fosforoDisponible);
+            fosforos[i].preserveAspect = true;
+        }
+    }
+
+    // Disponibles a la izquierda, gastados (solo el contorno) acumulados a la derecha.
+    private void MostrarCantidad(int cantidad)
+    {
+        if (conPiezas)
+        {
+            for (int i = 0; i < fosforos.Length; i++)
+                fosforos[i].sprite = i < cantidad ? fosforoDisponible : fosforoGastado;
+            return;
+        }
+        Sprite s = Estado(cantidad);
+        if (s != null) etiqueta.sprite = s;
     }
 
     private Sprite Estado(int cantidad)
@@ -170,13 +224,17 @@ public class InventarioFosforo : MonoBehaviour
     private void PintarEstado()
     {
         if (etiqueta == null) return;
-        Sprite s = Estado(quedan);
-        if (s != null) etiqueta.sprite = s;
+        MostrarCantidad(quedan);
     }
 
     // Centro de la cabeza del fósforo i (0 = el de la izquierda) dentro de la etiqueta.
     private Vector2 Cabeza(int i)
     {
+        if (conPiezas)
+        {
+            RectTransform f = fosforos[Mathf.Clamp(i, 0, 3)].rectTransform;
+            return f.anchoredPosition + new Vector2(0f, f.sizeDelta.y * 0.32f); // la cabeza roja está arriba
+        }
         Vector2 tam = etiqueta.rectTransform.sizeDelta;
         float x = (CabezaX[Mathf.Clamp(i, 0, 3)] / AnchoDibujo - 0.5f) * tam.x;
         float y = (0.5f - CabezaY / AltoDibujo) * tam.y;
@@ -189,8 +247,7 @@ public class InventarioFosforo : MonoBehaviour
     {
         // El que se prende ya se descontó: es el primero de los gastados, de izquierda a derecha.
         int usado = Mathf.Clamp(quedan, 0, 3);
-        Sprite antes = Estado(quedan + 1);
-        if (antes != null) etiqueta.sprite = antes;
+        MostrarCantidad(quedan + 1);
         RectTransform rl = llama.rectTransform;
         Vector2 cabeza = Cabeza(usado);
 

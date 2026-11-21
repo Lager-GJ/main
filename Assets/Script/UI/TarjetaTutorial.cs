@@ -235,21 +235,30 @@ namespace Terror.UI
             flecha.color = ColorTexto;
 
             // X arriba a la derecha, dentro del marco del papel.
-            var x = NuevoTexto("Cerrar", rf, new Vector2(medioAncho - 100f, medioAlto - 92f), new Vector2(80f, 80f), 54f, FontStyles.Normal, fuente);
-            x.text = "X";
-            x.color = ColorTexto;
-            x.raycastTarget = true;
-            BotonPlano(x.gameObject, Cerrar);
+            Sprite iconoCerrar = ArteUI.Recurso(ArteUI.IconoCerrar);
+            if (iconoCerrar != null)
+            {
+                // Ícono Cerrar de la hoja de diseño (reemplaza la X de texto).
+                var x = NuevaImagen("Cerrar", rf, new Vector2(medioAncho - 100f, medioAlto - 92f), new Vector2(60f, 62f), iconoCerrar);
+                x.preserveAspect = true;
+                BotonPlano(x.gameObject, Cerrar);
+            }
+            else
+            {
+                var x = NuevoTexto("Cerrar", rf, new Vector2(medioAncho - 100f, medioAlto - 92f), new Vector2(80f, 80f), 54f, FontStyles.Normal, fuente);
+                x.text = "X";
+                x.color = ColorTexto;
+                x.raycastTarget = true;
+                BotonPlano(x.gameObject, Cerrar);
+            }
 
             // Botón de abajo.
             float yBoton = -medioAlto + 105f;
-            var boton = NuevaImagen("Boton", rf, new Vector2(0f, yBoton), new Vector2(300f, 72f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            boton.type = Image.Type.Sliced;
-            boton.color = ColorTexto;
+            var boton = NuevaImagen("Boton", rf, new Vector2(0f, yBoton), new Vector2(220f, 99f), null);
+            ArteUI.PonerPapel(boton); // botón de papel: hover y presionado vienen del arte
             BotonPlano(boton.gameObject, Cerrar);
-            var tb = NuevoTexto("Texto", boton.transform, Vector2.zero, new Vector2(300f, 72f), 36f, FontStyles.Normal, fuente);
+            var tb = NuevoTexto("Texto", boton.transform, Vector2.zero, new Vector2(220f, 99f), 36f, FontStyles.Normal, fuente);
             tb.text = textoBoton;
-            tb.color = ColorTexto;
         }
 
         private void Cuadro(string nombre, Transform padre, Vector2 pos, Vector2 tam, Sprite sprite, string leyenda)

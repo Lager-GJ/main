@@ -27,6 +27,36 @@ namespace Terror.UI
         private static bool fuenteBuscada;
         private static readonly Dictionary<string, Sprite> cache = new Dictionary<string, Sprite>();
 
+        // Piezas sueltas de la hoja de diseño (Resources/UI).
+        public const string PestanaMochila = "UI/Pestaña mochila";
+        public const string PestanaFosforos = "UI/Pestaña fósforos";
+        public const string IconoMochila = "UI/Ícono · Mochila";
+        public const string IconoCajaFosforos = "UI/Ícono · Caja de fósforos";
+        public const string IconoFosforoDisponible = "UI/Ícono · Estado=Disponible";
+        public const string IconoFosforoGastado = "UI/Ícono · Estado=Gastado";
+        public const string IconoCerrar = "UI/Ícono · Cerrar";
+
+        /// <summary>Un sprite de Resources por su ruta (con caché). Null si no existe.</summary>
+        public static Sprite Recurso(string ruta)
+        {
+            if (cache.TryGetValue(ruta, out var s)) return s;
+            s = Resources.Load<Sprite>(ruta);
+            cache[ruta] = s;
+            return s;
+        }
+
+        /// <summary>
+        /// Convierte una Image en un botón de papel (BotonBase / BotonHover / BotonPressed de Resources/UI).
+        /// El papel mide 317 x 143 (proporción 2,2 : 1): conviene darle al botón esa proporción.
+        /// </summary>
+        public static BotonPapel PonerPapel(UnityEngine.UI.Image img)
+        {
+            img.sprite = null;
+            img.type = UnityEngine.UI.Image.Type.Simple;
+            img.color = Color.white;
+            return img.gameObject.AddComponent<BotonPapel>();
+        }
+
         /// <summary>La tarjeta de papel (con 9-slice: se estira sin deformar las esquinas).</summary>
         public static Sprite Papel()
         {

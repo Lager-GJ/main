@@ -540,6 +540,7 @@ namespace Terror.UI
             img.color = Color.white;
             var b = img.gameObject.AddComponent<Button>();
             b.targetGraphic = img;
+            ArteUI.PonerPapel(img); // botón de papel: hover y presionado vienen del arte
             Pintar(b, ColBoton);
             b.onClick.AddListener(() => alHacerClic());
 
@@ -558,6 +559,13 @@ namespace Terror.UI
         private static void Pintar(Button b, Color baseColor)
         {
             if (b == null) return;
+            // Botón de papel: el "activo" (pestaña elegida, tecla esperando) se ve con el dibujo de hover fijo.
+            var papel = b.GetComponent<BotonPapel>();
+            if (papel != null)
+            {
+                papel.Marcar(baseColor == ColBotonActivo);
+                return;
+            }
             ((Image)b.targetGraphic).color = Color.white;
             var foco = Color.Lerp(baseColor, ColAcento, 0.45f);
             var c = b.colors;
