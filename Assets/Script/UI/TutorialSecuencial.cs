@@ -257,8 +257,12 @@ namespace Terror.UI
         private static void HacerLegible(GameObject panel)
         {
             if (panel.GetComponentInChildren<TarjetaTutorial>(true) != null) return;
+            // Es solo estética: si algo falla, el tutorial sigue igual.
             foreach (var t in panel.GetComponentsInChildren<TMPro.TMP_Text>(true))
-                UIRuntime.Legible(t);
+            {
+                try { UIRuntime.Legible(t); }
+                catch (Exception e) { Debug.LogWarning($"No se pudo poner contorno a {t.name}: {e.Message}"); }
+            }
         }
 
         private void Esconder(GameObject panel, bool esconder)

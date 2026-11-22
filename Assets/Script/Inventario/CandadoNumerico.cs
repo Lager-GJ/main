@@ -18,7 +18,8 @@ namespace Terror
     /// Diseño del equipo (2026-11-17): una tarjeta de papel con el título arriba, 4 ruedas
     /// de 140 x 190 con el número en Jaini y flechas para subir y bajar, y la pista abajo.
     /// La rueda activa lleva borde de 6 px. Se abre solo al poner el código correcto; si
-    /// no, no pasa nada. Teclado: números, ← → ↑ ↓ y Backspace.
+    /// no, no pasa nada. Clic en una rueda: sube un número; flechas ^ v o ruedita del mouse:
+    /// sube o baja. Teclado: números, ← → ↑ ↓ y Backspace.
     /// Al acertar, el joyero se abre y aparece la llave pequeña para tomarla.
     /// </summary>
     public class CandadoNumerico : MonoBehaviour
@@ -184,6 +185,23 @@ namespace Terror
             else if (k.upArrowKey.wasPressedThisFrame) Girar(cursor, 1);
             else if (k.downArrowKey.wasPressedThisFrame) Girar(cursor, -1);
             else if (k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame) Probar();
+            else if (Mouse.current != null)
+            {
+                // La ruedita del mouse gira la rueda que está debajo del puntero (o la elegida).
+                float giro = Mouse.current.scroll.ReadValue().y;
+                if (Mathf.Abs(giro) > 0.01f) Girar(RuedaBajoElMouse(), giro > 0f ? 1 : -1);
+            }
+        }
+
+        private int RuedaBajoElMouse()
+        {
+            Vector2 mouse = Mouse.current.position.ReadValue();
+            for (int i = 0; i < 4; i++)
+            {
+                var rt = digitos[i] != null ? (RectTransform)digitos[i].transform.parent : null;
+                if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mouse, null)) return i;
+            }
+            return cursor;
         }
 
         private void Girar(int i, int delta)
@@ -352,7 +370,10 @@ namespace Terror
                 var rueda = NuevaImagen("Rueda" + i, tarjeta.transform, new Vector2(x, YRuedas), TamRueda, ArteUI.Relleno(RadioRueda));
                 rueda.type = Image.Type.Sliced;
                 rueda.color = ArteUI.Casilla;
-                BotonPlano(rueda.gameObject, () => { cursor = indice; Refrescar(); });
+                // Clic en la rueda: sube un número (en la prueba del 17/11 el clic solo la
+                // elegía y no se entendía cómo cambiar el número).
+                BotonPlano(rueda.gameObject, () => Girar(indice, 1));
+                rueda.gameObject.AddComponent<ResaltarAlPasar>();
                 marcos[i] = NuevaImagen("Borde", rueda.transform, Vector2.zero, TamRueda, ArteUI.Borde(3, RadioRueda));
                 marcos[i].type = Image.Type.Sliced;
                 marcos[i].color = ArteUI.Tinta;
