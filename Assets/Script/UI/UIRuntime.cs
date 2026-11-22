@@ -52,6 +52,13 @@ namespace Terror.UI
         public static void Legible(TMP_Text t, float contorno = 0.2f)
         {
             if (t == null) return;
+            // Un texto apagado que nunca se encendió todavía no tiene material: TMP falla
+            // al ponerle contorno. Se aplica cuando se encienda (2026-11-17).
+            if (!t.isActiveAndEnabled)
+            {
+                AlEncenderse.Hacer(t.gameObject, () => Legible(t, contorno));
+                return;
+            }
             t.outlineWidth = contorno;
             t.outlineColor = new Color32(0, 0, 0, 230);
 
@@ -67,6 +74,30 @@ namespace Terror.UI
             }
             t.UpdateMeshPadding();
             t.SetAllDirty();
+        }
+
+        /// <summary>Hace algo la próxima vez que el objeto se encienda (o ya, si está encendido).</summary>
+        public class AlEncenderse : MonoBehaviour
+        {
+            private Action accion;
+
+            public static void Hacer(GameObject go, Action accion)
+            {
+                if (go == null || accion == null) return;
+                if (go.activeInHierarchy) { accion(); return; }
+                var c = go.AddComponent<AlEncenderse>();
+                c.accion = accion;
+            }
+
+            // Va después de los componentes que ya estaban (el texto), así que ellos ya
+            // se iniciaron cuando esto corre.
+            private void OnEnable()
+            {
+                var a = accion;
+                accion = null;
+                Destroy(this);
+                a?.Invoke();
+            }
         }
 
         /// <summary>

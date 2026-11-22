@@ -87,6 +87,11 @@ namespace Terror.UI
         public static void Sombra(TMP_Text t)
         {
             if (t == null) return;
+            if (!t.isActiveAndEnabled)
+            {
+                UIRuntime.AlEncenderse.Hacer(t.gameObject, () => Sombra(t));
+                return;
+            }
             Material m = t.fontMaterial;
             if (m != null && m.HasProperty(ShaderUtilities.ID_UnderlayColor))
             {
