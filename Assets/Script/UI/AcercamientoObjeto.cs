@@ -393,12 +393,10 @@ namespace Terror.UI
 
             // La descripción sale en la franja de diálogos de abajo (CartelNarrativa).
             // Justo debajo del objeto (que ocupa el 30 % del alto, en el centro), arriba de los diálogos.
-            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(0f, -212f), new Vector2(300f, 64f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            marco.type = Image.Type.Sliced;
-            marco.color = new Color(1f, 1f, 1f, 0.85f);
+            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(0f, -218f), new Vector2(176f, 80f), null);
+            ArteUI.PonerPapel(marco); // botón de papel: hover y presionado vienen del arte
             BotonPlano(marco.gameObject, Voltear);
-            marco.gameObject.AddComponent<ResaltarAlPasar>();
-            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, 64f), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
+            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(176f, 80f), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
             boton = marco.gameObject;
         }
 

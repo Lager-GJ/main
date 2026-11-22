@@ -379,16 +379,15 @@ namespace Terror.UI
             funda.gameObject.AddComponent<ResaltarAlPasar>();
 
             // Botón Voltear, con el mismo borde a mano que el resto.
-            var marco = NuevaImagen("BotonVoltear", transform, PosicionBoton(cfg.posicion), new Vector2(300f, AltoBoton), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            marco.type = Image.Type.Sliced;
-            marco.color = new Color(1f, 1f, 1f, 0.85f);
+            var marco = NuevaImagen("BotonVoltear", transform, PosicionBoton(cfg.posicion), new Vector2(AnchoBoton, AltoBoton), null);
+            ArteUI.PonerPapel(marco); // botón de papel: hover y presionado vienen del arte
             BotonPlano(marco.gameObject, Voltear);
-            marco.gameObject.AddComponent<ResaltarAlPasar>();
-            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, AltoBoton), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
+            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(AnchoBoton, AltoBoton), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
             botonVoltear = marco.gameObject;
         }
 
-        private const float AltoBoton = 64f;
+        private const float AltoBoton = 80f;
+        private const float AnchoBoton = 176f; // proporción del papel: 317 x 143
 
         // El botón va justo debajo de la caja.
         private Vector2 PosicionBoton(Vector2 centroCaja) =>

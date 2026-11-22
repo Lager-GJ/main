@@ -300,12 +300,10 @@ namespace Terror.UI
             dibujo.gameObject.AddComponent<ResaltarAlPasar>();
 
             // Botón Voltear, con el mismo borde a mano que el resto.
-            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(0f, PosicionObjeto.y - TamanoMaximo.y * 0.5f - 46f), new Vector2(300f, 64f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            marco.type = Image.Type.Sliced;
-            marco.color = new Color(1f, 1f, 1f, 0.85f);
+            var marco = NuevaImagen("BotonVoltear", transform, new Vector2(0f, PosicionObjeto.y - TamanoMaximo.y * 0.5f - 52f), new Vector2(176f, 80f), null);
+            ArteUI.PonerPapel(marco); // botón de papel: hover y presionado vienen del arte
             BotonPlano(marco.gameObject, Voltear);
-            marco.gameObject.AddComponent<ResaltarAlPasar>();
-            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(300f, 64f), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
+            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(176f, 80f), 32f, FontStyles.Normal, fuente).text = TextoVoltear;
             boton = marco.gameObject;
         }
     }

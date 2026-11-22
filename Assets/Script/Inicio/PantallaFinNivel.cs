@@ -73,12 +73,11 @@ namespace Terror
 
         private void Boton(string nombre, Vector2 posicion, string texto, System.Action alClic)
         {
-            var marco = NuevaImagen(nombre, raiz.transform, posicion, new Vector2(480f, 100f), MarcoDibujado.Obtener(64, 4f, 6f, 1f));
-            marco.type = Image.Type.Sliced;
-            marco.color = new Color(1f, 1f, 1f, 0.9f);
+            var marco = NuevaImagen(nombre, raiz.transform, posicion, new Vector2(400f, 180f), null);
+            ArteUI.PonerPapel(marco); // botón de papel: hover y presionado vienen del arte
             BotonPlano(marco.gameObject, alClic);
-            marco.gameObject.AddComponent<ResaltarAlPasar>();
-            NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(480f, 100f), 46f, FontStyles.Normal, fuente).text = texto;
+            var t = NuevoTexto("Texto", marco.transform, Vector2.zero, new Vector2(340f, 120f), 44f, FontStyles.Normal, fuente);
+            t.text = texto;
         }
 
         private static void Ir(string escena)

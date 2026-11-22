@@ -230,16 +230,29 @@ namespace Terror
             UbicarAntesDe(raiz, padre, insertarAntesDe);
 
             // Mochila (arriba a la izquierda; los fósforos van arriba a la derecha)
-            Vector2 tamBolsa = iconoBolsa != null && iconoBolsa.rect.height > 0f
-                ? new Vector2(118f * iconoBolsa.rect.width / iconoBolsa.rect.height, 118f)
+            // Arte por piezas (hoja de diseño 2026-11-21): pestaña + ícono de mochila. Sin ellas, el dibujo viejo.
+            Sprite pestanaMochila = ArteUI.Recurso(ArteUI.PestanaMochila);
+            Sprite iconoMochila = ArteUI.Recurso(ArteUI.IconoMochila);
+            bool conPestana = pestanaMochila != null && iconoMochila != null;
+            Sprite fondoBolsa = conPestana ? pestanaMochila : iconoBolsa;
+            float altoBolsa = conPestana ? pestanaMochila.rect.height : 118f;
+            Vector2 tamBolsa = fondoBolsa != null && fondoBolsa.rect.height > 0f
+                ? new Vector2(altoBolsa * fondoBolsa.rect.width / fondoBolsa.rect.height, altoBolsa)
                 : new Vector2(120f, 120f);
             rectBolsa = NuevoRect("BotonInventario", raiz, Vector2.zero, tamBolsa);
             rectBolsa.anchorMin = rectBolsa.anchorMax = rectBolsa.pivot = new Vector2(0f, 1f);
             rectBolsa.anchoredPosition = new Vector2(MargenMochila.x, -MargenMochila.y);
             var imgBolsa = rectBolsa.gameObject.AddComponent<Image>();
-            imgBolsa.sprite = iconoBolsa;
+            imgBolsa.sprite = fondoBolsa;
             imgBolsa.preserveAspect = true;
-            if (iconoBolsa == null) imgBolsa.color = new Color(0.4f, 0.32f, 0.22f, 1f);
+            if (fondoBolsa == null) imgBolsa.color = new Color(0.4f, 0.32f, 0.22f, 1f);
+            if (conPestana)
+            {
+                float h = altoBolsa * 0.6f;
+                var icono = NuevaImagen("Icono", rectBolsa, Vector2.zero, new Vector2(h * iconoMochila.rect.width / iconoMochila.rect.height, h), iconoMochila);
+                icono.preserveAspect = true;
+                icono.raycastTarget = false;
+            }
             var botonBolsa = rectBolsa.gameObject.AddComponent<Button>();
             botonBolsa.onClick.AddListener(Alternar);
             grupoBolsa = rectBolsa.gameObject.AddComponent<CanvasGroup>();
